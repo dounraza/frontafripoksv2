@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus, Loader2 } from 'lucide-react';
 
 interface AuthFormProps {
   onSuccess: (token: string, username: string) => void;
@@ -11,9 +11,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     const body = isLogin ? { email, password } : { name, email, password };
     
@@ -38,6 +42,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
       }
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,14 +56,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         </h2>
         {error && <p className="text-red-500 text-xs mb-4 text-center">{error}</p>}
         {!isLogin && (
-          <input className="w-full bg-gray-900 border border-white/10 p-3 rounded-lg mb-4 text-white" type="text" placeholder="Nom complet" value={name} onChange={e => setName(e.target.value)} required />
+          <input className="w-full bg-gray-900 border border-white/10 p-3 rounded-lg mb-4 text-white" type="text" placeholder="Nom complet" value={name} onChange={e => setName(e.target.value)} required disabled={isLoading} />
         )}
-        <input className="w-full bg-gray-900 border border-white/10 p-3 rounded-lg mb-4 text-white" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input className="w-full bg-gray-900 border border-white/10 p-3 rounded-lg mb-6 text-white" type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} required />
-        <button className="w-full bg-yellow-500 text-black font-black py-3 rounded-lg hover:bg-yellow-400 transition-all uppercase">
-          {isLogin ? 'Se connecter' : 'S\'inscrire'}
+        <input className="w-full bg-gray-900 border border-white/10 p-3 rounded-lg mb-4 text-white" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required disabled={isLoading} />
+        <input className="w-full bg-gray-900 border border-white/10 p-3 rounded-lg mb-6 text-white" type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} required disabled={isLoading} />
+        <button 
+          className="w-full bg-yellow-500 text-black font-black py-3 rounded-lg hover:bg-yellow-400 transition-all uppercase flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading}
+        >
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+          {isLoading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'S\'inscrire')}
         </button>
-        <p className="mt-4 text-center text-xs text-gray-500 cursor-pointer hover:text-white" onClick={() => setIsLogin(!isLogin)}>
+        <p className="mt-4 text-center text-xs text-gray-500 cursor-pointer hover:text-white" onClick={() => !isLoading && setIsLogin(!isLogin)}>
           {isLogin ? 'Pas de compte ? S\'inscrire' : 'Déjà un compte ? Se connecter'}
         </p>
       </form>
