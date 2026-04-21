@@ -187,54 +187,55 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
-      <nav className="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-black/40">
-        <div className="flex items-center gap-4 sm:gap-8">
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center gap-2">
-              <img src="/logo.ico" alt="Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
-              <div className="text-white font-black text-xl sm:text-2xl tracking-tighter italic">AFRI<span className="text-yellow-500">POKS</span></div>
-            </div>
-          </div>
-          <div className="flex gap-4 sm:gap-6 text-sm font-bold text-gray-400">
-            <span onClick={() => setView('main')} className={`${view === 'main' ? 'text-white border-b-2 border-yellow-500' : 'text-gray-400'} py-5 cursor-pointer flex items-center gap-2 text-xs sm:text-sm`}><Trophy className="w-4 h-4" /> <span className="hidden xs:inline">POKER</span></span>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 sm:gap-6">
-          <div className="text-[10px] font-bold text-gray-500 hidden md:flex items-center gap-1">● {onlineCount} Joueurs</div>
-          <div className="flex items-center gap-2 bg-yellow-500/10 px-2 sm:px-3 py-1 rounded-full border border-yellow-500/30 relative">
-            <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
-            <span className="text-[11px] sm:text-sm font-bold text-yellow-500 cursor-pointer" onClick={() => { setShowWalletMenu(!showWalletMenu); setShowProfileMenu(false); }}>
-              {solde !== null ? (showSolde ? `${Number(solde).toLocaleString('fr-FR')} MGA` : '•••• MGA') : '...'}
-            </span>
-            <button onClick={() => setShowSolde(!showSolde)} className="ml-0.5 sm:ml-1 text-yellow-500/70 hover:text-yellow-500">
-              {showSolde ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-            </button>
-            {showWalletMenu && (
-              <div className="absolute top-10 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
-                <button className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10">Historique <HistoryIcon className="w-4 h-4" /></button>
-                <button onClick={() => { setShowDepositModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-yellow-500 font-bold">Dépôt <DollarSign className="w-4 h-4" /></button>
-                <button onClick={() => { setShowWithdrawModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-red-500 font-bold">Retrait <Wallet className="w-4 h-4" /></button>
+      <nav className="h-16 border-b border-white/10 flex items-center justify-between px-4 bg-black/40"> {/* Réduit px-6 à px-4 */}
+              <div className="flex items-center gap-4 sm:gap-8"> {/* Logo and Poker text */}
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-2">
+                    <img src="/logo.ico" alt="Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <div className="text-white font-black text-xl sm:text-2xl tracking-tighter italic">AFRI<span className="text-yellow-500">POKS</span></div>
+                  </div>
+                </div>
+                <div className="flex gap-4 sm:gap-6 text-sm font-bold text-gray-400"> {/* Main navigation links */}
+                  <span onClick={() => setView('main')} className={`${view === 'main' ? 'text-white border-b-2 border-yellow-500' : 'text-gray-400'} py-5 cursor-pointer flex items-center gap-2 text-xs sm:text-sm`}><Trophy className="w-4 h-4" /> <span className="hidden xs:inline">POKER</span></span>
+                </div>
               </div>
-            )}
-          </div>
-          <span className="text-sm font-bold text-white">{user.name}</span>
-          <div className="relative">
-            <button onClick={() => { setShowProfileMenu(!showProfileMenu); setShowWalletMenu(false); }} className="flex items-center gap-2">
-              <div className="relative w-10 h-10 rounded-full border-2 border-yellow-400 p-0.5 overflow-hidden">
-                <img src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${user.name}`} alt="avatar" className="rounded-full w-full h-full" />
-                <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>
+              <div className="flex items-center gap-1 sm:gap-4"> {/* Réduit le gap de 3 à 1 pour mobile, et sm:gap-6 à sm:gap-4 */}
+                <div className="text-[10px] font-bold text-gray-500 hidden md:flex items-center gap-1">● {onlineCount} Joueurs</div>
+                <div className="flex items-center gap-2 bg-yellow-500/10 px-2 sm:px-3 py-1 rounded-full border border-yellow-500/30 relative">
+                  <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                  <span className="text-[11px] sm:text-sm font-bold text-yellow-500 cursor-pointer" onClick={() => { setShowWalletMenu(!showWalletMenu); setShowProfileMenu(false); }}>
+                    {solde !== null ? (showSolde ? `${Number(solde).toLocaleString('fr-FR')} MGA` : '•••• MGA') : '...'}
+                  </span>
+                  <button onClick={() => setShowSolde(!showSolde)} className="ml-0.5 sm:ml-1 text-yellow-500/70 hover:text-yellow-500">
+                    {showSolde ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  </button>
+                  {showWalletMenu && (
+                    <div className="absolute top-10 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
+                      <button className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10">Historique <HistoryIcon className="w-4 h-4" /></button>
+                      <button onClick={() => { setShowDepositModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-yellow-500 font-bold">Dépôt <DollarSign className="w-4 h-4" /></button>
+                      <button onClick={() => { setShowWithdrawModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-red-500 font-bold">Retrait <Wallet className="w-4 h-4" /></button>
+                    </div>
+                  )}
+                </div>
+                <span className="text-sm font-bold text-white">{user.name}</span>
+                <div className="relative">
+                  <button onClick={() => { setShowProfileMenu(!showProfileMenu); setShowWalletMenu(false); }} className="flex items-center gap-2">
+                    <div className="relative w-10 h-10 rounded-full border-2 border-yellow-400 p-0.5 overflow-hidden">
+                      <img src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${user.name}`} alt="avatar" className="rounded-full w-full h-full" />
+                      <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </button>
+                  {showProfileMenu && (
+                  <div className="absolute top-12 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
+                    <div className="h-px bg-white/5 my-2"></div>
+                    <button className="block w-full text-right px-4 py-2 text-sm hover:bg-white/10">Mon profil</button>
+                    <button onClick={onLogout} className="block w-full text-right px-4 py-2 text-sm text-red-500 hover:bg-red-500/10">Déconnexion</button>
+                  </div>
+                  )}
+                </div>
               </div>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
-            </button>
-            {showProfileMenu && (
-            <div className="absolute top-12 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
-              <div className="h-px bg-white/5 my-2"></div>
-              <button className="block w-full text-right px-4 py-2 text-sm hover:bg-white/10">Mon profil</button>
-              <button onClick={onLogout} className="block w-full text-right px-4 py-2 text-sm text-red-500 hover:bg-red-500/10">Déconnexion</button>
-            </div>
-            )}          </div>
-        </div>
-      </nav>
+            </nav>
 
       <div className="flex gap-2 px-6 py-3 bg-black/20 border-b border-white/5 text-xs font-bold uppercase tracking-wider">
         <button onClick={() => setView('main')} className={`${view === 'main' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-4 py-2 rounded-lg flex items-center gap-2`}><Home className="w-4 h-4" /> Home</button>
@@ -360,6 +361,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                         </div>
                     ))}
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-8">
+                    <button 
+                      onClick={() => { setCurrentPage(prev => Math.max(prev - 1, 1)); }}
+                      disabled={currentPage === 1}
+                      className={`px-4 py-2 rounded-xl font-black uppercase text-sm transition-all border border-white/10 ${currentPage === 1 ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20'}`}
+                    >
+                      Précédent
+                    </button>
+                    <span className="text-sm font-bold text-white">Page {currentPage} sur {totalPages}</span>
+                    <button 
+                      onClick={() => { setCurrentPage(prev => Math.min(prev + 1, totalPages)); }}
+                      disabled={currentPage === totalPages}
+                      className={`px-4 py-2 rounded-xl font-black uppercase text-sm transition-all border border-white/10 ${currentPage === totalPages ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20'}`}
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                )}
             </div>
           </div>
         )}
