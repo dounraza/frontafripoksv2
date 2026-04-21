@@ -25,6 +25,8 @@ function App() {
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
   const [showRechargeModal, setShowRechargeModal] = useState(false);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'; // Définition de la variable d'environnement
+
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -58,7 +60,7 @@ function App() {
 
   const fetchSolde = () => {
     if (!user) return;
-    fetch(`${API_URL}/api/solde`, {
+    fetch(`${API_URL}/api/solde`, { // Utilisation de API_URL ici
       headers: { 'Authorization': `Bearer ${user.token}` }
     })
       .then(res => res.json())
