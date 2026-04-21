@@ -58,7 +58,7 @@ function App() {
 
   const fetchSolde = () => {
     if (!user) return;
-    fetch('http://localhost:3001/api/solde', {
+    fetch(`${API_URL}/api/solde`, {
       headers: { 'Authorization': `Bearer ${user.token}` }
     })
       .then(res => res.json())

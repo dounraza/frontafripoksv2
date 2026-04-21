@@ -77,8 +77,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
     return tableImages[index] || '/logo.ico';
   };
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
   const fetchSolde = () => {
-    fetch('http://localhost:3001/api/solde', {
+    fetch(`${API_URL}/api/solde`, {
       headers: { 'Authorization': `Bearer ${user.token}` }
     })
       .then(res => res.json())
@@ -97,7 +99,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
     fetchSolde();
 
     if (view === 'cashGames') {
-      fetch('http://localhost:3001/api/tables', {
+      fetch(`${API_URL}/api/tables`, {
         headers: { 'Authorization': `Bearer ${user.token}` }
       })
         .then(res => res.json())
@@ -109,7 +111,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
   const handleDeposit = () => {
     if (!depositAmount || isNaN(Number(depositAmount)) || !phoneNumber || !reference) return;
 
-    fetch('http://localhost:3001/api/solde/deposit', {
+    fetch(`${API_URL}/api/solde/deposit`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -146,7 +148,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
       return;
     }
 
-    fetch('http://localhost:3001/api/solde/withdraw', {
+    fetch(`${API_URL}/api/solde/withdraw`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

@@ -17,8 +17,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     const body = isLogin ? { email, password } : { name, email, password };
     
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    
     try {
-      const response = await fetch(`http://localhost:3001${endpoint}`, {
+      const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
