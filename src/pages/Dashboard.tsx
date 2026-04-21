@@ -187,23 +187,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
-      <nav className="h-16 border-b border-white/10 flex items-center justify-between px-4 bg-black/40"> {/* Réduit px-6 à px-4 */}
-              <div className="flex items-center gap-4 sm:gap-8"> {/* Logo and Poker text */}
+      <nav className="h-16 border-b border-white/10 flex items-center justify-between px-2 sm:px-4 bg-black/40">
+              <div className="flex items-center gap-2 sm:gap-8">
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex items-center gap-2">
                     <img src="/logo.ico" alt="Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
-                    <div className="text-white font-black text-xl sm:text-2xl tracking-tighter italic">AFRI<span className="text-yellow-500">POKS</span></div>
+                    <div className="text-white font-black text-lg sm:text-2xl tracking-tighter italic hidden sm:block">AFRI<span className="text-yellow-500">POKS</span></div>
                   </div>
                 </div>
-                <div className="flex gap-4 sm:gap-6 text-sm font-bold text-gray-400"> {/* Main navigation links */}
-                  <span onClick={() => setView('main')} className={`${view === 'main' ? 'text-white border-b-2 border-yellow-500' : 'text-gray-400'} py-5 cursor-pointer flex items-center gap-2 text-xs sm:text-sm`}>{/* <Trophy className="w-4 h-4" /> */}<span className="hidden xs:inline">POKER</span></span>
+                <div className="flex gap-2 sm:gap-6 text-sm font-bold text-gray-400">
+                  <span onClick={() => setView('main')} className={`${view === 'main' ? 'text-white border-b-2 border-yellow-500' : 'text-gray-400'} py-5 cursor-pointer flex items-center gap-2 text-[10px] sm:text-sm`}><span className="">POKER</span></span>
                 </div>
               </div>
-              <div className="flex items-center gap-1 sm:gap-4"> {/* Réduit le gap de 3 à 1 pour mobile, et sm:gap-6 à sm:gap-4 */}
+              <div className="flex items-center gap-1 sm:gap-4">
                 <div className="text-[10px] font-bold text-gray-500 hidden md:flex items-center gap-1">● {onlineCount} Joueurs</div>
-                <div className="flex items-center gap-2 bg-yellow-500/10 px-2 sm:px-3 py-1 rounded-full border border-yellow-500/30 relative">
+                <div className="flex items-center gap-1 sm:gap-2 bg-yellow-500/10 px-1.5 sm:px-3 py-1 rounded-full border border-yellow-500/30 relative">
                   <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
-                  <span className="text-[11px] sm:text-sm font-bold text-yellow-500 cursor-pointer" onClick={() => { setShowWalletMenu(!showWalletMenu); setShowProfileMenu(false); }}>
+                  <span className="text-[10px] sm:text-sm font-bold text-yellow-500 cursor-pointer" onClick={() => { setShowWalletMenu(!showWalletMenu); setShowProfileMenu(false); }}>
                     {solde !== null ? (showSolde ? `${Number(solde).toLocaleString('fr-FR')} MGA` : '•••• MGA') : '...'}
                   </span>
                   <button onClick={() => setShowSolde(!showSolde)} className="ml-0.5 sm:ml-1 text-yellow-500/70 hover:text-yellow-500">
@@ -217,14 +217,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                     </div>
                   )}
                 </div>
-                <span className="text-sm font-bold text-white">{user.name}</span>
+                <span className="text-[10px] sm:text-sm font-bold text-white hidden xs:inline">{user.name}</span>
                 <div className="relative">
-                  <button onClick={() => { setShowProfileMenu(!showProfileMenu); setShowWalletMenu(false); }} className="flex items-center gap-2">
-                    <div className="relative w-10 h-10 rounded-full border-2 border-yellow-400 p-0.5 overflow-hidden">
+                  <button onClick={() => { setShowProfileMenu(!showProfileMenu); setShowWalletMenu(false); }} className="flex items-center gap-1 sm:gap-2">
+                    <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-yellow-400 p-0.5 overflow-hidden">
                       <img src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${user.name}`} alt="avatar" className="rounded-full w-full h-full" />
                       <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>
                     </div>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                   </button>
                   {showProfileMenu && (
                   <div className="absolute top-12 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
@@ -237,86 +237,86 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
               </div>
             </nav>
 
-      <div className="flex gap-2 px-6 py-3 bg-black/20 border-b border-white/5 text-xs font-bold uppercase tracking-wider">
-        <button onClick={() => setView('main')} className={`${view === 'main' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-4 py-2 rounded-lg flex items-center gap-2`}><Home className="w-4 h-4" /> Home</button>
-        <button onClick={() => setView('cashGames')} className={`${view === 'cashGames' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-4 py-2 rounded-lg flex items-center gap-2`}><DollarSign className="w-4 h-4" /> Cash Games</button>
-        <button onClick={() => setView('tournaments')} className={`${view === 'tournaments' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-4 py-2 rounded-lg flex items-center gap-2`}><Trophy className="w-4 h-4" /> Tournaments <span className="text-[10px] bg-red-600 px-1 rounded ml-1">NEW</span></button>
+      <div className="flex gap-2 px-4 sm:px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] sm:text-xs font-bold uppercase tracking-wider overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <button onClick={() => setView('main')} className={`${view === 'main' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 shrink-0`}><Home className="w-4 h-4" /> Home</button>
+        <button onClick={() => setView('cashGames')} className={`${view === 'cashGames' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 shrink-0`}><DollarSign className="w-4 h-4" /> Cash Games</button>
+        <button onClick={() => setView('tournaments')} className={`${view === 'tournaments' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 shrink-0`}><Trophy className="w-4 h-4" /> Tournaments <span className="text-[8px] sm:text-[10px] bg-red-600 px-1 rounded ml-1">NEW</span></button>
       </div>
 
-      <main className="p-6 max-w-[1600px] mx-auto">
+      <main className="p-4 sm:p-6 max-w-[1600px] mx-auto">
         {view === 'main' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[80vh]">
-            <div className="lg:col-span-3">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 min-h-auto lg:min-h-[80vh]">
+            <div className="lg:col-span-3 h-[300px] sm:h-[400px] lg:h-auto">
               <div className="relative h-full rounded-3xl overflow-hidden border border-white/10 group bg-gradient-to-b from-gray-900 to-black">
                 <img src={slides[currentSlide].img} className="w-full h-full object-cover opacity-80 transition-opacity duration-1000" alt={slides[currentSlide].title} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                <div className="absolute top-12 left-0 right-0 text-center px-4">
-                   <h1 className="text-4xl font-black italic tracking-tighter text-yellow-500 drop-shadow-2xl uppercase">
+                <div className="absolute top-8 sm:top-12 left-0 right-0 text-center px-4">
+                   <h1 className="text-2xl sm:text-4xl font-black italic tracking-tighter text-yellow-500 drop-shadow-2xl uppercase">
                      {slides[currentSlide].title.split(' ').map((word, i) => (<React.Fragment key={i}>{word}{i === 0 && <br/>}</React.Fragment>))}
                    </h1>
-                   <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2">{slides[currentSlide].desc}</p>
+                   <p className="text-[8px] sm:text-[10px] font-bold text-white/60 uppercase tracking-widest mt-2">{slides[currentSlide].desc}</p>
                 </div>
-                <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2">
+                <div className="absolute bottom-6 sm:bottom-10 left-0 right-0 flex justify-center gap-2">
                    {slides.map((_, i) => (<div key={i} onClick={() => setCurrentSlide(i)} className={`h-1 rounded-full transition-all cursor-pointer ${i === currentSlide ? 'w-8 bg-yellow-500' : 'w-2 bg-white/20 hover:bg-white/40'}`}></div>))}
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-6 space-y-6">
-              <div className="bg-gradient-to-r from-gray-900/80 to-black/80 rounded-3xl border border-white/10 p-12 text-center flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden">
+            <div className="lg:col-span-6 space-y-4 sm:space-y-6">
+              <div className="bg-gradient-to-r from-gray-900/80 to-black/80 rounded-3xl border border-white/10 p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[200px] sm:min-h-[250px] relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.05)_0%,transparent_70%)]"></div>
-                <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2 relative z-10">JOUEZ AU MOINS 1 TOURNOI POUR</h2>
-                <h3 className="text-2xl font-black text-yellow-500 italic relative z-10">ÊTRE CLASSÉ AU SCORE DE COMPÉTENCE</h3>
-                <div className="mt-6 h-px w-32 bg-white/10 relative z-10"></div>
-                <p className="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] relative z-10">COMMENCEZ À JOUER MAINTENANT</p>
+                <h2 className="text-sm sm:text-xl font-black text-white uppercase tracking-widest mb-2 relative z-10 leading-tight">JOUEZ AU MOINS 1 TOURNOI POUR</h2>
+                <h3 className="text-lg sm:text-2xl font-black text-yellow-500 italic relative z-10">ÊTRE CLASSÉ AU SCORE DE COMPÉTENCE</h3>
+                <div className="mt-4 sm:mt-6 h-px w-24 sm:w-32 bg-white/10 relative z-10"></div>
+                <p className="mt-3 sm:mt-4 text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] relative z-10">COMMENCEZ À JOUER MAINTENANT</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="bg-gray-900/30 rounded-3xl border border-white/5 p-6 space-y-6">
                    <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">EXPLORE POKER FORMATS</h4>
                    <div className="grid grid-cols-2 gap-4">
                       <div onClick={() => setView('cashGames')} className="aspect-square bg-black/40 rounded-2xl border border-white/10 p-4 flex flex-col items-center justify-center gap-3 hover:border-yellow-500/50 transition-all cursor-pointer group">
-                         <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><DollarSign className="w-6 h-6 text-yellow-500" /></div>
+                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" /></div>
                          <span className="text-[10px] font-black uppercase text-center">Cash Games</span>
                       </div>
                       <div onClick={() => setView('tournaments')} className="aspect-square bg-black/40 rounded-2xl border border-white/10 p-4 flex flex-col items-center justify-center gap-3 hover:border-yellow-500/50 transition-all cursor-pointer group">
-                         <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><Trophy className="w-6 h-6 text-green-500" /></div>
+                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" /></div>
                          <span className="text-[10px] font-black uppercase text-center">Tournaments</span>
                       </div>
                    </div>
                 </div>
-                <div className="space-y-6">
-                   <div className="bg-gray-900/30 rounded-3xl border border-white/5 p-8 relative overflow-hidden group hover:border-white/10 transition-all h-[180px] flex flex-col justify-center">
-                      <Zap className="w-8 h-8 text-yellow-500 mb-4" />
-                      <h4 className="text-lg font-black italic">My Transactions</h4>
+                <div className="space-y-4 sm:space-y-6">
+                   <div className="bg-gray-900/30 rounded-3xl border border-white/5 p-6 sm:p-8 relative overflow-hidden group hover:border-white/10 transition-all h-[150px] sm:h-[180px] flex flex-col justify-center">
+                      <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mb-4" />
+                      <h4 className="text-base sm:text-lg font-black italic">My Transactions</h4>
                       <p className="text-[10px] text-gray-500 font-bold uppercase mt-1">Check out your withdrawal and deposit status</p>
                    </div>
                 </div>
               </div>
             </div>
             <div className="lg:col-span-3">
-              <div className="bg-gray-900/30 rounded-3xl border border-white/10 p-8 h-full">
-                <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-8">GAME STATS</h4>
-                <div className="bg-black/40 rounded-2xl p-1 mb-8 flex"><button className="flex-1 py-3 bg-red-600 rounded-xl text-xs font-black uppercase italic tracking-wider">Cash</button><button className="flex-1 py-3 text-xs font-black uppercase italic tracking-wider text-gray-500">Tournament</button></div>
+              <div className="bg-gray-900/30 rounded-3xl border border-white/10 p-6 sm:p-8 h-auto lg:h-full">
+                <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6 sm:mb-8">GAME STATS</h4>
+                <div className="bg-black/40 rounded-2xl p-1 mb-6 sm:mb-8 flex"><button className="flex-1 py-3 bg-red-600 rounded-xl text-xs font-black uppercase italic tracking-wider">Cash</button><button className="flex-1 py-3 text-xs font-black uppercase italic tracking-wider text-gray-500">Tournament</button></div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-3 space-y-6">
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 p-6">
-                    <h2 className="text-sm font-black tracking-widest mb-6 uppercase text-yellow-500">FILTRES</h2>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
+            <div className="md:col-span-3 space-y-4 sm:space-y-6">
+                <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 p-4 sm:p-6">
+                    <h2 className="text-xs sm:text-sm font-black tracking-widest mb-4 sm:mb-6 uppercase text-yellow-500">FILTRES</h2>
                     <div className="space-y-4">
                         <div>
                             <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Rechercher</label>
-                            <input type="text" placeholder="Nom de la table..." className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50" onChange={(e) => setSearch(e.target.value)} />
+                            <input type="text" placeholder="Nom de la table..." className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-yellow-500/50" onChange={(e) => setSearch(e.target.value)} />
                         </div>
                         <div>
                             <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Type de jeu</label>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                                 {['All', 'holdem', 'omaha'].map(type => (
                                     <button 
                                         key={type}
                                         onClick={() => { setGameFilter(type as any); setCurrentPage(1); }}
-                                        className={`w-full px-4 py-2 rounded-xl text-xs font-bold uppercase text-left transition-all ${gameFilter === type ? 'bg-yellow-500 text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase text-left transition-all whitespace-nowrap md:w-full ${gameFilter === type ? 'bg-yellow-500 text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                                     >
                                         {type}
                                     </button>
@@ -326,36 +326,36 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                     </div>
                 </div>
             </div>
-            <div className="md:col-span-9 space-y-6">
+            <div className="md:col-span-9 space-y-4 sm:space-y-6">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-2">LOBBY</span></h1>
+                    <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                     {paginatedTables.map((t) => (
-                        <div key={t.id} className="group relative w-full h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
+                        <div key={t.id} className="group relative w-full h-40 sm:h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
                             <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                            <div className="absolute top-5 right-5 bg-yellow-500 text-black px-3 py-1 rounded-full shadow-lg"><span className="font-black text-[10px] tracking-wider uppercase">{t.cave} MGA</span></div>
-                            <div className="absolute bottom-6 left-6 right-6">
-                                <h3 className="text-xl font-black leading-tight mb-2 text-white group-hover:text-yellow-500 transition-colors uppercase italic">{t.name}</h3>
+                            <div className="absolute top-4 sm:top-5 right-4 sm:right-5 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-full shadow-lg"><span className="font-black text-[9px] sm:text-[10px] tracking-wider uppercase">{t.cave} MGA</span></div>
+                            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
+                                <h3 className="text-lg sm:text-xl font-black leading-tight mb-1 sm:mb-2 text-white group-hover:text-yellow-500 transition-colors uppercase italic">{t.name}</h3>
                                 {t.playerNames && t.playerNames.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mb-3">
+                                  <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
                                     {t.playerNames.map((name: string, i: number) => (
-                                      <span key={i} className="text-[8px] px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/30 rounded text-yellow-200 font-bold uppercase tracking-tighter">
+                                      <span key={i} className="text-[7px] sm:text-[8px] px-1.5 sm:px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/30 rounded text-yellow-200 font-bold uppercase tracking-tighter">
                                         {name}
                                       </span>
                                     ))}
                                   </div>
                                 )}
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex flex-col"><span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Type</span><span className="text-xs font-black text-white">{t.gameType.toUpperCase()}</span></div>
-                                        <div className="w-px h-6 bg-white/10"></div>
-                                        <div className="flex flex-col"><span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Joueurs</span><span className="text-xs font-black text-yellow-500 flex items-center gap-1"><User className="w-3 h-3" /> {t.currentPlayers || 0} / 9</span></div>
-                                        <div className="w-px h-6 bg-white/10"></div>
-                                        <div className="flex flex-col"><span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Blinds</span><span className="text-xs font-black text-white">{t.smallBlind}/{t.bigBlind}</span></div>
+                                    <div className="flex items-center gap-2 sm:gap-4">
+                                        <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Type</span><span className="text-[10px] sm:text-xs font-black text-white">{t.gameType.toUpperCase()}</span></div>
+                                        <div className="w-px h-5 sm:h-6 bg-white/10"></div>
+                                        <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Joueurs</span><span className="text-[10px] sm:text-xs font-black text-yellow-500 flex items-center gap-1"><User className="w-3 h-3" /> {t.currentPlayers || 0} / 9</span></div>
+                                        <div className="w-px h-5 sm:h-6 bg-white/10"></div>
+                                        <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Blinds</span><span className="text-[10px] sm:text-xs font-black text-white">{t.smallBlind}/{t.bigBlind}</span></div>
                                     </div>
-                                    <button onClick={() => onJoinTable(t.id, Number(t.cave))} className="bg-white text-black h-10 w-10 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all hover:scale-110 active:scale-95"><Play className="w-4 h-4 fill-current ml-0.5" /></button>
+                                    <button onClick={() => onJoinTable(t.id, Number(t.cave))} className="bg-white text-black h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all hover:scale-110 active:scale-95"><Play className="w-3 h-3 sm:w-4 sm:h-4 fill-current ml-0.5" /></button>
                                 </div>
                             </div>
                         </div>
