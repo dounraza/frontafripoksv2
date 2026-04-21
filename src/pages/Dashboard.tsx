@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut, XCircle, CreditCard } from 'lucide-react';
 import { useSocket } from '../hooks/useSocket';
 import { Chat } from '../components/Chat';
 
@@ -42,6 +42,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
   }, [socket]);
 
   const [view, setView] = useState<'main' | 'cashGames' | 'tournaments'>('main');
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -229,7 +230,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                   {showProfileMenu && (
                   <div className="absolute top-12 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
                     <div className="h-px bg-white/5 my-2"></div>
-                    <button className="block w-full text-right px-4 py-2 text-sm hover:bg-white/10">Mon profil</button>
+                    <button onClick={() => { setShowProfileModal(true); setShowProfileMenu(false); }} className="block w-full text-right px-4 py-2 text-sm hover:bg-white/10">Mon profil</button>
                     <button onClick={onLogout} className="block w-full text-right px-4 py-2 text-sm text-red-500 hover:bg-red-500/10">Déconnexion</button>
                   </div>
                   )}
@@ -386,6 +387,167 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
           </div>
         )}
       </main>
+
+      {/* Profile Modal */}
+      <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title="Mon Profil">
+        <div className="space-y-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative w-24 h-24 rounded-full border-4 border-yellow-500 p-1 shadow-2xl">
+              <img src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${user.name}`} alt="avatar" className="rounded-full w-full h-full" />
+              <div className="absolute bottom-0 right-0 bg-yellow-500 p-1.5 rounded-full border-4 border-gray-900 shadow-lg">
+                <User className="w-4 h-4 text-black" />
+              </div>
+            </div>
+            <div className="text-center">
+              <h4 className="text-xl font-black text-white uppercase italic">{user.name}</h4>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Joueur AFRI<span className="text-yellow-500">POKS</span></p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center border border-yellow-500/20">
+                  <Wallet className="w-5 h-5 text-yellow-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-500 font-black uppercase">Solde Actuel</p>
+                  <p className="text-lg font-black text-white">{solde?.toLocaleString()} MGA</p>
+                </div>
+              </div>
+              <button onClick={() => { setShowProfileModal(false); setShowDepositModal(true); }} className="px-4 py-2 bg-yellow-500 text-black text-[10px] font-black uppercase rounded-lg hover:bg-yellow-400 transition-all">Recharger</button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Modifier mon pseudo</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={pseudo} 
+                  onChange={(e) => setPseudo(e.target.value)}
+                  placeholder="Nouveau pseudo..."
+                  className="flex-1 bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
+                />
+                <button className="px-6 bg-white/5 border border-white/10 text-white font-black text-[10px] uppercase rounded-xl hover:bg-white/10 transition-all">Mettre à jour</button>
+              </div>
+            </div>
+          </div>
+
+          <button 
+            onClick={onLogout}
+            className="w-full py-4 bg-red-600/10 border border-red-600/30 hover:bg-red-600/20 text-red-500 rounded-2xl font-black uppercase tracking-widest transition-all mt-4 flex items-center justify-center gap-2"
+          >
+            <LogOut className="w-4 h-4" /> Déconnexion
+          </button>
+        </div>
+      </Modal>
+
+      {/* Deposit Modal */}
+      <Modal isOpen={showDepositModal} onClose={() => setShowDepositModal(false)} title="Dépôt de Fonds">
+        <div className="space-y-4">
+          <div className="p-4 bg-yellow-500/5 rounded-2xl border border-yellow-500/20">
+            <p className="text-[10px] text-gray-400 uppercase font-black mb-1">Votre Solde Actuel</p>
+            <p className="text-xl font-black text-white">{solde?.toLocaleString()} MGA</p>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Montant à déposer (MGA)</label>
+              <input 
+                type="number" 
+                value={depositAmount} 
+                onChange={(e) => setDepositAmount(e.target.value)}
+                placeholder="Ex: 5000"
+                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Numéro Mobile Money</label>
+              <input 
+                type="text" 
+                value={phoneNumber} 
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Ex: 0340000000"
+                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Référence du transfert</label>
+              <input 
+                type="text" 
+                value={reference} 
+                onChange={(e) => setReference(e.target.value)}
+                placeholder="ID de transaction"
+                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
+              />
+            </div>
+          </div>
+          <button 
+            onClick={handleDeposit}
+            className="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-black rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-yellow-500/10 transition-all mt-4"
+          >
+            Confirmer le dépôt
+          </button>
+        </div>
+      </Modal>
+
+      {/* Withdraw Modal */}
+      <Modal isOpen={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} title="Demande de Retrait">
+        <div className="space-y-4">
+          <div className="p-4 bg-red-500/5 rounded-2xl border border-red-500/20">
+            <p className="text-[10px] text-gray-400 uppercase font-black mb-1">Disponible pour retrait</p>
+            <p className="text-xl font-black text-white">{solde?.toLocaleString()} MGA</p>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Montant à retirer (MGA)</label>
+              <input 
+                type="number" 
+                value={withdrawAmount} 
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+                placeholder="Ex: 2000"
+                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-red-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Numéro de réception</label>
+              <input 
+                type="text" 
+                value={withdrawPhone} 
+                onChange={(e) => setWithdrawPhone(e.target.value)}
+                placeholder="Ex: 0320000000"
+                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-red-500 outline-none"
+              />
+            </div>
+          </div>
+          <button 
+            onClick={handleWithdraw}
+            className="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-red-600/10 transition-all mt-4"
+          >
+            Confirmer le retrait
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };
+
+// Modals are handled within the same file for simplicity as requested
+const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }> = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-black text-yellow-500 italic uppercase tracking-tighter">{title}</h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+            <XCircle className="w-6 h-6" />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// Update Dashboard.tsx to include the modals and their triggers
+// I'll re-read the full file to ensure I place the modals correctly and add missing icons/logic if needed.
