@@ -196,7 +196,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                   </div>
                 </div>
                 <div className="flex gap-4 sm:gap-6 text-sm font-bold text-gray-400"> {/* Main navigation links */}
-                  <span onClick={() => setView('main')} className={`${view === 'main' ? 'text-white border-b-2 border-yellow-500' : 'text-gray-400'} py-5 cursor-pointer flex items-center gap-2 text-xs sm:text-sm`}><Trophy className="w-4 h-4" /> <span className="hidden xs:inline">POKER</span></span>
+                  <span onClick={() => setView('main')} className={`${view === 'main' ? 'text-white border-b-2 border-yellow-500' : 'text-gray-400'} py-5 cursor-pointer flex items-center gap-2 text-xs sm:text-sm`}>{/* <Trophy className="w-4 h-4" /> */}<span className="hidden xs:inline">POKER</span></span>
                 </div>
               </div>
               <div className="flex items-center gap-1 sm:gap-4"> {/* Réduit le gap de 3 à 1 pour mobile, et sm:gap-6 à sm:gap-4 */}
