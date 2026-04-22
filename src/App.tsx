@@ -171,7 +171,7 @@ function App() {
              <div className="flex gap-2">
                 <button onClick={() => { leaveTable(); setIsReadyToPlay(false); localStorage.removeItem('active_table'); }} className="px-4 py-2 bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-500 rounded-xl text-xs font-black uppercase transition-all flex items-center gap-2 border border-white/5"><LogOut className="w-4 h-4" /> Quitter</button>
              </div>
-             <button onClick={() => setIsVertical(!isVertical)} className="px-4 py-2 bg-white/5 hover:bg-yellow-500/20 text-gray-400 hover:text-yellow-500 rounded-xl text-xs font-black uppercase transition-all border border-white/5">Orientation</button>
+             <button onClick={() => setIsVertical(!isVertical)} className="hidden sm:px-4 sm:py-2 sm:bg-white/5 sm:hover:bg-yellow-500/20 sm:text-gray-400 sm:hover:text-yellow-500 sm:rounded-xl sm:text-xs sm:font-black sm:uppercase sm:transition-all sm:border sm:border-white/5 sm:block">Orientation</button>
              <div className="flex items-center gap-3">
                 <div className="text-right">
                   <div className="text-[9px] font-black text-gray-500 uppercase">Votre Cave</div>
@@ -192,25 +192,23 @@ function App() {
              <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
           </div>
 
-          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center ${isVertical ? 'mt-[-120px] sm:mt-4' : 'mt-24 sm:mt-32'}`}>
+          {/* Action buttons section - placed directly after the table in vertical mode */}
+          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center ${isVertical ? 'mt-0' : 'mt-24 sm:mt-32'}`}>
             {isVertical ? (
-              <div className={`flex flex-col items-center gap-6 transition-all duration-700 ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                <div className="grid grid-cols-3 gap-3 w-full max-w-md">
-                  <button onClick={() => sendAction('fold')} className="group flex flex-col items-center gap-2">
-                    <div className="w-16 h-16 bg-red-950/20 border-2 border-red-500/30 rounded-2xl flex items-center justify-center group-hover:bg-red-600 shadow-xl active:scale-95 transition-all"><XCircle className="w-9 h-9 text-red-500 group-hover:text-white" /></div>
+              <div className={`flex flex-col items-center gap-2 transition-all duration-700 ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                <div className="grid grid-cols-3 gap-2 w-full max-w-sm px-2">
+                  <button onClick={() => sendAction('fold')} className="flex flex-col items-center justify-center p-2 bg-red-950/20 border border-red-500/30 rounded-xl active:scale-95 transition-all">
                     <span className="text-[10px] font-black uppercase text-red-500">FOLD</span>
                   </button>
-                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="group flex flex-col items-center gap-2">
-                    <div className="w-16 h-16 bg-green-950/20 border-2 border-green-500/30 rounded-2xl flex items-center justify-center group-hover:bg-green-600 shadow-xl active:scale-95 transition-all"><CheckCircle2 className="w-9 h-9 text-green-500 group-hover:text-white" /></div>
+                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="flex flex-col items-center justify-center p-2 bg-green-950/20 border border-green-500/30 rounded-xl active:scale-95 transition-all">
                     <span className="text-[10px] font-black uppercase text-green-500">{callAmount > 0 ? 'CALL' : 'CHECK'}</span>
                   </button>
-                  <button onClick={() => sendAction('all-in')} className="group flex flex-col items-center gap-2">
-                    <div className="w-16 h-16 bg-yellow-950/20 border-2 border-yellow-500/30 rounded-2xl flex items-center justify-center group-hover:bg-yellow-600 shadow-xl active:scale-95 transition-all"><Zap className="w-9 h-9 text-yellow-500 group-hover:text-white" /></div>
+                  <button onClick={() => sendAction('all-in')} className="flex flex-col items-center justify-center p-2 bg-yellow-950/20 border border-yellow-500/30 rounded-xl active:scale-95 transition-all">
                     <span className="text-[10px] font-black uppercase text-yellow-500">ALL-IN</span>
                   </button>
-                  <div className="col-span-3 flex items-center gap-2 bg-white/5 p-2 rounded-2xl border border-white/10 backdrop-blur-md w-full">
-                    <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} className="bg-transparent text-white font-black w-24 focus:outline-none text-center" />
-                    <button onClick={() => sendAction('raise', raiseAmount)} className="bg-yellow-500 text-black flex-1 py-2 rounded-xl active:scale-95 font-black uppercase text-xs">Raise</button>
+                  <div className="col-span-3 flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 w-full">
+                    <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} className="bg-transparent text-white font-black w-16 focus:outline-none text-center text-xs" />
+                    <button onClick={() => sendAction('raise', raiseAmount)} className="bg-yellow-500 text-black flex-1 py-1.5 rounded-lg font-black uppercase text-[10px]">Raise</button>
                   </div>
                 </div>
               </div>
