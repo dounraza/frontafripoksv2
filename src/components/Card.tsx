@@ -22,6 +22,8 @@ const suitIcons: Record<string, string> = {
 };
 
 export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true }) => {
+  const displayValue = value === 'T' ? '10' : value;
+
   const CardBack = (
     <div className="w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20 bg-black">
       <img src="/logo.ico" alt="logo" className="w-1/2 h-1/2 object-contain" />
@@ -35,9 +37,9 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
       <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${revealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
         {/* Front Side */}
         <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-between p-1 sm:p-2 font-black ${suitColors[suit]}`}>
-          <div className="text-[10px] sm:text-lg self-start leading-none">{value}</div>
+          <div className="text-[10px] sm:text-lg self-start leading-none">{displayValue}</div>
           <div className="text-xl sm:text-4xl leading-none">{suitIcons[suit]}</div>
-          <div className="text-[10px] sm:text-lg self-end rotate-180 leading-none">{value}</div>
+          <div className="text-[10px] sm:text-lg self-end rotate-180 leading-none">{displayValue}</div>
         </div>
         
         {/* Back Side */}

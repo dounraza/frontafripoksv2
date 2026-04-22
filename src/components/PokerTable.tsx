@@ -14,15 +14,15 @@ interface PokerTableProps {
 }
 
 const POSITIONS_HORIZONTAL = [
-  'bottom-[-10%] left-[50%] -translate-x-1/2',
-  'bottom-[15%] left-[-4%]',
-  'top-[25%] left-[-4%]',
-  'top-[-2%] left-[10%]',
-  'top-[-15%] left-[35%] -translate-x-1/2',
-  'top-[-15%] right-[35%] translate-x-1/2',
-  'top-[-2%] right-[10%]',
-  'top-[25%] right-[-4%]',
-  'bottom-[15%] right-[-4%]',
+  'bottom-[-10%] left-[50%] -translate-x-1/2', // Seat 0 (Bottom-Center)
+  'bottom-[-10%] left-[10%]',                    // Seat 1 (Bottom-Row, Left, aligned with seat 3)
+  'top-[50%] left-[-6%] -translate-y-1/2',      // Seat 2
+  'top-[-5%] left-[5%]',                       // Seat 3 (Top-Left)
+  'top-[-15%] left-[35%] -translate-x-1/2',     // Seat 4
+  'top-[-15%] right-[35%] translate-x-1/2',     // Seat 5
+  'top-[-5%] right-[6%]',                      // Seat 6 (Top-Right)
+  'top-[50%] right-[-5%] -translate-y-1/2',      // Seat 7
+  'bottom-[-10%] right-[10%]',                   // Seat 8 (Bottom-Row, Right, aligned with seat 6)
 ];
 
 const POSITIONS_VERTICAL = [
@@ -112,7 +112,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
   const winnerPos = winnerSeat !== -1 ? targetTranslations[winnerSeat] : { x: '0px', y: '0px' };
 
   return (
-    <div className="relative w-full flex flex-col items-center">
+    <div className="relative w-full flex flex-col items-center mt-20">
       <div className={`relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center
         ${isVertical ? 'w-full max-w-[480px] aspect-[480/850] rounded-[240px] border-[14px]' : 'w-[80vw] max-w-[1000px] aspect-[2/1] rounded-[300px] border-[16px]'}
         border-[#3d2b1f]`}
