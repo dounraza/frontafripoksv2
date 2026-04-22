@@ -147,10 +147,12 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
 
       {/* 1. Badge Action (en haut, au niveau des cartes) */}
       {player.lastAction && (
-        <div className={`absolute top-[69px] left-[-9px] px-3 py-0.5 rounded-md text-[10px] font-black uppercase shadow-lg border border-white/20 z-50 whitespace-nowrap
+        <div className={`absolute px-3 py-0.5 rounded-md text-[10px] font-black uppercase shadow-lg border border-white/20 z-50 whitespace-nowrap
           ${player.lastAction === 'fold' ? 'bg-red-700 text-white' : 
             player.lastAction === 'all-in' ? 'bg-purple-700 text-white' :
-            'bg-yellow-600 text-black'}`}>
+            'bg-yellow-600 text-black'}`}
+          style={{ top: '120px', left: '-9px' }}
+        >
           {player.lastAction}
         </div>
       )}

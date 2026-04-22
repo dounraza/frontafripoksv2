@@ -14,25 +14,25 @@ interface PokerTableProps {
 }
 
 const POSITIONS_HORIZONTAL = [
-  'bottom-[-10%] left-[50%] -translate-x-1/2', // Seat 0 (Bottom-Center)
-  'bottom-[-10%] left-[10%]',                    // Seat 1 (Bottom-Row, Left, aligned with seat 3)
-  'top-[50%] left-[-6%] -translate-y-1/2',      // Seat 2
-  'top-[-5%] left-[5%]',                       // Seat 3 (Top-Left)
-  'top-[-15%] left-[35%] -translate-x-1/2',     // Seat 4
-  'top-[-15%] right-[35%] translate-x-1/2',     // Seat 5
-  'top-[-5%] right-[6%]',                      // Seat 6 (Top-Right)
-  'top-[50%] right-[-5%] -translate-y-1/2',      // Seat 7
-  'bottom-[-10%] right-[10%]',                   // Seat 8 (Bottom-Row, Right, aligned with seat 6)
+  'bottom-[-10%] left-[50%] -translate-x-1/2',
+  'bottom-[15%] left-[-4%]',
+  'top-[25%] left-[-4%]',
+  'top-[-2%] left-[10%]',
+  'top-[-15%] left-[35%] -translate-x-1/2',
+  'top-[-15%] right-[35%] translate-x-1/2',
+  'top-[-2%] right-[10%]',
+  'top-[25%] right-[-4%]',
+  'bottom-[15%] right-[-4%]',
 ];
 
 const POSITIONS_VERTICAL = [
-  'bottom-[-4%] left-[25%] -translate-x-1/2',
-  'bottom-[25%] left-[-12%]',
-  'top-[32%] left-[-15%]',                   // Ancien Seat 3, remonté
-  'top-[12%] left-[-12%]',                   // Ancien Seat 2, remonté
-  'top-[-4%] left-[50%] -translate-x-1/2',
-  'top-[2%] right-[-6%]',                  // Seat 5 ajusté
-  'top-[32%] right-[-15%]',
+  'bottom-[-4%] left-[15%] -translate-x-1/2',
+  'bottom-[23%] left-[-12%]',
+  'top-[27%] left-[-15%]',                   // Ancien Seat 3, remonté
+  'top-[3%] left-[-12%]',                   // Ancien Seat 2, remonté
+  'top-[-8%] left-[50%] -translate-x-1/2',
+  'top-[4%] right-[-6%]',                  // Seat 5 ajusté
+  'top-[27%] right-[-15%]',
   'bottom-[25%] right-[-12%]',
   'bottom-[2%] right-[6%]',
 ];
