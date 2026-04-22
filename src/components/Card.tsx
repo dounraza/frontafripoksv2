@@ -23,10 +23,8 @@ const suitIcons: Record<string, string> = {
 
 export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true }) => {
   const CardBack = (
-    <div className="w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20">
-      <div className="w-2/3 h-2/3 border border-white/10 rounded-md bg-white/10 flex items-center justify-center">
-        <div className="w-1/2 h-1/2 rounded-full border border-white/20 bg-gradient-to-br from-white/20 to-transparent"></div>
-      </div>
+    <div className="w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20 bg-black">
+      <img src="/logo.ico" alt="logo" className="w-1/2 h-1/2 object-contain" />
     </div>
   );
 
