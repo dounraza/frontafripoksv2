@@ -140,7 +140,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
           </div>
         </div>
 
-        {/* WINNER BANNER */}
+        {/* WINNER BANNER (Commented out as per request)
         {showWinnerBanner && tableData.winnerInfo && tableData.winnerInfo.length > 0 && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center gap-4 w-full">
             {tableData.winnerInfo.map((winner: any, i: number) => (
@@ -155,6 +155,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
             ))}
           </div>
         )}
+        */}
 
         {Array.from({ length: 9 }).map((_, idx) => {
           const player = players.find((p: any) => p.position === idx);
