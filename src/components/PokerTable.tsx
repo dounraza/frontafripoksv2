@@ -120,13 +120,16 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
         <div className={`absolute inset-[6px] bg-cover opacity-10 pointer-events-none ${isVertical ? 'rounded-[228px]' : 'rounded-[280px]'} `} style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
         <div className={`absolute inset-[6px] border-[#2c6e49] ${isVertical ? 'rounded-[228px] border-[3px]' : 'rounded-[280px] border-[4px]'}`}></div>
         <div className={`flex flex-col items-center z-10 relative ${isVertical ? 'gap-4' : 'gap-6 mt-4'}`}>
+
           <div style={{ '--target-x': winnerPos.x, '--target-y': winnerPos.y } as any} className="relative z-20">
             <ChipPot amount={tableData.pot} winnerPosition={isShowdown ? 'active' : undefined} />
           </div>
           <div className={`${isVertical ? 'w-auto h-auto gap-4 px-6' : 'h-32 gap-3 px-6'} flex items-center justify-center bg-black/40 rounded-xl shadow-inner border-2 border-white/10 relative z-10`}>
             <div className={`absolute -top-24 left-1/2 -translate-x-1/2 flex items-center justify-center transition-all duration-700 pointer-events-none z-50 ${showDeck ? 'opacity-100 translate-y-0 scale-75' : 'opacity-0 -translate-y-4 scale-50'}`}>
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="absolute w-20 h-28 card-back shadow-2xl border-2 border-white/20" style={{ transform: `translate(${-i * 1.5}px, ${-i * 1.5}px)`, zIndex: 10 - i }} />
+                <div key={i} className="absolute w-20 h-28 bg-black shadow-2xl border-2 border-white/20 rounded-lg flex items-center justify-center" style={{ transform: `translate(${-i * 1.5}px, ${-i * 1.5}px)`, zIndex: 10 - i }}>
+                  <img src="/logo.ico" alt="logo" className="w-1/2 h-1/2 object-contain" />
+                </div>
               ))}
             </div>
             {communityCards.map((card: any, idx: number) => (

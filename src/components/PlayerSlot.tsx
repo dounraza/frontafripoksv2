@@ -151,7 +151,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           ${player.lastAction === 'fold' ? 'bg-red-700 text-white' : 
             player.lastAction === 'all-in' ? 'bg-purple-700 text-white' :
             'bg-yellow-600 text-black'}`}
-          style={{ top: '120px', left: '-9px' }}
+          style={{ top: '80px', left: '-9px' }}
         >
           {player.lastAction}
         </div>
