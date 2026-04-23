@@ -3,57 +3,37 @@ import { Card } from './Card';
 import { BetChips } from './BetChips';
 
 interface PlayerSlotProps {
-  player: any;
-  isActive: boolean;
-  isWinner: boolean;
-  positionClass: string;
-  shouldGatherBets: boolean;
-  dealOrigin: { x: string; y: string };
-  isDealer: boolean;
-  isSB: boolean;
-  isBB: boolean;
-  seatNumber: number;
-  isShowdown: boolean;
-  dealOrder: number;
-  numPlayers: number;
-  handKey: number;
-  isCurrentUser: boolean;
-  gameState: string;
-  centerX: number;
-  centerY: number;
-  gatheringPlayerId: string | null;
-}
-
-export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
-  player, isActive, isWinner, positionClass, shouldGatherBets, dealOrigin, isDealer, isSB, isBB, isShowdown,
-  dealOrder, numPlayers, handKey, isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId
-}) => {
-  const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
-  
-  const [timeLeft, setTimeLeft] = useState(15);
-  const [isRevealed, setIsRevealed] = useState(false);
-
-  useEffect(() => {
-    setIsRevealed(false);
-    if (!isCurrentUser || gameState !== 'playing') return;
-    const tableRevealDelay = (2 * numPlayers) * 300 + 1200;
-    const timer = setTimeout(() => {
-      setIsRevealed(true);
-    }, tableRevealDelay); 
-    return () => clearTimeout(timer);
-  }, [handKey, numPlayers, dealOrder, isCurrentUser, gameState]);
-
-  useEffect(() => {
-    if (isActive) {
-      setTimeLeft(15);
-      const interval = setInterval(() => {
-        setTimeLeft((prev) => (prev <= 0 ? 0 : prev - 1));
-      }, 1000);
-      return () => clearInterval(interval);
-    } else {
-      setTimeLeft(15);
+  interface PlayerSlotProps {
+    interface PlayerSlotProps {
+      player: any;
+      isActive: boolean;
+      isWinner: boolean;
+      positionClass: string;
+      shouldGatherBets: boolean;
+      dealOrigin: { x: string; y: string };
+      isDealer: boolean;
+      isSB: boolean;
+      isBB: boolean;
+      seatNumber: number;
+      isShowdown: boolean;
+      dealOrder: number;
+      numPlayers: number;
+      handKey: number;
+      isCurrentUser: boolean;
+      gameState: string;
+      centerX: number;
+      centerY: number;
+      gatheringPlayerId: string | null;
+      isVertical: boolean; // Added prop for mobile scaling
     }
-  }, [isActive]);
+
+    export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
+      player, isActive, isWinner, positionClass, shouldGatherBets, dealOrigin, isDealer, isSB, isBB, isShowdown,
+      dealOrder, numPlayers, handKey, isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, isVertical
+    }) => {
+      const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
+
+      const [timeLeft, setTimeLeft] = useState(15);
 
   // Un joueur ne doit voir des cartes que s'il est réellement dans la main en cours
   const isInHand = player.inHand || (player.cards && player.cards.length > 0) || player.lastAction;
@@ -109,7 +89,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
             return (
               <div 
                 key={idx} 
-                className="animate-card-deal scale-[0.85] origin-bottom transition-transform duration-300 bg-black rounded-lg"
+                className={\`animate-card-deal \${isVertical ? 'scale-[0.95]' : 'scale-[0.85]'} origin-bottom transition-transform duration-300 bg-black rounded-lg\` }
                 style={{
                   '--deal-x': dealOrigin.x,
                   '--deal-y': dealOrigin.y,
@@ -118,7 +98,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
                   marginLeft: idx === 1 ? '-35px' : '0',
                   boxShadow: '0 10px 20px rgba(0,0,0,0.8)'
                 } as React.CSSProperties}
-              >
+                >
                 <Card 
                   value={card?.value || ''} 
                   suit={card?.suit || ''} 

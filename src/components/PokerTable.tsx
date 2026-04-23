@@ -11,6 +11,7 @@ interface PokerTableProps {
   tableData: any;
   currentUserId: string | undefined;
   currentUserName?: string;
+  isVertical: boolean; // Added prop
 }
 
 const POSITIONS_VERTICAL = [
@@ -218,10 +219,14 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
                 isCurrentUser={player.id === currentUserId || player.name.trim().toLowerCase() === currentUserName?.trim().toLowerCase()}
                 centerX={seatCoords[idx]?.x || 0} centerY={seatCoords[idx]?.y || 0}
                 gatheringPlayerId={gatheringPlayerId}
+                isVertical={isVertical} // Passed down
                 />
-                </div>          );
-        })}
-      </div>
-    </div>
-  );
-};
+                </div>
+                );
+                })}
+                </div>
+                </div>
+                );
+                };
+                };
+                };

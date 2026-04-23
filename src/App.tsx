@@ -67,26 +67,24 @@ function App() {
       setIsVertical(isVert);
       
       if (isVert) {
-        // Optimisation pour Mobile : on utilise presque toute la largeur
-        // La table fait 480px, on cible un rendu sur ~520px pour inclure les avatars
-        const targetWidth = 520; 
-        const targetHeight = 880;
+        const targetWidth = 520;
+        const targetHeight = 950; // Augmenté pour que la table ait plus de place
         const scaleW = width / targetWidth;
-        // On alloue 75% de la hauteur à la table pour laisser 25% aux boutons
-        const scaleH = (height * 0.78) / targetHeight; 
-        setScale(Math.min(1.1, scaleW, scaleH)); // Autoriser un léger zoom si l'écran le permet
-      } else {
+        // Augmenter le ratio de hauteur pour rendre la table plus grande sur mobile
+        const scaleH = (height * 0.75) / targetHeight;
+        setScale(Math.min(1.1, scaleW, scaleH));      } else {
         const targetWidth = 1200;
         const targetHeight = 850;
         const scaleW = (width - 40) / targetWidth;
         const scaleH = (height - 160) / targetHeight;
         setScale(Math.min(1, scaleW, scaleH));
       }
-    };
-    
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+      };
+
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+      }, []);
   }, []);
 
   useEffect(() => {
@@ -228,13 +226,13 @@ function App() {
           </div>
 
           <div 
-            className={`w-full flex flex-col items-center ${isVertical ? 'justify-start' : 'justify-center flex-1'}`}
+            className={`w-full flex flex-col items-center ${isVertical ? 'justify-start pt-10' : 'justify-center flex-1'}`}
           >
             <div 
               className="transition-all duration-700 origin-top flex justify-center"
               style={{ 
                 transform: `scale(${scale})`,
-                height: isVertical ? `${880 * scale}px` : 'auto' // On ajuste la hauteur réelle occupée après scale
+                height: isVertical ? `${890 * scale}px` : 'auto' // Légère augmentation de la hauteur de réserve
               }} 
             >
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={isVertical} />
