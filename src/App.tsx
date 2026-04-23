@@ -29,7 +29,6 @@ function App() {
     return localStorage.getItem('last_buy_in') || '1000';
   });
 
-  // Gestion du routage factice pour l'URL
   useEffect(() => {
     if (!user) {
       window.history.pushState({}, '', '/');
@@ -40,7 +39,6 @@ function App() {
     }
   }, [user, isReadyToPlay, selectedTable]);
 
-  // Reconnexion automatique à la table au chargement si les données existent
   useEffect(() => {
     if (user && isReadyToPlay && selectedTable && socket) {
       const timer = setTimeout(() => {
@@ -53,7 +51,7 @@ function App() {
   const [minBuyIn, setMinBuyIn] = useState(0);
   const [solde, setSolde] = useState<number | null>(null);
   const [raiseAmount, setRaiseAmount] = useState(100);
-  const [isVertical, setIsVertical] = useState(window.innerWidth < 768);
+  const [isVertical, setIsVertical] = useState(window.innerWidth < 480);
   const [scale, setScale] = useState(1);
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
   const [showRechargeModal, setShowRechargeModal] = useState(false);
@@ -64,16 +62,17 @@ function App() {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const isVert = width < 768;
-      setIsVertical(isVert);
       
-      const targetWidth = 500; 
-      const targetHeight = 880;
+      const isMobile = width < 480;
+      setIsVertical(isMobile);
       
-      const scaleW = (width - 20) / targetWidth;
-      const scaleH = (height - 300) / targetHeight; // Plus d'espace pour les contrôles
+      const targetWidth = 450; 
+      const targetHeight = 750; 
       
-      setScale(Math.min(1.3, scaleW, scaleH));
+      const scaleW = width / targetWidth;
+      const scaleH = (height - 250) / targetHeight;
+      
+      setScale(Math.min(2.0, scaleW, scaleH));
     };
 
       handleResize();
@@ -217,71 +216,77 @@ function App() {
           </div>
 
           <div 
-            className={`w-full flex-1 flex flex-col items-center ${isVertical ? 'justify-start pt-16' : 'justify-center'}`}
+            className={`w-full flex-1 flex flex-col items-center ${isVertical ? 'justify-start pt-32' : 'justify-center'}`}
           >
             <div 
               className="transition-all duration-700 origin-top flex justify-center"
               style={{ 
                 transform: `scale(${scale})`,
-                height: isVertical ? `${980 * scale}px` : 'auto' 
+                height: `${750 * scale}px` 
               }} 
             >
-              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={isVertical} />
+              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} />
             </div>
           </div>
 
-          <div className="fixed bottom-6 left-6 z-[100]">
-             <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-          </div>
-
-          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center py-6 px-4 z-[80] ${isVertical ? 'relative' : 'mt-12'}`}>
+          {/* Action buttons + Chat container */}
+          <div className={`w-full max-w-4xl flex items-end justify-center py-4 px-4 z-[100] relative mt-2 gap-2`}>
             {isVertical ? (
-              <div className={`flex flex-col items-center gap-3 transition-all duration-700 w-full ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                <div className="grid grid-cols-3 gap-3 w-full max-w-[450px]">
-                  <button onClick={() => sendAction('fold')} className="flex flex-col items-center justify-center py-4 bg-red-950/40 border border-red-500/50 rounded-2xl active:scale-95 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-                    <span className="text-[12px] font-black uppercase text-red-500 tracking-widest">FOLD</span>
-                  </button>
-                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="flex flex-col items-center justify-center py-4 bg-green-950/40 border border-green-500/50 rounded-2xl active:scale-95 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-                    <span className="text-[12px] font-black uppercase text-green-500 tracking-widest">{callAmount > 0 ? 'CALL' : 'CHECK'}</span>
-                  </button>
-                  <button onClick={() => sendAction('all-in')} className="flex flex-col items-center justify-center py-4 bg-yellow-950/40 border border-yellow-500/50 rounded-2xl active:scale-95 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-                    <span className="text-[12px] font-black uppercase text-yellow-500 tracking-widest">ALL-IN</span>
-                  </button>
-                  <div className="col-span-3 flex items-center gap-3 bg-black/60 p-2 rounded-2xl border border-white/10 w-full">
+              <>
+                <div className="flex-1 flex flex-col items-center gap-2 transition-all duration-700 max-w-[380px] ml-12">
+                   <div className={`grid grid-cols-3 gap-2 w-full ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                      <button onClick={() => sendAction('fold')} className="flex flex-col items-center justify-center py-3 bg-red-950/40 border border-red-500/50 rounded-xl active:scale-95 transition-all">
+                        <span className="text-[10px] font-black uppercase text-red-500">FOLD</span>
+                      </button>
+                      <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="flex flex-col items-center justify-center py-3 bg-green-950/40 border border-green-500/50 rounded-xl active:scale-95 transition-all">
+                        <span className="text-[10px] font-black uppercase text-green-500">{callAmount > 0 ? 'CALL' : 'CHECK'}</span>
+                      </button>
+                      <button onClick={() => sendAction('all-in')} className="flex flex-col items-center justify-center py-3 bg-yellow-950/40 border border-yellow-500/50 rounded-xl active:scale-95 transition-all">
+                        <span className="text-[10px] font-black uppercase text-yellow-500">ALL-IN</span>
+                      </button>
+                      <div className="col-span-3 flex items-center gap-2 bg-black/60 p-1.5 rounded-xl border border-white/10 w-full">
+                        <input 
+                          type="number" 
+                          value={raiseAmount} 
+                          onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
+                          className="bg-gray-900 text-white font-black w-16 py-2 rounded-lg focus:outline-none text-center text-sm border border-white/5" 
+                        />
+                        <button 
+                          onClick={() => sendAction('raise', raiseAmount)} 
+                          className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black flex-1 py-2.5 rounded-lg font-black uppercase text-[11px] shadow-lg"
+                        >
+                          Raise
+                        </button>
+                      </div>
+                   </div>
+                </div>
+                {/* Chat placed explicitly next to action buttons */}
+                <div className="shrink-0">
+                   <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-4">
+                <div className={`flex items-center justify-center gap-4 transition-all ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                  <button onClick={() => sendAction('fold')} className="px-8 py-3 bg-red-600 rounded-xl font-black uppercase italic hover:bg-red-500 transition-all shadow-xl">Fold</button>
+                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="px-8 py-3 bg-green-600 rounded-xl font-black uppercase italic hover:bg-green-500 transition-all shadow-xl">{callAmount > 0 ? `Call ${callAmount}` : 'Check'}</button>
+                  <button onClick={() => sendAction('all-in')} className="px-8 py-3 bg-yellow-600 rounded-xl font-black uppercase italic hover:bg-yellow-500 transition-all shadow-xl">All-in</button>
+                  <div className="flex items-center gap-4 bg-black/40 p-2 rounded-2xl border border-white/10 shadow-inner">
                     <input 
                       type="number" 
                       value={raiseAmount} 
                       onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
-                      className="bg-gray-900 text-white font-black w-24 py-3 rounded-xl focus:outline-none text-center text-lg border border-white/5" 
+                      className="w-24 bg-gray-900 border border-white/10 rounded-xl px-4 py-2 text-white font-black text-center text-lg" 
                     />
                     <button 
                       onClick={() => sendAction('raise', raiseAmount)} 
-                      className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black flex-1 py-4 rounded-xl font-black uppercase text-[14px] shadow-xl tracking-widest"
+                      className="px-6 py-2 bg-yellow-500 text-black rounded-xl font-black uppercase hover:bg-yellow-400 transition-all shadow-lg"
                     >
                       Raise
                     </button>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className={`flex items-center justify-center gap-8 transition-all ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                <button onClick={() => sendAction('fold')} className="px-10 py-4 bg-red-600 rounded-xl font-black uppercase italic hover:bg-red-500 transition-all shadow-xl">Fold</button>
-                <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="px-10 py-4 bg-green-600 rounded-xl font-black uppercase italic hover:bg-green-500 transition-all shadow-xl">{callAmount > 0 ? `Call ${callAmount}` : 'Check'}</button>
-                <button onClick={() => sendAction('all-in')} className="px-10 py-4 bg-yellow-600 rounded-xl font-black uppercase italic hover:bg-yellow-500 transition-all shadow-xl">All-in</button>
-                <div className="flex items-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/10 shadow-inner">
-                  <input 
-                    type="number" 
-                    value={raiseAmount} 
-                    onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
-                    className="w-28 bg-gray-900 border border-white/10 rounded-xl px-4 py-2 text-white font-black text-center text-lg" 
-                  />
-                  <button 
-                    onClick={() => sendAction('raise', raiseAmount)} 
-                    className="px-8 py-2 bg-yellow-500 text-black rounded-xl font-black uppercase hover:bg-yellow-400 transition-all shadow-lg"
-                  >
-                    Raise
-                  </button>
-                </div>
+                <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
               </div>
             )}
           </div>
