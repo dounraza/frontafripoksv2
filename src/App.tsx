@@ -66,11 +66,14 @@ function App() {
       const isMobile = width < 480;
       setIsVertical(isMobile);
       
-      const targetWidth = 450; 
-      const targetHeight = 750; 
+      // TargetWidth ho 540px ho an'ny table ngeza be
+      const targetWidth = 540; 
+      const targetHeight = 800; 
       
-      const scaleW = width / targetWidth;
-      const scaleH = (height - 250) / targetHeight;
+      // Scale mifanaraka amin'ny sakan'ny ecran (marge kely 4px)
+      const scaleW = (width - 4) / targetWidth;
+      // Scale mifanaraka amin'ny hauteur (marge kely 150px ho an'ny boutons)
+      const scaleH = (height - 150) / targetHeight;
       
       setScale(Math.min(2.0, scaleW, scaleH));
     };
@@ -216,13 +219,13 @@ function App() {
           </div>
 
           <div 
-            className={`w-full flex-1 flex flex-col items-center ${isVertical ? 'justify-start pt-32' : 'justify-center'}`}
+            className={`w-full flex-1 flex flex-col items-center ${isVertical ? 'justify-start pt-12' : 'justify-center'}`}
           >
             <div 
               className="transition-all duration-700 origin-top flex justify-center"
               style={{ 
                 transform: `scale(${scale})`,
-                height: `${750 * scale}px` 
+                height: `${800 * scale}px` 
               }} 
             >
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} />
@@ -271,7 +274,7 @@ function App() {
                   <button onClick={() => sendAction('fold')} className="px-8 py-3 bg-red-600 rounded-xl font-black uppercase italic hover:bg-red-500 transition-all shadow-xl">Fold</button>
                   <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="px-8 py-3 bg-green-600 rounded-xl font-black uppercase italic hover:bg-green-500 transition-all shadow-xl">{callAmount > 0 ? `Call ${callAmount}` : 'Check'}</button>
                   <button onClick={() => sendAction('all-in')} className="px-8 py-3 bg-yellow-600 rounded-xl font-black uppercase italic hover:bg-yellow-500 transition-all shadow-xl">All-in</button>
-                  <div className="flex items-center gap-4 bg-black/40 p-2 rounded-2xl border border-white/10 shadow-inner">
+                  <div className="flex items-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/10 shadow-inner">
                     <input 
                       type="number" 
                       value={raiseAmount} 

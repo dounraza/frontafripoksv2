@@ -13,17 +13,17 @@ interface PokerTableProps {
   isVertical: boolean;
 }
 
-// Positions optimisées ho an'ny table 450px ny sakany
+// Positions ho an'ny table 480px
 const PLAYER_POSITIONS = [
-  'bottom-[-5%] left-1/2 -translate-x-1/2',   // Seat 0: Bas Centre
-  'bottom-[18%] left-[-12%]',                  // Seat 1: Bas Gauche
-  'top-[45%] left-[-15%]',                     // Seat 2: Milieu Gauche
-  'top-[18%] left-[-12%]',                     // Seat 3: Haut Gauche
-  'top-[-8%] left-1/2 -translate-x-1/2',       // Seat 4: Haut Centre
-  'top-[18%] right-[-12%]',                    // Seat 5: Haut Droite
-  'top-[45%] right-[-15%]',                    // Seat 6: Milieu Droite
-  'bottom-[18%] right-[-12%]',                 // Seat 7: Bas Droite
-  'bottom-[-5%] right-[30%]',                  // Seat 8: Bas Droite-Centre
+  'bottom-[-4%] left-1/2 -translate-x-1/2',   // Seat 0
+  'bottom-[18%] left-[-10%]',                  // Seat 1
+  'top-[45%] left-[-14%]',                     // Seat 2
+  'top-[18%] left-[-10%]',                     // Seat 3
+  'top-[-8%] left-1/2 -translate-x-1/2',       // Seat 4
+  'top-[18%] right-[-10%]',                    // Seat 5
+  'top-[45%] right-[-14%]',                    // Seat 6
+  'bottom-[18%] right-[-10%]',                 // Seat 7
+  'bottom-[-4%] right-[28%]',                  // Seat 8
 ];
 
 export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId, currentUserName, isVertical }) => {
@@ -132,17 +132,17 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-      { x: 0, y: 320 },   { x: -200, y: 220 }, { x: -250, y: 0 }, { x: -200, y: -220 }, { x: 0, y: -320 }, { x: 200, y: -220 }, { x: 250, y: 0 }, { x: 200, y: 220 }, { x: 100, y: 320 },
+      { x: 0, y: 320 },   { x: -220, y: 220 }, { x: -260, y: 0 }, { x: -220, y: -220 }, { x: 0, y: -320 }, { x: 220, y: -220 }, { x: 260, y: 0 }, { x: 220, y: 220 }, { x: 120, y: 320 },
     ];
     return offsets[idx] || { x: 0, y: 0 };
   };
 
-  // Sakany nohalehibiazina ho 450px
-  const tableWidth = isVertical ? 450 : 420;
-  const tableHeight = isVertical ? 750 : 820;
+  // Sakany nohalehibiazina ho 540px
+  const tableWidth = isVertical ? 540 : 420;
+  const tableHeight = isVertical ? 800 : 820;
 
   const dealOrigins = [
-    { x: '0px', y: '350px' }, { x: '-200px', y: '220px' }, { x: '-250px', y: '0px' }, { x: '-200px', y: '-220px' }, { x: '0px', y: '-350px' }, { x: 200, y: -220 }, { x: 250, y: 0 }, { x: 200, y: 220 }, { x: 100, y: 350 },
+    { x: '0px', y: '350px' }, { x: '-220px', y: '220px' }, { x: '-260px', y: '0px' }, { x: '-220px', y: '-220px' }, { x: '0px', y: '-320px' }, { x: 220, y: -220 }, { x: 260, y: 0 }, { x: 220, y: 220 }, { x: 120, y: 350 },
   ];
 
   const winOffset = winnerSeat !== -1 ? getSeatOffset(winnerSeat) : { x: 0, y: 0 };
@@ -150,15 +150,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
   return (
     <div className="relative flex flex-col items-center justify-center poker-table">
       <div 
-        className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-[220px] border-[14px] border-[#3d2b1f] table-surface"
+        className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-[240px] border-[14px] border-[#3d2b1f] table-surface"
         style={{ 
           width: `${tableWidth}px`,
           height: `${tableHeight}px`,
           aspectRatio: `${tableWidth}/${tableHeight}`
         }}
       >
-        <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-[208px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
-        <div className="absolute inset-[6px] border-[#2c6e49] rounded-[208px] border-[3px]"></div>
+        <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-[228px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
+        <div className="absolute inset-[6px] border-[#2c6e49] rounded-[228px] border-[3px]"></div>
         <div className="flex flex-col items-center z-10 relative gap-6">
           <div className="relative z-20 flex flex-col items-center" ref={potRef}>
             <div className={`absolute -top-36 flex items-center justify-center transition-all duration-700 pointer-events-none z-50 ${showDeck ? 'opacity-100 translate-y-0 scale-[0.6]' : 'opacity-0 -translate-y-4 scale-50'}`}>
