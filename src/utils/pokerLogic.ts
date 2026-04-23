@@ -57,7 +57,7 @@ export const isPlayerTurn = (tableData: any, socketId: string | undefined) => {
 
 export const getPlayerRoleInfo = (player: any, tableData: any) => {
   const players = tableData.players || [];
-  const presentPositions = players.map((p: any) => p.position).sort((a, b) => a - b);
+  const presentPositions = players.map((p: any) => p.position).sort((a: any, b: any) => a - b);
   const numPresent = presentPositions.length;
   
   if (numPresent < 2) return { isDealer: false, isSB: false, isBB: false };

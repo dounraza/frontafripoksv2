@@ -30,16 +30,16 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
     </div>
   );
 
-  if (hidden) return <div className="w-16 h-24 sm:w-20 sm:h-28">{CardBack}</div>;
+  if (hidden) return <div className="w-20 h-28">{CardBack}</div>;
 
   return (
-    <div className="w-16 h-24 sm:w-20 sm:h-28 perspective-1000 antialiased">
+    <div className="w-20 h-28 perspective-1000 antialiased">
       <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${revealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
         {/* Front Side */}
         <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-between p-1 sm:p-2 font-black ${suitColors[suit]}`}>
-          <div className="text-[10px] sm:text-lg self-start leading-none">{displayValue}</div>
-          <div className="text-xl sm:text-4xl leading-none">{suitIcons[suit]}</div>
-          <div className="text-[10px] sm:text-lg self-end rotate-180 leading-none">{displayValue}</div>
+          <div className="text-lg self-start leading-none">{displayValue}</div>
+          <div className="text-4xl leading-none">{suitIcons[suit]}</div>
+          <div className="text-lg self-end rotate-180 leading-none">{displayValue}</div>
         </div>
         
         {/* Back Side */}

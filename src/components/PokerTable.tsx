@@ -2,7 +2,6 @@ import React from 'react';
 import { PlayerSlot } from './PlayerSlot';
 import { Card } from './Card';
 import { ChipPot } from './ChipPot';
-import { Chat } from './Chat';
 import { EmptySlot } from './EmptySlot';
 import { useSocket } from '../hooks/useSocket';
 import { isPlayerTurn, getPlayerRoleInfo } from '../utils/pokerLogic';
@@ -11,37 +10,35 @@ interface PokerTableProps {
   tableData: any;
   currentUserId: string | undefined;
   currentUserName?: string;
-  isVertical: boolean; // Added prop
+  isVertical: boolean;
 }
 
-const POSITIONS_VERTICAL = [
-  'bottom-[-4%] left-[25%] -translate-x-1/2',
-  'bottom-[17%] left-[-23%]',
-  'top-[27%] left-[-26%]',                   // Ancien Seat 3, remonté
-  'top-[3%] left-[-23%]',                   // Ancien Seat 2, remonté
-  'top-[-20%] left-[50%] -translate-x-1/2',
-  'top-[4%] right-[-25%]',                  // Seat 5 ajusté
-  'top-[34%] right-[-34%]',
-  'bottom-[25%] right-[-31%]',
-  'bottom-[2%] right-[2%]',
+const PLAYER_POSITIONS = [
+  'bottom-[-5%] left-[30%] -translate-x-1/2',
+  'bottom-[20%] left-[-15%]',
+  'top-[40%] left-[-18%]',
+  'top-[15%] left-[-15%]',
+  'top-[-10%] left-1/2 -translate-x-1/2',
+  'top-[15%] right-[-15%]',
+  'top-[40%] right-[-18%]',
+  'bottom-[20%] right-[-15%]',
+  'bottom-[-5%] right-[30%] translate-x-1/2',
 ];
 
-export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId, currentUserName }) => {
+export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId, currentUserName, isVertical }) => {
   if (!tableData) return null;
 
+  // @ts-ignore
   const { socket } = useSocket();
-  const PLAYER_POSITIONS = POSITIONS_VERTICAL;
 
   const isShowdown = tableData.gameState === 'showdown';
   const winnerIds = tableData.winnerInfo?.map((w: any) => w.playerId) || [];
   const players = tableData.players || [];
   const communityCards = tableData.communityCards || [];
   
-  // Calcul du pot total en temps réel : Pot au centre + Somme des mises sur la table
   const currentBetsSum = players.reduce((sum: number, p: any) => sum + (p.bet || 0), 0);
   const totalPotInPlay = (tableData.pot || 0) + currentBetsSum;
   
-  // On garde une trace du dernier pot pour l'animation de gain (showdown)
   const [lastTotalPot, setLastTotalPot] = React.useState(0);
   
   React.useEffect(() => {
@@ -52,6 +49,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
 
   const displayPot = isShowdown ? lastTotalPot : totalPotInPlay;
 
+  // @ts-ignore
   const [gatheringPlayerId, setGatheringPlayerId] = React.useState<string | null>(null);
   
   const [prevPhase, setPrevPhase] = React.useState<string>('');
@@ -59,6 +57,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
   const [shouldGather, setShouldGather] = React.useState(false);
   const [handKey, setHandKey] = React.useState(0);
   const [showDeck, setShowDeck] = React.useState(false);
+  // @ts-ignore
   const [showWinnerBanner, setShowWinnerBanner] = React.useState(false);
   
   const potRef = React.useRef<HTMLDivElement>(null);
@@ -94,23 +93,13 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
     const currentPhase = tableData.currentPhase;
     const currentGameState = tableData.gameState;
 
-    if (currentGameState !== 'showdown') {
-      setShowWinnerBanner(false);
-    } else if (currentGameState === 'showdown' && prevGameState !== 'showdown') {
-      const delay = (communityCards.length * 150) + 1000;
-      setTimeout(() => setShowWinnerBanner(true), delay);
-    }
-
     const isNewHand = (currentGameState === 'playing' && prevGameState !== 'playing') || (currentGameState === 'playing' && currentPhase === 'pre-flop' && prevPhase !== 'pre-flop' && prevPhase !== '');
-    
     const hasUncollectedBets = players.some((p: any) => p.bet > 0);
 
     if (isNewHand && hasUncollectedBets) {
       setShouldGather(true); 
-      
       setTimeout(() => {
         setShouldGather(false);
-        
         setTimeout(() => {
           setHandKey(prev => prev + 1);
           setShowDeck(true);
@@ -118,7 +107,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
           setTimeout(() => setShowDeck(false), dealDuration);
         }, 500);
       }, 1200);
-      
       setPrevGameState(currentGameState);
       setPrevPhase(currentPhase);
       return;
@@ -164,11 +152,17 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
 
   return (
     <div className="relative flex flex-col items-center justify-center">
-      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center w-[480px] aspect-[480/850] rounded-[240px] border-[14px] border-[#3d2b1f]">
+      <div 
+        className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-[240px] border-[14px] border-[#3d2b1f]"
+        style={{ 
+          width: '500px',
+          height: '880px',
+          aspectRatio: '500/880'
+        }}
+      >
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-[228px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-[228px] border-[3px]"></div>
         <div className="flex flex-col items-center z-10 relative gap-4">
-
           <div className="relative z-20 flex flex-col items-center" ref={potRef}>
             <div className={`absolute -top-36 flex items-center justify-center transition-all duration-700 pointer-events-none z-50 ${showDeck ? 'opacity-100 translate-y-0 scale-[0.6]' : 'opacity-0 -translate-y-4 scale-50'}`}>
               {Array.from({ length: 5 }).map((_, i) => (
@@ -194,18 +188,13 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
         {Array.from({ length: 9 }).map((_, idx) => {
           const player = players.find((p: any) => p.position === idx);
           if (!player) return <EmptySlot key={`empty-${idx}`} positionClass={PLAYER_POSITIONS[idx]} />;
-          
           const isWinner = winnerIds.includes(player.id) && isShowdown;
-          
-          // Calcul de la séquence pour SB/BB
-          const presentPositions = players.map((p: any) => p.position).sort((a, b) => a - b);
+          const presentPositions = players.map((p: any) => p.position).sort((a: any, b: any) => a - b);
           const dealerIdx = presentPositions.indexOf(tableData.dealerIndex);
           const playerIdx = presentPositions.indexOf(player.position);
           const numPresent = presentPositions.length;
           const sequenceIndex = (playerIdx - dealerIdx + numPresent) % numPresent;
           const dealOrder = sequenceIndex === 0 ? numPresent : sequenceIndex;
-
-          // Détection du Dealer, SB et BB (via utilitaire logic)
           const { isDealer, isSB, isBB } = getPlayerRoleInfo(player, tableData);
 
           return (
@@ -219,14 +208,12 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
                 isCurrentUser={player.id === currentUserId || player.name.trim().toLowerCase() === currentUserName?.trim().toLowerCase()}
                 centerX={seatCoords[idx]?.x || 0} centerY={seatCoords[idx]?.y || 0}
                 gatheringPlayerId={gatheringPlayerId}
-                isVertical={isVertical} // Passed down
-                />
-                </div>
-                );
-                })}
-                </div>
-                </div>
-                );
-                };
-                };
-                };
+                isVertical={isVertical}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};

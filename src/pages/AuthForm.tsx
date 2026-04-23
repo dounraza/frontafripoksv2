@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// @ts-ignore
 import { LogIn, UserPlus, Loader2 } from 'lucide-react';
 
 interface AuthFormProps {

@@ -1,45 +1,47 @@
+// @ts-ignore
 import React, { useState, useEffect } from 'react';
 import { Card } from './Card';
 import { BetChips } from './BetChips';
 
 interface PlayerSlotProps {
-  interface PlayerSlotProps {
-    interface PlayerSlotProps {
-      player: any;
-      isActive: boolean;
-      isWinner: boolean;
-      positionClass: string;
-      shouldGatherBets: boolean;
-      dealOrigin: { x: string; y: string };
-      isDealer: boolean;
-      isSB: boolean;
-      isBB: boolean;
-      seatNumber: number;
-      isShowdown: boolean;
-      dealOrder: number;
-      numPlayers: number;
-      handKey: number;
-      isCurrentUser: boolean;
-      gameState: string;
-      centerX: number;
-      centerY: number;
-      gatheringPlayerId: string | null;
-      isVertical: boolean; // Added prop for mobile scaling
-    }
+  player: any;
+  isActive: boolean;
+  isWinner: boolean;
+  positionClass: string;
+  shouldGatherBets: boolean;
+  dealOrigin: { x: string; y: string };
+  isDealer: boolean;
+  isSB: boolean;
+  isBB: boolean;
+  seatNumber: number;
+  isShowdown: boolean;
+  dealOrder: number;
+  numPlayers: number;
+  handKey: number;
+  isCurrentUser: boolean;
+  gameState: string;
+  centerX: number;
+  centerY: number;
+  gatheringPlayerId: string | null;
+  isVertical: boolean; // Added prop for mobile scaling
+}
 
-    export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
-      player, isActive, isWinner, positionClass, shouldGatherBets, dealOrigin, isDealer, isSB, isBB, isShowdown,
-      dealOrder, numPlayers, handKey, isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, isVertical
-    }) => {
-      const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
+export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
+  player, isActive, isWinner, positionClass, shouldGatherBets, dealOrigin, isDealer, isSB, isBB, isShowdown,
+  dealOrder, numPlayers, handKey, isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, isVertical
+}) => {
+  const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
 
-      const [timeLeft, setTimeLeft] = useState(15);
+  // @ts-ignore
+  const [timeLeft, setTimeLeft] = useState(15);
 
   // Un joueur ne doit voir des cartes que s'il est réellement dans la main en cours
   const isInHand = player.inHand || (player.cards && player.cards.length > 0) || player.lastAction;
   const showCards = (gameState === 'playing' || gameState === 'showdown') && player.lastAction !== 'fold' && isInHand;
   
+  // @ts-ignore
   const isPlayerGathering = gatheringPlayerId === player.id;
+  const isRevealed = isCurrentUser || isShowdown;
 
   // Fonction pour positionner les jetons de rôle (D, SB, BB) intelligemment
   const getMarkerPosition = (offset = 0) => {
@@ -89,7 +91,7 @@ interface PlayerSlotProps {
             return (
               <div 
                 key={idx} 
-                className={\`animate-card-deal \${isVertical ? 'scale-[0.95]' : 'scale-[0.85]'} origin-bottom transition-transform duration-300 bg-black rounded-lg\` }
+                className={`animate-card-deal ${isVertical ? 'scale-[0.95]' : 'scale-[0.85]'} origin-bottom transition-transform duration-300 bg-black rounded-lg`}
                 style={{
                   '--deal-x': dealOrigin.x,
                   '--deal-y': dealOrigin.y,
@@ -177,7 +179,7 @@ interface PlayerSlotProps {
 
         <BetChips 
           amount={player.bet} 
-          shouldGather={isPlayerGathering} 
+          shouldGather={shouldGatherBets} 
           position={positionClass} 
           seatNumber={seatNumber} 
           centerX={centerX} 

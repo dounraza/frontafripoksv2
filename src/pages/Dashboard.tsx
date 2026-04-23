@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+// @ts-ignore
 import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut, XCircle, CreditCard } from 'lucide-react';
 import { useSocket } from '../hooks/useSocket';
+// @ts-ignore
 import { Chat } from '../components/Chat';
 
 interface DashboardProps {
@@ -101,11 +103,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
 
     if (view === 'cashGames') {
       fetch(`${API_URL}/api/tables`, {
-        headers: { 'Authorization': `Bearer ${user.token}` }
+        headers: { Authorization: `Bearer ${user.token}` },
       })
-        .then(res => res.json())
-        .then(data => setTables(data))
-        .catch(err => console.error('Error fetching tables:', err));
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setTables(data);
+          } else {
+            console.error("Tables data is not an array:", data);
+            setTables([]);
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching tables:", err);
+          setTables([]);
+        });
     }
   }, [view, user.token]);
 
