@@ -55,11 +55,16 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
     }
   }, [isActive]);
 
-  const showCards = (gameState === 'playing' || gameState === 'showdown') && player.lastAction !== 'fold';
+  // Un joueur ne doit voir des cartes que s'il est réellement dans la main en cours
+  const isInHand = player.inHand || (player.cards && player.cards.length > 0) || player.lastAction;
+  const showCards = (gameState === 'playing' || gameState === 'showdown') && player.lastAction !== 'fold' && isInHand;
+  
   const isPlayerGathering = gatheringPlayerId === player.id;
 
   // Fonction pour positionner les jetons de rôle (D, SB, BB) intelligemment
   const getMarkerPosition = (offset = 0) => {
+    // Ne pas afficher de rôle si le joueur n'est pas dans la main
+    if (!isInHand && gameState === 'playing') return 'hidden';
     // Sièges à gauche (1, 2, 3) -> Marqueurs à DROITE de l'avatar
     if ([1, 2, 3].includes(seatNumber)) return `top-[${10+offset}px] -right-4`;
     // Sièges à droite (5, 6, 7) -> Marqueurs à GAUCHE de l'avatar

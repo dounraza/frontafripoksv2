@@ -47,6 +47,11 @@ export const getMaxRaiseTo = (myPlayer: any) => {
 export const isPlayerTurn = (tableData: any, socketId: string | undefined) => {
   if (!tableData || !socketId || !tableData.players) return false;
   const currentPlayer = tableData.players.find((p: any) => p.position === tableData.currentPlayerIndex);
+  
+  // Un joueur ne peut avoir son tour que s'il est réellement dans la main
+  // (Pas couché et présent au début de la distribution)
+  if (!currentPlayer || currentPlayer.folded || currentPlayer.inHand === false) return false;
+  
   return currentPlayer?.id === socketId;
 };
 

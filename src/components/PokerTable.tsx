@@ -162,8 +162,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
   const winOffset = winnerSeat !== -1 ? getSeatOffset(winnerSeat) : { x: 0, y: 0 };
 
   return (
-    <div className="relative w-full flex flex-col items-center mt-20">
-      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center w-full max-w-[480px] aspect-[480/850] rounded-[240px] border-[14px] border-[#3d2b1f]">
+    <div className="relative flex flex-col items-center justify-center">
+      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center w-[480px] aspect-[480/850] rounded-[240px] border-[14px] border-[#3d2b1f]">
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-[228px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-[228px] border-[3px]"></div>
         <div className="flex flex-col items-center z-10 relative gap-4">

@@ -62,17 +62,25 @@ function App() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
+      const height = window.innerHeight;
       const isVert = width < 768;
       setIsVertical(isVert);
       
       if (isVert) {
-        const targetWidth = 550;
-        const newScale = Math.min(1, (width - 20) / targetWidth);
-        setScale(newScale);
+        // En mode vertical (Mobile), on se base sur la largeur pour ne pas déborder
+        // La table fait environ 480px de large + marges avatars
+        const targetWidth = 600; 
+        const targetHeight = 900;
+        const scaleW = width / targetWidth;
+        const scaleH = (height * 0.7) / targetHeight; // On laisse de la place pour les boutons
+        setScale(Math.min(1, scaleW, scaleH));
       } else {
+        // En mode horizontal (Desktop/Tablette)
         const targetWidth = 1200;
-        const newScale = Math.min(1, (width - 40) / targetWidth);
-        setScale(newScale);
+        const targetHeight = 800;
+        const scaleW = (width - 40) / targetWidth;
+        const scaleH = (height - 150) / targetHeight;
+        setScale(Math.min(1, scaleW, scaleH));
       }
     };
     
@@ -220,10 +228,14 @@ function App() {
           </div>
 
           <div 
-            className="transition-all duration-700 mt-0 origin-top flex justify-center"
-            style={{ transform: `scale(${scale})` }} 
+            className="flex-1 w-full flex items-center justify-center overflow-hidden py-4"
           >
-            <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={isVertical} />
+            <div 
+              className="transition-all duration-700 origin-center flex justify-center"
+              style={{ transform: `scale(${scale})` }} 
+            >
+              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={isVertical} />
+            </div>
           </div>
 
           <div className="fixed bottom-4 left-4 z-[50]">
@@ -231,29 +243,29 @@ function App() {
           </div>
 
           {/* Action buttons section - placed directly after the table in vertical mode */}
-          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center ${isVertical ? 'mt-0' : 'mt-24 sm:mt-32'}`}>
+          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center pb-safe ${isVertical ? 'mt-4 mb-2' : 'mt-24 sm:mt-32'}`}>
             {isVertical ? (
-              <div className={`flex flex-col items-center gap-2 transition-all duration-700 ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                <div className="grid grid-cols-3 gap-2 w-full max-w-sm px-2">
-                  <button onClick={() => sendAction('fold')} className="flex flex-col items-center justify-center p-2 bg-red-950/20 border border-red-500/30 rounded-xl active:scale-95 transition-all">
-                    <span className="text-[10px] font-black uppercase text-red-500">FOLD</span>
+              <div className={`flex flex-col items-center gap-2 transition-all duration-700 w-full ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                <div className="grid grid-cols-3 gap-2 w-full max-w-[400px] px-4">
+                  <button onClick={() => sendAction('fold')} className="flex flex-col items-center justify-center p-3 bg-red-950/30 border border-red-500/40 rounded-2xl active:scale-95 transition-all shadow-lg">
+                    <span className="text-[11px] font-black uppercase text-red-500 tracking-tighter">FOLD</span>
                   </button>
-                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="flex flex-col items-center justify-center p-2 bg-green-950/20 border border-green-500/30 rounded-xl active:scale-95 transition-all">
-                    <span className="text-[10px] font-black uppercase text-green-500">{callAmount > 0 ? 'CALL' : 'CHECK'}</span>
+                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="flex flex-col items-center justify-center p-3 bg-green-950/30 border border-green-500/40 rounded-2xl active:scale-95 transition-all shadow-lg">
+                    <span className="text-[11px] font-black uppercase text-green-500 tracking-tighter">{callAmount > 0 ? 'CALL' : 'CHECK'}</span>
                   </button>
-                  <button onClick={() => sendAction('all-in')} className="flex flex-col items-center justify-center p-2 bg-yellow-950/20 border border-yellow-500/30 rounded-xl active:scale-95 transition-all">
-                    <span className="text-[10px] font-black uppercase text-yellow-500">ALL-IN</span>
+                  <button onClick={() => sendAction('all-in')} className="flex flex-col items-center justify-center p-3 bg-yellow-950/30 border border-yellow-500/40 rounded-2xl active:scale-95 transition-all shadow-lg">
+                    <span className="text-[11px] font-black uppercase text-yellow-500 tracking-tighter">ALL-IN</span>
                   </button>
-                  <div className="col-span-3 flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 w-full">
+                  <div className="col-span-3 flex items-center gap-3 bg-white/5 p-1.5 rounded-2xl border border-white/10 w-full mt-1">
                     <input 
                       type="number" 
                       value={raiseAmount} 
                       onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
-                      className="bg-transparent text-white font-black w-16 focus:outline-none text-center text-xs" 
+                      className="bg-black/40 text-white font-black w-20 py-2 rounded-xl focus:outline-none text-center text-sm border border-white/5" 
                     />
                     <button 
                       onClick={() => sendAction('raise', raiseAmount)} 
-                      className="bg-yellow-500 text-black flex-1 py-1.5 rounded-lg font-black uppercase text-[10px]"
+                      className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black flex-1 py-2.5 rounded-xl font-black uppercase text-[11px] shadow-xl"
                     >
                       Raise
                     </button>
