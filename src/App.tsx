@@ -67,19 +67,19 @@ function App() {
       setIsVertical(isVert);
       
       if (isVert) {
-        // En mode vertical (Mobile), on se base sur la largeur pour ne pas déborder
-        // La table fait environ 480px de large + marges avatars
-        const targetWidth = 600; 
-        const targetHeight = 900;
+        // Optimisation pour Mobile : on utilise presque toute la largeur
+        // La table fait 480px, on cible un rendu sur ~520px pour inclure les avatars
+        const targetWidth = 520; 
+        const targetHeight = 880;
         const scaleW = width / targetWidth;
-        const scaleH = (height * 0.7) / targetHeight; // On laisse de la place pour les boutons
-        setScale(Math.min(1, scaleW, scaleH));
+        // On alloue 75% de la hauteur à la table pour laisser 25% aux boutons
+        const scaleH = (height * 0.78) / targetHeight; 
+        setScale(Math.min(1.1, scaleW, scaleH)); // Autoriser un léger zoom si l'écran le permet
       } else {
-        // En mode horizontal (Desktop/Tablette)
         const targetWidth = 1200;
-        const targetHeight = 800;
+        const targetHeight = 850;
         const scaleW = (width - 40) / targetWidth;
-        const scaleH = (height - 150) / targetHeight;
+        const scaleH = (height - 160) / targetHeight;
         setScale(Math.min(1, scaleW, scaleH));
       }
     };
@@ -228,11 +228,14 @@ function App() {
           </div>
 
           <div 
-            className="flex-1 w-full flex items-center justify-center overflow-hidden py-4"
+            className={`w-full flex flex-col items-center ${isVertical ? 'justify-start' : 'justify-center flex-1'}`}
           >
             <div 
-              className="transition-all duration-700 origin-center flex justify-center"
-              style={{ transform: `scale(${scale})` }} 
+              className="transition-all duration-700 origin-top flex justify-center"
+              style={{ 
+                transform: `scale(${scale})`,
+                height: isVertical ? `${880 * scale}px` : 'auto' // On ajuste la hauteur réelle occupée après scale
+              }} 
             >
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={isVertical} />
             </div>
@@ -242,8 +245,8 @@ function App() {
              <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
           </div>
 
-          {/* Action buttons section - placed directly after the table in vertical mode */}
-          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center pb-safe ${isVertical ? 'mt-4 mb-2' : 'mt-24 sm:mt-32'}`}>
+          {/* Action buttons section - Placé immédiatement sous la table sur mobile */}
+          <div className={`w-full max-w-4xl transition-all duration-500 flex justify-center pb-safe ${isVertical ? 'mt-[-20px] relative z-[60]' : 'mt-24 sm:mt-32'}`}>
             {isVertical ? (
               <div className={`flex flex-col items-center gap-2 transition-all duration-700 w-full ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
                 <div className="grid grid-cols-3 gap-2 w-full max-w-[400px] px-4">
