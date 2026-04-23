@@ -233,7 +233,7 @@ function App() {
           </div>
 
           {/* Action buttons + Chat container */}
-          <div className={`w-full max-w-4xl flex items-end justify-center py-4 px-4 z-[100] relative mt-2 gap-2`}>
+          <div className={`w-full max-w-4xl flex items-end justify-center py-4 px-4 z-[100] relative mt-6 gap-2`}>
             {isVertical ? (
               <>
                 <div className="flex-1 flex flex-col items-center gap-2 transition-all duration-700 max-w-[380px] ml-12">
