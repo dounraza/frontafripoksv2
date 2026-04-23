@@ -1,7 +1,8 @@
 html, body {
   touch-action: manipulation;
   overscroll-behavior: none;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   margin: 0;
   padding: 0;
