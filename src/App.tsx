@@ -61,21 +61,17 @@ function App() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      const height = window.innerHeight;
       
       const isMobile = width < 480;
       setIsVertical(isMobile);
       
       // TargetWidth ho 540px ho an'ny table ngeza be
       const targetWidth = 540; 
-      const targetHeight = 800; 
       
-      // Scale mifanaraka amin'ny sakan'ny ecran (marge kely 4px)
+      // Scale miankina fotsiny amin'ny width (sakan'ny ecran) mba tsy hiovaova
       const scaleW = (width - 4) / targetWidth;
-      // Scale mifanaraka amin'ny hauteur (marge kely 150px ho an'ny boutons)
-      const scaleH = (height - 150) / targetHeight;
       
-      setScale(Math.min(2.0, scaleW, scaleH));
+      setScale(Math.min(2.0, scaleW));
     };
 
       handleResize();
