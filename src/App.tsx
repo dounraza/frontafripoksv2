@@ -6,6 +6,7 @@ import { Dashboard } from './pages/Dashboard';
 import { AuthForm } from './pages/AuthForm';
 import { Alert } from './components/Alert';
 import { LogOut, ArrowUpCircle, CheckCircle2, XCircle, Zap } from 'lucide-react';
+import { getCallAmount, getMinRaiseTo, getMaxRaiseTo, isPlayerTurn } from './utils/pokerLogic';
 
 function App() {
   const { socket, tableData, error, joinTable, leaveTable, sendAction } = useSocket();
@@ -13,10 +14,41 @@ function App() {
     const savedUser = localStorage.getItem('poker_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  const [isReadyToPlay, setIsReadyToPlay] = useState(false);
+  const [isReadyToPlay, setIsReadyToPlay] = useState(() => {
+    const pathTableId = window.location.pathname.startsWith('/table/') ? window.location.pathname.split('/')[2] : null;
+    return localStorage.getItem('active_table') !== null || pathTableId !== null;
+  });
   const [showJoinForm, setShowJoinForm] = useState(false);
-  const [selectedTable, setSelectedTable] = useState('');
-  const [buyIn, setBuyIn] = useState('1000');
+  const [selectedTable, setSelectedTable] = useState(() => {
+    const pathTableId = window.location.pathname.startsWith('/table/') ? window.location.pathname.split('/')[2] : null;
+    return pathTableId || localStorage.getItem('active_table') || '';
+  });
+  const [buyIn, setBuyIn] = useState(() => {
+    return localStorage.getItem('last_buy_in') || '1000';
+  });
+
+  // Gestion du routage factice pour l'URL
+  useEffect(() => {
+    if (!user) {
+      window.history.pushState({}, '', '/');
+    } else if (isReadyToPlay && selectedTable) {
+      window.history.pushState({}, '', `/table/${selectedTable}`);
+    } else {
+      window.history.pushState({}, '', '/dashboard');
+    }
+  }, [user, isReadyToPlay, selectedTable]);
+
+  // Reconnexion automatique à la table au chargement si les données existent
+  useEffect(() => {
+    if (user && isReadyToPlay && selectedTable && socket) {
+      // Un petit délai pour laisser le socket se connecter
+      const timer = setTimeout(() => {
+        joinTable(user.name, selectedTable, buyIn);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [socket, user]); // On ne dépend pas de isReadyToPlay pour éviter de re-joindre en boucle
+
   const [minBuyIn, setMinBuyIn] = useState(0);
   const [solde, setSolde] = useState<number | null>(null);
   const [raiseAmount, setRaiseAmount] = useState(100);
@@ -25,7 +57,7 @@ function App() {
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
   const [showRechargeModal, setShowRechargeModal] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'; // Définition de la variable d'environnement
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,7 +92,7 @@ function App() {
 
   const fetchSolde = () => {
     if (!user) return;
-    fetch(`${API_URL}/api/solde`, { // Utilisation de API_URL ici
+    fetch(`${API_URL}/api/solde`, {
       headers: { 'Authorization': `Bearer ${user.token}` }
     })
       .then(res => res.json())
@@ -84,6 +116,7 @@ function App() {
       setIsReadyToPlay(true);
       setShowJoinForm(false);
       localStorage.setItem('active_table', selectedTable);
+      localStorage.setItem('last_buy_in', buyIn);
       setTimeout(fetchSolde, 1000);
     }
   };
@@ -92,29 +125,34 @@ function App() {
     setUser(null);
     setIsReadyToPlay(false);
     localStorage.removeItem('active_table');
+    localStorage.removeItem('last_buy_in');
+    localStorage.removeItem('poker_user');
   };
 
-  const isMyTurn = tableData && socket && tableData.players[tableData.currentPlayerIndex]?.id === socket.id;
+  // Logic separated into utilities
   const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
+  const isMyTurn = isPlayerTurn(tableData, socket?.id);
+  const callAmount = getCallAmount(tableData, myPlayer);
+  const minRaiseTo = Number(getMinRaiseTo(tableData)) || 20;
+  const maxRaiseTo = Number(getMaxRaiseTo(myPlayer)) || 0;
+
+  // Synchronisation du raiseAmount au début du tour ou changement de mise min
+  useEffect(() => {
+    if (isMyTurn && !isNaN(minRaiseTo) && !isNaN(maxRaiseTo)) {
+      setRaiseAmount(current => {
+        const safeCurrent = Number(current) || minRaiseTo;
+        if (safeCurrent < minRaiseTo) return minRaiseTo;
+        if (safeCurrent > maxRaiseTo) return maxRaiseTo;
+        return safeCurrent;
+      });
+    }
+  }, [isMyTurn, minRaiseTo, maxRaiseTo]);
 
   useEffect(() => {
-    // Affiche la modale si les jetons sont à 0 au début d'une nouvelle main
     if (myPlayer && myPlayer.chips === 0 && tableData?.gameState === 'waiting' && !showRechargeModal && isReadyToPlay) {
       setShowRechargeModal(true);
     }
   }, [myPlayer?.chips, tableData?.gameState, isReadyToPlay]);
-
-  const currentBet = tableData?.currentBet || 0;
-  const myBet = myPlayer?.bet || 0;
-  const callAmount = Math.max(0, currentBet - myBet);
-  const maxChips = myPlayer?.chips || 0;
-  const currentMinRaise = tableData ? (tableData.currentBet + Math.max(tableData.bigBlind || 20, tableData.currentBet - (tableData.previousBet || 0))) : 40;
-  
-  useEffect(() => {
-    if (raiseAmount < currentMinRaise) {
-      setRaiseAmount(currentMinRaise);
-    }
-  }, [currentMinRaise, raiseAmount]);
 
   if (!user) {
     return <AuthForm onSuccess={(token, name) => setUser({ token, name })} />;
@@ -169,9 +207,9 @@ function App() {
         <div className="flex flex-col items-center p-4">
           <div className="w-full max-w-[1400px] flex justify-between items-center mb-4 px-4">
              <div className="flex gap-2">
-                <button onClick={() => { leaveTable(); setIsReadyToPlay(false); localStorage.removeItem('active_table'); }} className="px-4 py-2 bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-500 rounded-xl text-xs font-black uppercase transition-all flex items-center gap-2 border border-white/5"><LogOut className="w-4 h-4" /> Quitter</button>
+                <button onClick={() => { leaveTable(); setIsReadyToPlay(false); localStorage.removeItem('active_table'); localStorage.removeItem('last_buy_in'); }} className="px-4 py-2 bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-500 rounded-xl text-xs font-black uppercase transition-all flex items-center gap-2 border border-white/5"><LogOut className="w-4 h-4" /> Quitter</button>
              </div>
-             <button onClick={() => setIsVertical(!isVertical)} className="hidden sm:px-4 sm:py-2 sm:bg-white/5 sm:hover:bg-yellow-500/20 sm:text-gray-400 sm:hover:text-yellow-500 sm:rounded-xl sm:text-xs sm:font-black sm:uppercase sm:transition-all sm:border sm:border-white/5 sm:block">Orientation</button>
+             {/* <button onClick={() => setIsVertical(!isVertical)} className="hidden sm:px-4 sm:py-2 sm:bg-white/5 sm:hover:bg-yellow-500/20 sm:text-gray-400 sm:hover:text-yellow-500 sm:rounded-xl sm:text-xs sm:font-black sm:uppercase sm:transition-all sm:border sm:border-white/5 sm:block">Orientation</button> */}
              <div className="flex items-center gap-3">
                 <div className="text-right">
                   <div className="text-[9px] font-black text-gray-500 uppercase">Votre Cave</div>
@@ -207,8 +245,18 @@ function App() {
                     <span className="text-[10px] font-black uppercase text-yellow-500">ALL-IN</span>
                   </button>
                   <div className="col-span-3 flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 w-full">
-                    <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} className="bg-transparent text-white font-black w-16 focus:outline-none text-center text-xs" />
-                    <button onClick={() => sendAction('raise', raiseAmount)} className="bg-yellow-500 text-black flex-1 py-1.5 rounded-lg font-black uppercase text-[10px]">Raise</button>
+                    <input 
+                      type="number" 
+                      value={raiseAmount} 
+                      onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
+                      className="bg-transparent text-white font-black w-16 focus:outline-none text-center text-xs" 
+                    />
+                    <button 
+                      onClick={() => sendAction('raise', raiseAmount)} 
+                      className="bg-yellow-500 text-black flex-1 py-1.5 rounded-lg font-black uppercase text-[10px]"
+                    >
+                      Raise
+                    </button>
                   </div>
                 </div>
               </div>
@@ -218,8 +266,18 @@ function App() {
                 <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="px-8 py-3 bg-green-600 rounded-xl font-black uppercase italic hover:bg-green-500 transition-all">{callAmount > 0 ? `Call ${callAmount}` : 'Check'}</button>
                 <button onClick={() => sendAction('all-in')} className="px-8 py-3 bg-yellow-600 rounded-xl font-black uppercase italic hover:bg-yellow-500 transition-all">All-in</button>
                 <div className="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/10">
-                  <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} className="w-24 bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-white font-black text-center" />
-                  <button onClick={() => sendAction('raise', raiseAmount)} className="px-6 py-2 bg-yellow-500 text-black rounded-xl font-black uppercase hover:bg-yellow-400 transition-all">Raise</button>
+                  <input 
+                    type="number" 
+                    value={raiseAmount} 
+                    onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
+                    className="w-24 bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-white font-black text-center" 
+                  />
+                  <button 
+                    onClick={() => sendAction('raise', raiseAmount)} 
+                    className="px-6 py-2 bg-yellow-500 text-black rounded-xl font-black uppercase hover:bg-yellow-400 transition-all"
+                  >
+                    Raise
+                  </button>
                 </div>
               </div>
             )}

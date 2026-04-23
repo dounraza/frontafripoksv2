@@ -1,0 +1,27 @@
+# Poker Table - Seat Positions (Vertical Mode)
+Configuration for PokerTable.tsx:
+
+const POSITIONS_VERTICAL = [
+  'bottom-[-4%] left-[15%] -translate-x-1/2', // Seat 0
+  'bottom-[23%] left-[-12%]',                  // Seat 1
+  'top-[27%] left-[-15%]',                   // Seat 2
+  'top-[3%] left-[-12%]',                    // Seat 3
+  'top-[-8%] left-[50%] -translate-x-1/2',   // Seat 4
+  'top-[4%] right-[-6%]',                    // Seat 5
+  'top-[27%] right-[-15%]',                  // Seat 6
+  'bottom-[25%] right-[-12%]',               // Seat 7
+  'bottom-[2%] right-[6%]',                  // Seat 8
+];
+
+# Payout Convergence Offsets (Target: 0,0)
+const offsets = [
+  { x: 0, y: -200 },   // Seat 0: Bottom
+  { x: 200, y: -150 }, // Seat 1: Bottom-Left
+  { x: 250, y: 0 },    // Seat 2: Middle-Left
+  { x: 200, y: 150 },  // Seat 3: Top-Left
+  { x: 0, y: 200 },    // Seat 4: Top
+  { x: -200, y: 150 }, // Seat 5: Top-Right
+  { x: -250, y: 0 },   // Seat 6: Middle-Right
+  { x: -200, y: -150 },// Seat 7: Bottom-Right
+  { x: 0, y: -50 },    // Seat 8: Inner
+];
