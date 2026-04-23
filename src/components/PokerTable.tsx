@@ -137,8 +137,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({ tableData, currentUserId
     return offsets[idx] || { x: 0, y: 0 };
   };
 
-  // Sakany nohalehibiazina ho 540px
-  const tableWidth = isVertical ? 540 : 420;
+  // Sakany nohalehibiazina ho 500px mba ho hita tsara ny mpilalao
+  const tableWidth = isVertical ? 500 : 420;
   const tableHeight = isVertical ? 800 : 820;
 
   const dealOrigins = [
