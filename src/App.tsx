@@ -177,7 +177,7 @@ function App() {
       ) : !isReadyToPlay ? (
         <Dashboard user={user} onJoinTable={(id, min) => { setSelectedTable(String(id)); setMinBuyIn(min); setBuyIn(String(min)); setShowJoinForm(true); }} onLogout={handleLogout} />
       ) : (
-        <div className="flex flex-col items-center min-h-screen">
+        <div className="flex flex-col items-center min-h-screen w-full">
           <div className="w-full max-w-[1400px] flex justify-between items-center py-4 px-6 z-50">
              <div className="flex gap-2">
                 <button onClick={() => { leaveTable(); setIsReadyToPlay(false); localStorage.removeItem('active_table'); localStorage.removeItem('last_buy_in'); }} className="px-4 py-2 bg-black/40 hover:bg-red-500/20 text-gray-400 hover:text-red-500 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-2 border border-white/10"><LogOut className="w-4 h-4" /> Quitter</button>
@@ -191,22 +191,13 @@ function App() {
              </div>
           </div>
 
-          <div 
-            className="flex flex-col items-center w-full max-w-[1400px] min-h-screen py-4"
-          >
+          <div className="flex flex-col items-center w-full max-w-[1400px]">
             {/* Poker Table */}
             <div 
               className="transition-all duration-700 origin-top flex justify-center"
-              style={{ 
-                transform: `scale(${scale})`
-              }} 
+              style={{ transform: `scale(${scale})` }} 
             >
-              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} />
-            </div>
-
-            {/* Action Panel */}
-            <div className="mt-4 px-4 w-full flex justify-center">
-               <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
 
             {/* Chat */}

@@ -7,6 +7,7 @@ interface ActionPanelProps {
 }
 
 export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount, isMyTurn }) => {
+  console.log("ActionPanel - isMyTurn:", isMyTurn);
   const [raiseAmount, setRaiseAmount] = useState(100);
 
   return (

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from './Card';
 import { BetChips } from './BetChips';
+import { CardDealer } from './CardDealer';
 
 interface PlayerSlotProps {
   player: any;
@@ -42,11 +43,6 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
 
   const isInHand = player.inHand || (player.cards && player.cards.length > 0) || player.lastAction;
   
-  const getMarkerPosition = (offset = 0) => {
-    // Apetraka eo amin'ny "glass-panel" (trapeze) ny position
-    return `absolute -top-6 ${[1, 2, 3].includes(seatNumber) ? '-right-6' : '-left-6'} z-[60]`;
-  };
-
   return (
     <div 
       id={id || `seat-${seatNumber}`}
@@ -78,21 +74,22 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
                 <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
             </div>
           </div>
-          {isDealer && (
-            <div className={`absolute ${getMarkerPosition()} w-8 h-8 rounded-full bg-white shadow-lg border-2 border-gray-300 flex items-center justify-center z-30 animate-in zoom-in duration-500`}>
-              <span className="text-[12px] font-black text-gray-800">D</span>
-            </div>
-          )}
         </div>
 
-        {/* TRAPEZE - Timer ao ambaniny */}
-        <div className="glass-panel p-2 min-w-[130px] text-center mt-[-22px] relative overflow-hidden border-x border-t border-white/10"
+        {/* TRAPEZE - Misy anarana, chips, ary D/SB/BB */}
+        <div className="glass-panel p-2 min-w-[130px] text-center mt-[-22px] relative border-x border-t border-white/10 flex flex-col items-center"
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '12px' }}>
-          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-          <div className="text-white text-[12px] font-black uppercase italic">{player.name}</div>
+          
+          <div className="flex items-center justify-center gap-2 mb-1">
+             <div className="text-white text-[12px] font-black uppercase italic">{player.name}</div>
+             <div className="flex gap-1">
+               {isDealer && <span className="w-5 h-5 bg-white text-black rounded-full text-[10px] font-black flex items-center justify-center">D</span>}
+               {isSB && <span className="w-5 h-5 bg-blue-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">SB</span>}
+               {isBB && <span className="w-5 h-5 bg-red-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">BB</span>}
+             </div>
+          </div>
           <div className="text-yellow-400 text-[14px] font-black">{Number(player.chips).toLocaleString()}</div>
           
-          {/* TIMER */}
           {isActive && (
             <div className="absolute bottom-0 left-0 h-[3px] bg-gradient-to-r from-yellow-500 to-yellow-200 transition-all duration-1000 ease-linear" 
                  style={{ width: `${(timeLeft / 15) * 100}%` }}></div>
@@ -101,18 +98,6 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
 
         <BetChips amount={player.bet} shouldGather={shouldGatherBets} position={positionClass} seatNumber={seatNumber} centerX={centerX} centerY={centerY} playerId={player.id} gatheringPlayerId={gatheringPlayerId} />
       </div>
-
-      {/* Badge Action */}
-      {player.lastAction && (
-        <div className={`absolute px-4 py-1 rounded-full text-[10px] font-black uppercase shadow-2xl border border-white/20 z-[60] whitespace-nowrap transition-all duration-300
-          ${player.lastAction === 'fold' ? 'bg-gradient-to-r from-red-900 to-red-600 text-white' : 
-            player.lastAction === 'all-in' ? 'bg-gradient-to-r from-purple-900 to-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]' :
-            'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black'}`}
-          style={{ top: '75px', left: '-5px' }}
-        >
-          {player.lastAction}
-        </div>
-      )}
     </div>
   );
 };
