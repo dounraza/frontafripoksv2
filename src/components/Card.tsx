@@ -30,10 +30,11 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
     </div>
   );
 
-  if (hidden) return <div className="w-20 h-28">{CardBack}</div>;
+  // MANAIKY HABÈ RAIKITRA FOANA (80x112)
+  if (hidden) return <div className="w-20 h-28 min-w-[80px] min-h-[112px]">{CardBack}</div>;
 
   return (
-    <div className="w-20 h-28 perspective-1000 antialiased">
+    <div className="w-20 h-28 min-w-[80px] min-h-[112px] perspective-1000 antialiased">
       <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${revealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
         {/* Front Side */}
         <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-between p-1 sm:p-2 font-black ${suitColors[suit]}`}>

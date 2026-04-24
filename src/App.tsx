@@ -5,6 +5,7 @@ import { PokerTable } from './components/PokerTable';
 import { Dashboard } from './pages/Dashboard';
 import { AuthForm } from './pages/AuthForm';
 import { Alert } from './components/Alert';
+import { ActionPanel } from './components/ActionPanel';
 // @ts-ignore
 import { LogOut, ArrowUpCircle, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { getCallAmount, getMinRaiseTo, getMaxRaiseTo, isPlayerTurn } from './utils/pokerLogic';
@@ -50,7 +51,6 @@ function App() {
 
   const [minBuyIn, setMinBuyIn] = useState(0);
   const [solde, setSolde] = useState<number | null>(null);
-  const [raiseAmount, setRaiseAmount] = useState(100);
   const [isVertical, setIsVertical] = useState(window.innerWidth < 480);
   const [scale, setScale] = useState(1);
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
@@ -61,17 +61,13 @@ function App() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      
       const isMobile = width < 480;
       setIsVertical(isMobile);
       
-      // TargetWidth ho 540px ho an'ny table ngeza be
-      const targetWidth = 540; 
+      const targetWidth = isMobile ? 540 : 1000; 
+      const scaleW = (width * 0.9) / targetWidth;
       
-      // Scale miankina fotsiny amin'ny width (sakan'ny ecran) mba tsy hiovaova
-      const scaleW = (width - 4) / targetWidth;
-      
-      setScale(Math.min(2.0, scaleW));
+      setScale(Math.min(1.0, scaleW));
     };
 
       handleResize();
@@ -130,25 +126,6 @@ function App() {
   const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
   const isMyTurn = isPlayerTurn(tableData, socket?.id);
   const callAmount = getCallAmount(tableData, myPlayer);
-  const minRaiseTo = Number(getMinRaiseTo(tableData)) || 20;
-  const maxRaiseTo = Number(getMaxRaiseTo(myPlayer)) || 0;
-
-  useEffect(() => {
-    if (isMyTurn && !isNaN(minRaiseTo) && !isNaN(maxRaiseTo)) {
-      setRaiseAmount(current => {
-        const safeCurrent = Number(current) || minRaiseTo;
-        if (safeCurrent < minRaiseTo) return minRaiseTo;
-        if (safeCurrent > maxRaiseTo) return maxRaiseTo;
-        return safeCurrent;
-      });
-    }
-  }, [isMyTurn, minRaiseTo, maxRaiseTo]);
-
-  useEffect(() => {
-    if (myPlayer && myPlayer.chips === 0 && tableData?.gameState === 'waiting' && !showRechargeModal && isReadyToPlay) {
-      setShowRechargeModal(true);
-    }
-  }, [myPlayer?.chips, tableData?.gameState, isReadyToPlay]);
 
   if (!user) {
     return <AuthForm onSuccess={(token, name) => setUser({ token, name })} />;
@@ -215,78 +192,27 @@ function App() {
           </div>
 
           <div 
-            className={`w-full flex-1 flex flex-col items-center ${isVertical ? 'justify-start pt-12' : 'justify-center'}`}
+            className="flex flex-col items-center w-full max-w-[1400px] min-h-screen py-4"
           >
+            {/* Poker Table */}
             <div 
               className="transition-all duration-700 origin-top flex justify-center"
               style={{ 
-                transform: `scale(${scale})`,
-                height: `${800 * scale}px` 
+                transform: `scale(${scale})`
               }} 
             >
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} />
             </div>
-          </div>
 
-          {/* Action buttons + Chat container */}
-          <div className="w-full flex flex-col items-center py-4 px-2 z-[100] relative mt-6 gap-4">
-            {isVertical ? (
-              <>
-                <div className={`w-full max-w-[360px] ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                   <div className="grid grid-cols-3 gap-2 w-full mb-2">
-                      <button onClick={() => sendAction('fold')} className="flex flex-col items-center justify-center py-3 bg-red-950/40 border border-red-500/50 rounded-xl active:scale-95 transition-all">
-                        <span className="text-[10px] font-black uppercase text-red-500">FOLD</span>
-                      </button>
-                      <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="flex flex-col items-center justify-center py-3 bg-green-950/40 border border-green-500/50 rounded-xl active:scale-95 transition-all">
-                        <span className="text-[10px] font-black uppercase text-green-500">{callAmount > 0 ? 'CALL' : 'CHECK'}</span>
-                      </button>
-                      <button onClick={() => sendAction('all-in')} className="flex flex-col items-center justify-center py-3 bg-yellow-950/40 border border-yellow-500/50 rounded-xl active:scale-95 transition-all">
-                        <span className="text-[10px] font-black uppercase text-yellow-500">ALL-IN</span>
-                      </button>
-                   </div>
-                   <div className="flex items-center gap-2 bg-black/60 p-2 rounded-xl border border-white/10 w-full">
-                      <input 
-                        type="number" 
-                        value={raiseAmount} 
-                        onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
-                        className="bg-gray-900 text-white font-black w-20 py-3 rounded-lg focus:outline-none text-center text-sm border border-white/5" 
-                      />
-                      <button 
-                        onClick={() => sendAction('raise', raiseAmount)} 
-                        className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black flex-1 py-3 rounded-lg font-black uppercase text-[11px] shadow-lg"
-                      >
-                        Raise
-                      </button>
-                   </div>
-                </div>
-                <div className="w-full max-w-[360px]">
-                   <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-4">
-                <div className={`flex items-center justify-center gap-4 transition-all ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                  <button onClick={() => sendAction('fold')} className="px-8 py-3 bg-red-600 rounded-xl font-black uppercase italic hover:bg-red-500 transition-all shadow-xl">Fold</button>
-                  <button onClick={() => sendAction(callAmount > 0 ? 'call' : 'check')} className="px-8 py-3 bg-green-600 rounded-xl font-black uppercase italic hover:bg-green-500 transition-all shadow-xl">{callAmount > 0 ? `Call ${callAmount}` : 'Check'}</button>
-                  <button onClick={() => sendAction('all-in')} className="px-8 py-3 bg-yellow-600 rounded-xl font-black uppercase italic hover:bg-yellow-500 transition-all shadow-xl">All-in</button>
-                  <div className="flex items-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/10 shadow-inner">
-                    <input 
-                      type="number" 
-                      value={raiseAmount} 
-                      onChange={(e) => setRaiseAmount(parseInt(e.target.value) || 0)} 
-                      className="w-24 bg-gray-900 border border-white/10 rounded-xl px-4 py-2 text-white font-black text-center text-lg" 
-                    />
-                    <button 
-                      onClick={() => sendAction('raise', raiseAmount)} 
-                      className="px-6 py-2 bg-yellow-500 text-black rounded-xl font-black uppercase hover:bg-yellow-400 transition-all shadow-lg"
-                    >
-                      Raise
-                    </button>
-                  </div>
-                </div>
-                <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-              </div>
-            )}
+            {/* Action Panel */}
+            <div className="mt-4 px-4 w-full flex justify-center">
+               <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+            </div>
+
+            {/* Chat */}
+            <div className="w-full max-w-[420px] px-2 mt-4">
+               <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
+            </div>
           </div>
         </div>
       )}

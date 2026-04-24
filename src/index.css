@@ -48,7 +48,30 @@ html, body {
   animation: card-appear 0.3s ease-out forwards;
 }
 
-/* Animation de distribution des cartes (du centre vers sa cible) */
+/* Animation Universelle de Glisse (utilisée pour les cartes et les jetons) */
+@keyframes universal-glide {
+  0% { 
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(0.1) rotateY(180deg);
+    opacity: 0;
+    z-index: 1000;
+  }
+  15% {
+    opacity: 1;
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(0.8) rotateY(120deg);
+    z-index: 1000;
+  }
+  100% { 
+    transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(1) rotateY(0deg);
+    opacity: 1;
+    z-index: 20;
+  }
+}
+
+.universal-motion {
+  animation: universal-glide 1.2s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+/* Animation de distribution des cartes (Ancienne version, maintenue pour compatibilité temporaire) */
 @keyframes card-deal-distribute {
   0% {
     transform: translate(var(--deal-x, 0), var(--deal-y, 0)) scale(0.3) rotateY(180deg) rotateZ(30deg);
