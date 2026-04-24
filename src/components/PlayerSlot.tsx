@@ -29,7 +29,21 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
 }) => {
   const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
   const [timeLeft, setTimeLeft] = useState(15);
+  const [displayChips, setDisplayChips] = useState(player.chips);
   
+  // Sync display chips with delay if winner
+  useEffect(() => {
+    if (isWinner) {
+      // Wait for the pot animation to travel to the player
+      const timer = setTimeout(() => {
+        setDisplayChips(player.chips);
+      }, 1500); // Adjust this to match your ChipPot animation duration
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayChips(player.chips);
+    }
+  }, [player.chips, isWinner]);
+
   useEffect(() => {
     let timer: any;
     if (isActive) {
@@ -88,7 +102,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
                {isBB && <span className="w-5 h-5 bg-red-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">BB</span>}
              </div>
           </div>
-          <div className="text-yellow-400 text-[14px] font-black">{Number(player.chips).toLocaleString()}</div>
+          <div className="text-yellow-400 text-[14px] font-black">{Number(displayChips).toLocaleString()}</div>
           
           {isActive && (
             <div className="absolute bottom-0 left-0 h-[3px] bg-gradient-to-r from-yellow-500 to-yellow-200 transition-all duration-1000 ease-linear" 

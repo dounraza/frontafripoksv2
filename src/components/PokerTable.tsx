@@ -75,7 +75,12 @@ export const PokerTable: React.FC<PokerTableProps> = ({
     };
     updateSeatCoords();
     window.addEventListener('resize', updateSeatCoords);
-    return () => window.removeEventListener('resize', updateSeatCoords);
+    // Timeout to ensure elements are rendered
+    const timer = setTimeout(updateSeatCoords, 500);
+    return () => {
+        window.removeEventListener('resize', updateSeatCoords);
+        clearTimeout(timer);
+    };
   }, [players, tableData.gameState]);
 
   const getSeatOffset = (idx: number) => {
@@ -85,12 +90,27 @@ export const PokerTable: React.FC<PokerTableProps> = ({
     return offsets[idx] || { x: 0, y: 0 };
   };
 
-  const winningPlayerIndex = players.findIndex((p: any) => winnerIds.includes(p.id));
-  const winnerSeat = winningPlayerIndex !== -1 ? players[winningPlayerIndex].position : -1;
-  const winOffset = getSeatOffset(winnerSeat);
-
   const tableWidth = isVertical ? 500 : 420;
   const tableHeight = isVertical ? 800 : 820;
+
+  // Animation logic for Pot -> Winner with Delay
+  const firstWinner = players.find((p: any) => winnerIds.includes(p.id));
+  const winnerSeatIdx = firstWinner ? firstWinner.position : undefined;
+  const [delayedWinnerIdx, setDelayedWinnerIdx] = React.useState<number | undefined>(undefined);
+
+  React.useEffect(() => {
+    if (winnerSeatIdx !== undefined) {
+      // Wait for community cards (0.4s delay each + 0.8s animation)
+      // For 5 cards, it takes about 2.8s to be fully shown
+      const delay = communityCards.length > 0 ? (communityCards.length * 400) + 1200 : 1000;
+      const timer = setTimeout(() => {
+        setDelayedWinnerIdx(winnerSeatIdx);
+      }, delay);
+      return () => clearTimeout(timer);
+    } else {
+      setDelayedWinnerIdx(undefined);
+    }
+  }, [winnerSeatIdx, communityCards.length]);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -100,6 +120,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-[228px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-[228px] border-[3px]"></div>
         
+        {/* CARDS LAYER */}
         <div className="absolute inset-0 pointer-events-none z-[100]">
            {players.map((player: any) => {
               const seatIdx = player.position;
@@ -129,23 +150,40 @@ export const PokerTable: React.FC<PokerTableProps> = ({
            })}
         </div>
 
+        {/* POT AND COMMUNITY CARDS */}
         <div className="flex flex-col items-center z-10 relative gap-6">
+          <style>{`
+            @keyframes slide-in-right {
+              0% { transform: translateX(50px); opacity: 0; }
+              100% { transform: translateX(0); opacity: 1; }
+            }
+            .animate-community-card {
+              animation: slide-in-right 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              opacity: 0;
+            }
+          `}</style>
           <div className="relative z-20 flex flex-col items-center" ref={potRef}>
              <ChipPot 
-               key={`pot-${handKey}-${isShowdown}`}
                amount={displayPot} 
-               winnerPosition={isShowdown && winnerSeat !== -1 ? 'active' : undefined} 
-               targetX={`${winOffset.x || 0}px`} 
-               targetY={`${winOffset.y || 0}px`} 
+               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
+               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x || 0}px` : `0px`} 
+               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
              />
           </div>
-          <div className="w-auto h-auto gap-4 px-6 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 relative z-10 opacity-100">
+          <div className="w-auto h-auto gap-4 px-6 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 relative z-10 opacity-100 min-h-[120px]">
             {communityCards.map((card: any, idx: number) => (
-              <div key={idx} className="animate-community-slide"><Card value={card.value} suit={card.suit} hidden={false} /></div>
+              <div 
+                key={`${idx}-${card.value}-${card.suit}`} 
+                className="animate-community-card"
+                style={{ animationDelay: `${idx * 0.4}s` }}
+              >
+                <Card value={card.value} suit={card.suit} hidden={false} />
+              </div>
             ))}
           </div>
         </div>
 
+        {/* PLAYERS */}
         {Array.from({ length: 9 }).map((_, idx) => {
           const player = players.find((p: any) => p.position === idx);
           if (!player) return <EmptySlot key={`empty-${idx}`} positionClass={PLAYER_POSITIONS[idx]} />;
@@ -154,19 +192,16 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           return (
             <PlayerSlot 
               key={player.id} id={`seat-${idx}`} player={player} isActive={isPlayerTurn(tableData, player.id)} 
-              isWinner={false} isDealer={isDealer} isSB={isSB} isBB={isBB}
-              positionClass={PLAYER_POSITIONS[idx]} shouldGatherBets={false} 
+              isWinner={winnerIds.includes(player.id) && delayedWinnerIdx !== undefined} isDealer={isDealer} isSB={isSB} isBB={isBB}
+              positionClass={PLAYER_POSITIONS[idx]} shouldGatherBets={tableData.gatheringBets} 
               dealOrigin={{ x: "0px", y: "0px" }} seatNumber={idx} isShowdown={isShowdown}
               handKey={handKey} gameState={tableData.gameState}
               isCurrentUser={player.id === currentUserId || player.name.trim().toLowerCase() === currentUserName?.trim().toLowerCase()}
-              centerX={0} centerY={0} gatheringPlayerId={null} isVertical={true}
+              centerX={seatCoords[idx]?.x || 0} centerY={seatCoords[idx]?.y || 0} 
+              gatheringPlayerId={tableData.gatheringPlayerId} isVertical={true}
             />
           );
         })}
-      </div>
-      
-      <div className="mt-8">
-         <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
       </div>
     </div>
   );
