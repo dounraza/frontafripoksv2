@@ -19,15 +19,15 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-4%] left-1/2 -translate-x-1/2',
-  'bottom-[18%] left-[-10%]',
-  'top-[38%] left-[-14%]',
-  'top-[18%] left-[-10%]',
-  'top-[-8%] left-1/2 -translate-x-1/2',
-  'top-[18%] right-[-10%]',
-  'top-[38%] right-[-14%]',
-  'bottom-[18%] right-[-10%]',
-  'bottom-[-4%] right-[28%]',
+  'bottom-[-4%] left-1/2 -translate-x-1/2',   
+  'bottom-[18%] left-[-10%]',                  
+  'top-[38%] left-[-14%]',                     
+  'top-[18%] left-[-10%]',                     
+  'top-[-8%] left-1/2 -translate-x-1/2',       
+  'top-[18%] right-[-10%]',                    
+  'top-[38%] right-[-14%]',                    
+  'bottom-[18%] right-[-10%]',                 
+  'bottom-[-4%] right-[28%]',                  
 ];
 
 export const PokerTable: React.FC<PokerTableProps> = ({ 
@@ -85,6 +85,10 @@ export const PokerTable: React.FC<PokerTableProps> = ({
     return offsets[idx] || { x: 0, y: 0 };
   };
 
+  const winningPlayerIndex = players.findIndex((p: any) => winnerIds.includes(p.id));
+  const winnerSeat = winningPlayerIndex !== -1 ? players[winningPlayerIndex].position : -1;
+  const winOffset = getSeatOffset(winnerSeat);
+
   const tableWidth = isVertical ? 500 : 420;
   const tableHeight = isVertical ? 800 : 820;
 
@@ -107,7 +111,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               return (
                 <div key={`${player.id}-${handKey}`} className="absolute z-[200]" style={{ left: `calc(50% + ${offset.x}px)`, top: `calc(50% + ${offset.y + 20}px)`, transform: 'translate(-50%, -50%)' }}>
                   {player.lastAction && (
-                    <div className="absolute z-[300] top-2 -left-16 bg-yellow-500 text-black px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap">
+                    <div className="absolute z-[300] top-8 -left-24 bg-yellow-500 text-black px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap">
                       {player.lastAction}
                     </div>
                   )}
@@ -128,10 +132,11 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         <div className="flex flex-col items-center z-10 relative gap-6">
           <div className="relative z-20 flex flex-col items-center" ref={potRef}>
              <ChipPot 
+               key={`pot-${handKey}-${isShowdown}`}
                amount={displayPot} 
-               winnerPosition={false ? 'active' : undefined} 
-               targetX={`0px`} 
-               targetY={`0px`} 
+               winnerPosition={isShowdown && winnerSeat !== -1 ? 'active' : undefined} 
+               targetX={`${winOffset.x || 0}px`} 
+               targetY={`${winOffset.y || 0}px`} 
              />
           </div>
           <div className="w-auto h-auto gap-4 px-6 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 relative z-10 opacity-100">
