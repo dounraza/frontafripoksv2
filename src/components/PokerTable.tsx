@@ -107,8 +107,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               return (
                 <div key={`${player.id}-${handKey}`} className="absolute z-[200]" style={{ left: `calc(50% + ${offset.x}px)`, top: `calc(50% + ${offset.y + 20}px)`, transform: 'translate(-50%, -50%)' }}>
                   {player.lastAction && (
-                    <div className={`absolute z-[300] top-8 -left-24 px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap 
-                      ${player.lastAction.toLowerCase() === 'fold' ? 'bg-red-600 text-white' : 'bg-yellow-500 text-black'}`}>
+                    <div className="absolute z-[300] top-2 -left-16 bg-yellow-500 text-black px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap">
                       {player.lastAction}
                     </div>
                   )}
