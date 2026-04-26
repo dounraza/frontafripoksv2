@@ -27,7 +27,18 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   player, isActive, isWinner, positionClass, shouldGatherBets, isDealer, isSB, isBB,
   isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, id
 }) => {
-  const avatarUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  
+  const getAvatarUrl = () => {
+    if (player.avatarUrl) {
+      return player.avatarUrl.startsWith('http') 
+        ? player.avatarUrl 
+        : `${API_URL}${player.avatarUrl}`;
+    }
+    return `https://api.dicebear.com/9.x/adventurer/svg?seed=${player.name}&radius=50`;
+  };
+
+  const avatarUrl = getAvatarUrl();
   const [timeLeft, setTimeLeft] = useState(15);
   const [displayChips, setDisplayChips] = useState(player.chips);
   
@@ -95,7 +106,9 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '12px' }}>
           
           <div className="flex items-center justify-center gap-2 mb-1">
-             <div className="text-white text-[12px] font-black uppercase italic">{player.name}</div>
+             <div className={`text-[12px] font-black uppercase italic ${player.handResult ? 'text-yellow-400 animate-pulse' : 'text-white'}`}>
+                {player.handResult ? player.handResult : player.name}
+             </div>
              <div className="flex gap-1">
                {isDealer && <span className="w-5 h-5 bg-white text-black rounded-full text-[10px] font-black flex items-center justify-center">D</span>}
                {isSB && <span className="w-5 h-5 bg-blue-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">SB</span>}
@@ -105,8 +118,12 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           <div className="text-yellow-400 text-[14px] font-black">{Number(displayChips).toLocaleString()}</div>
           
           {isActive && (
-            <div className="absolute bottom-0 left-0 h-[3px] bg-gradient-to-r from-yellow-500 to-yellow-200 transition-all duration-1000 ease-linear" 
-                 style={{ width: `${(timeLeft / 15) * 100}%` }}></div>
+            <div className="absolute bottom-0 left-0 h-[4px] transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(0,0,0,0.5)]" 
+                 style={{ 
+                   width: `${(timeLeft / 15) * 100}%`,
+                   background: timeLeft > 10 ? '#10b981' : timeLeft > 5 ? '#f59e0b' : '#ef4444',
+                   boxShadow: timeLeft > 10 ? '0 0 8px #10b981' : timeLeft > 5 ? '0 0 8px #f59e0b' : '0 0 12px #ef4444'
+                 }}></div>
           )}
         </div>
 

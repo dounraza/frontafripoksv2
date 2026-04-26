@@ -9,19 +9,19 @@ interface ChipPotProps {
 
 const PotChip = ({ color, index, stackIndex }: { color: any, index: number, stackIndex: number }) => (
   <div 
-    className="w-12 h-12 rounded-full border-[3px] border-dashed flex items-center justify-center shadow-2xl transition-transform"
+    className="w-8 h-8 rounded-full border-[2px] border-dashed flex items-center justify-center shadow-2xl transition-transform"
     style={{ 
       backgroundColor: color.main,
       borderColor: 'rgba(255,255,255,0.4)',
-      boxShadow: `0 ${index * 2 + 2}px 0 rgba(0,0,0,0.6), 0 10px 20px rgba(0,0,0,0.4)`,
-      transform: `translateY(-${index * 4}px) rotate(${stackIndex * 15}deg)`,
+      boxShadow: `0 ${index * 1.5 + 1.5}px 0 rgba(0,0,0,0.6), 0 8px 15px rgba(0,0,0,0.4)`,
+      transform: `translateY(-${index * 3}px) rotate(${stackIndex * 15}deg)`,
       backgroundImage: `
         repeating-conic-gradient(from 0deg, rgba(255,255,255,0.2) 0deg 20deg, transparent 20deg 40deg),
         radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), transparent)
       `,
     }}
   >
-    <div className="w-6 h-6 rounded-full border border-white/20 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+    <div className="w-4 h-4 rounded-full border border-white/20 bg-black/20 backdrop-blur-sm flex items-center justify-center">
         <div className="w-full h-full rounded-full border-[0.5px] border-white/10" />
     </div>
   </div>

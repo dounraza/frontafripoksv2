@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
-import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut, XCircle, CreditCard } from 'lucide-react';
+import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut, XCircle, CreditCard, Volume2, VolumeX, History } from 'lucide-react';
 import { useSocket } from '../hooks/useSocket';
 // @ts-ignore
 import { Chat } from '../components/Chat';
 
 interface DashboardProps {
   onJoinTable: (tableId: string | number, minBuyIn: number) => void;
-  user: { name: string; token: string };
+  user: { name: string; token: string; id: string; avatar_url?: string };
+  solde: number | null;
+  onRefreshSolde: () => void;
   onLogout: () => void;
+  onOpenProfile: () => void;
+  isMuted: boolean;
+  onToggleMute: () => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogout }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ 
+  onJoinTable, user, solde, onRefreshSolde, onLogout, onOpenProfile, isMuted, onToggleMute 
+}) => {
   const [onlineCount, setOnlineCount] = useState(0);
   const { socket } = useSocket();
 
@@ -21,7 +28,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
         setOnlineCount(count);
       });
       socket.on('lobbyUpdate', (updateData: { id: number | string, currentPlayers: number, playerNames?: string[] }[]) => {
-        console.log("Mise à jour lobby reçue:", updateData);
         setTables(prevTables => {
           return prevTables.map(table => {
             const update = updateData.find(u => String(u.id) === String(table.id));
@@ -44,19 +50,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
   }, [socket]);
 
   const [view, setView] = useState<'main' | 'cashGames' | 'tournaments'>('main');
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showSolde, setShowSolde] = useState(true);
   const [tables, setTables] = useState<any[]>([]);
-  const [solde, setSolde] = useState<number | null>(null);
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawPhone, setWithdrawPhone] = useState('');
   const [withdrawMobileName, setWithdrawMobileName] = useState('');
-  const [pseudo, setPseudo] = useState(user.name);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [mobileMoneyName, setMobileMoneyName] = useState('');
   const [reference, setReference] = useState('');
@@ -76,20 +79,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
   const tableImages = ['/image/4.jpg', '/image/Poker_hero.png', '/image/poker.jpg', '/image/re.jfif'];
 
   const getTableImage = (id: number) => {
-    const index = id % tableImages.length;
+    const index = typeof id === 'number' ? id % tableImages.length : 0;
     return tableImages[index] || '/logo.ico';
   };
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
-  const fetchSolde = () => {
-    fetch(`${API_URL}/api/solde`, {
-      headers: { 'Authorization': `Bearer ${user.token}` }
-    })
-      .then(res => res.json())
-      .then(data => setSolde(data.montant))
-      .catch(err => console.error('Error fetching solde:', err));
-  };
 
   useEffect(() => {
     const slideTimer = setInterval(() => {
@@ -99,8 +93,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
   }, [slides.length]);
 
   useEffect(() => {
-    fetchSolde();
-
     if (view === 'cashGames') {
       fetch(`${API_URL}/api/tables`, {
         headers: { Authorization: `Bearer ${user.token}` },
@@ -110,7 +102,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
           if (Array.isArray(data)) {
             setTables(data);
           } else {
-            console.error("Tables data is not an array:", data);
             setTables([]);
           }
         })
@@ -119,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
           setTables([]);
         });
     }
-  }, [view, user.token]);
+  }, [view, user.token, API_URL]);
 
   const handleDeposit = () => {
     if (!depositAmount || isNaN(Number(depositAmount)) || !phoneNumber || !reference) return;
@@ -131,7 +122,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
         'Authorization': `Bearer ${user.token}` 
       },
       body: JSON.stringify({ 
-        pseudo: pseudo,
+        pseudo: user.name,
         montant: parseFloat(depositAmount),
         numero: phoneNumber,
         nom: mobileMoneyName,
@@ -149,6 +140,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
           setMobileMoneyName('');
           setReference('');
           alert("Votre demande de dépôt a été enregistrée.");
+          setTimeout(onRefreshSolde, 1000);
         }
       })
       .catch(err => console.error('Error depositing:', err));
@@ -168,7 +160,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
         'Authorization': `Bearer ${user.token}` 
       },
       body: JSON.stringify({ 
-        pseudo: pseudo,
+        pseudo: user.name,
         montant: parseFloat(withdrawAmount),
         numero: withdrawPhone,
         nom: withdrawMobileName
@@ -179,15 +171,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
         if (data.error) {
           alert(`Erreur: ${data.error}`);
         } else {
-          setSolde(data.montant);
           setShowWithdrawModal(false);
           setWithdrawAmount('');
           setWithdrawPhone('');
           setWithdrawMobileName('');
           alert("Votre demande de retrait a été enregistrée.");
+          setTimeout(onRefreshSolde, 1000);
         }
       })
       .catch(err => console.error('Error withdrawing:', err));
+  };
+
+  const getAvatarUrl = (avatar_url?: string, name?: string) => {
+    if (avatar_url) {
+      return avatar_url.startsWith('http') ? avatar_url : `${API_URL}${avatar_url}`;
+    }
+    return `https://api.dicebear.com/9.x/adventurer/svg?seed=${name || 'default'}`;
   };
 
   const filteredTables = tables.filter(t =>
@@ -195,7 +194,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
     (gameFilter === 'All' || t.gameType.toLowerCase() === gameFilter.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredTables.length / itemsPerPage);
   const paginatedTables = filteredTables.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
@@ -224,17 +222,36 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                   </button>
                   {showWalletMenu && (
                     <div className="absolute top-10 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
-                      <button className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10">Historique <HistoryIcon className="w-4 h-4" /></button>
+                      <button onClick={() => { setShowHistoryModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10">Historique <HistoryIcon className="w-4 h-4" /></button>
                       <button onClick={() => { setShowDepositModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-yellow-500 font-bold">Dépôt <DollarSign className="w-4 h-4" /></button>
                       <button onClick={() => { setShowWithdrawModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-red-500 font-bold">Retrait <Wallet className="w-4 h-4" /></button>
                     </div>
                   )}
                 </div>
+
+                {/* History & Mute Buttons */}
+                <div className="flex items-center gap-1 sm:gap-2 mr-1">
+                   <button 
+                     onClick={() => setShowHistoryModal(true)}
+                     className="p-1.5 sm:p-2 bg-white/5 text-gray-400 rounded-full hover:text-white border border-white/5 transition-all"
+                     title="Historique"
+                   >
+                     <History className="w-4 h-4 sm:w-5 sm:h-5" />
+                   </button>
+                   <button 
+                     onClick={onToggleMute}
+                     className="p-1.5 sm:p-2 bg-white/5 text-gray-400 rounded-full hover:text-white border border-white/5 transition-all"
+                     title={isMuted ? "Réactiver le son" : "Couper le son"}
+                   >
+                     {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />}
+                   </button>
+                </div>
+
                 <span className="text-[10px] sm:text-sm font-bold text-white hidden xs:inline">{user.name}</span>
                 <div className="relative">
                   <button onClick={() => { setShowProfileMenu(!showProfileMenu); setShowWalletMenu(false); }} className="flex items-center gap-1 sm:gap-2">
                     <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-yellow-400 p-0.5 overflow-hidden">
-                      <img src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${user.name}`} alt="avatar" className="rounded-full w-full h-full" />
+                      <img src={getAvatarUrl(user.avatar_url, user.name)} alt="avatar" className="rounded-full w-full h-full object-cover" />
                       <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>
                     </div>
                     <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -242,7 +259,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                   {showProfileMenu && (
                   <div className="absolute top-12 right-0 w-48 bg-black border border-white/10 rounded-xl shadow-2xl py-2 z-50 text-right">
                     <div className="h-px bg-white/5 my-2"></div>
-                    <button onClick={() => { setShowProfileModal(true); setShowProfileMenu(false); }} className="block w-full text-right px-4 py-2 text-sm hover:bg-white/10">Mon profil</button>
+                    <button onClick={() => { onOpenProfile(); setShowProfileMenu(false); }} className="block w-full text-right px-4 py-2 text-sm hover:bg-white/10">Mon profil</button>
                     <button onClick={onLogout} className="block w-full text-right px-4 py-2 text-sm text-red-500 hover:bg-red-500/10">Déconnexion</button>
                   </div>
                   )}
@@ -290,276 +307,145 @@ export const Dashboard: React.FC<DashboardProps> = ({ onJoinTable, user, onLogou
                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" /></div>
                          <span className="text-[10px] font-black uppercase text-center">Cash Games</span>
                       </div>
-                      <div onClick={() => setView('tournaments')} className="aspect-square bg-black/40 rounded-2xl border border-white/10 p-4 flex flex-col items-center justify-center gap-3 hover:border-yellow-500/50 transition-all cursor-pointer group">
+                      <div onClick={() => setView('tournaments')} className="aspect-square bg-green-500/20 rounded-2xl border border-white/10 p-4 flex flex-col items-center justify-center gap-3 hover:border-green-500/50 transition-all cursor-pointer group">
                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" /></div>
                          <span className="text-[10px] font-black uppercase text-center">Tournaments</span>
                       </div>
                    </div>
                 </div>
-                <div className="space-y-4 sm:space-y-6">
-                   <div className="bg-gray-900/30 rounded-3xl border border-white/5 p-6 sm:p-8 relative overflow-hidden group hover:border-white/10 transition-all h-[150px] sm:h-[180px] flex flex-col justify-center">
-                      <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mb-4" />
-                      <h4 className="text-base sm:text-lg font-black italic">My Transactions</h4>
-                      <p className="text-[10px] text-gray-500 font-bold uppercase mt-1">Check out your withdrawal and deposit status</p>
-                   </div>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-3">
-              <div className="bg-gray-900/30 rounded-3xl border border-white/10 p-6 sm:p-8 h-auto lg:h-full">
-                <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6 sm:mb-8">GAME STATS</h4>
-                <div className="bg-black/40 rounded-2xl p-1 mb-6 sm:mb-8 flex"><button className="flex-1 py-3 bg-red-600 rounded-xl text-xs font-black uppercase italic tracking-wider">Cash</button><button className="flex-1 py-3 text-xs font-black uppercase italic tracking-wider text-gray-500">Tournament</button></div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
-            <div className="md:col-span-3 space-y-4 sm:space-y-6">
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 p-4 sm:p-6">
-                    <h2 className="text-xs sm:text-sm font-black tracking-widest mb-4 sm:mb-6 uppercase text-yellow-500">FILTRES</h2>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Rechercher</label>
-                            <input type="text" placeholder="Nom de la table..." className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-yellow-500/50" onChange={(e) => setSearch(e.target.value)} />
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Type de jeu</label>
-                            <div className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                                {['All', 'holdem', 'omaha'].map(type => (
-                                    <button 
-                                        key={type}
-                                        onClick={() => { setGameFilter(type as any); setCurrentPage(1); }}
-                                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase text-left transition-all whitespace-nowrap md:w-full ${gameFilter === type ? 'bg-yellow-500 text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="md:col-span-9 space-y-4 sm:space-y-6">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                    {paginatedTables.map((t) => (
-                        <div key={t.id} className="group relative w-full h-40 sm:h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
-                            <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                            <div className="absolute top-4 sm:top-5 right-4 sm:right-5 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-full shadow-lg"><span className="font-black text-[9px] sm:text-[10px] tracking-wider uppercase">{t.cave} MGA</span></div>
-                            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
-                                <h3 className="text-lg sm:text-xl font-black leading-tight mb-1 sm:mb-2 text-white group-hover:text-yellow-500 transition-colors uppercase italic">{t.name}</h3>
-                                {t.playerNames && t.playerNames.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
-                                    {t.playerNames.map((name: string, i: number) => (
-                                      <span key={i} className="text-[7px] sm:text-[8px] px-1.5 sm:px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/30 rounded text-yellow-200 font-bold uppercase tracking-tighter">
-                                        {name}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 sm:gap-4">
-                                        <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Type</span><span className="text-[10px] sm:text-xs font-black text-white">{t.gameType.toUpperCase()}</span></div>
-                                        <div className="w-px h-5 sm:h-6 bg-white/10"></div>
-                                        <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Joueurs</span><span className="text-[10px] sm:text-xs font-black text-yellow-500 flex items-center gap-1"><User className="w-3 h-3" /> {t.currentPlayers || 0} / 9</span></div>
-                                        <div className="w-px h-5 sm:h-6 bg-white/10"></div>
-                                        <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Blinds</span><span className="text-[10px] sm:text-xs font-black text-white">{t.smallBlind}/{t.bigBlind}</span></div>
-                                    </div>
-                                    <button onClick={() => onJoinTable(t.id, Number(t.cave))} className="bg-white text-black h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all hover:scale-110 active:scale-95"><Play className="w-3 h-3 sm:w-4 sm:h-4 fill-current ml-0.5" /></button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-4 mt-8">
-                    <button 
-                      onClick={() => { setCurrentPage(prev => Math.max(prev - 1, 1)); }}
-                      disabled={currentPage === 1}
-                      className={`px-4 py-2 rounded-xl font-black uppercase text-sm transition-all border border-white/10 ${currentPage === 1 ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20'}`}
-                    >
-                      Précédent
-                    </button>
-                    <span className="text-sm font-bold text-white">Page {currentPage} sur {totalPages}</span>
-                    <button 
-                      onClick={() => { setCurrentPage(prev => Math.min(prev + 1, totalPages)); }}
-                      disabled={currentPage === totalPages}
-                      className={`px-4 py-2 rounded-xl font-black uppercase text-sm transition-all border border-white/10 ${currentPage === totalPages ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20'}`}
-                    >
-                      Suivant
-                    </button>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
+              <div className="md:col-span-3 space-y-4 sm:space-y-6">
+                  <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 p-4 sm:p-6">
+                      <h2 className="text-xs sm:text-sm font-black tracking-widest mb-4 sm:mb-6 uppercase text-yellow-500">FILTRES</h2>
+                      <div className="space-y-4">
+                          <div>
+                              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Rechercher</label>
+                              <input type="text" placeholder="Nom de la table..." className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-yellow-500/50" onChange={(e) => setSearch(e.target.value)} />
+                          </div>
+                          <div>
+                              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Type de jeu</label>
+                              <div className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                                  {['All', 'holdem', 'omaha'].map(type => (
+                                      <button 
+                                          key={type}
+                                          onClick={() => { setGameFilter(type as any); setCurrentPage(1); }}
+                                          className={`px-4 py-2 rounded-xl text-xs font-bold uppercase text-left transition-all whitespace-nowrap md:w-full ${gameFilter === type ? 'bg-yellow-500 text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                                      >
+                                          {type}
+                                      </button>
+                                  ))}
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                )}
+              </div>
+              <div className="md:col-span-9 space-y-4 sm:space-y-6">
+                  <div className="flex justify-between items-center">
+                      <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                      {paginatedTables.map((t) => (
+                          <div key={t.id} className="group relative w-full h-40 sm:h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
+                              <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                              <div className="absolute top-4 sm:top-5 right-4 sm:right-5 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-full shadow-lg"><span className="font-black text-[9px] sm:text-[10px] tracking-wider uppercase">{t.cave} MGA</span></div>
+                              <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
+                                  <h3 className="text-lg sm:text-xl font-black leading-tight mb-1 sm:mb-2 text-white group-hover:text-yellow-500 transition-colors uppercase italic">{t.name}</h3>
+                                  <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 sm:gap-4">
+                                          <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Type</span><span className="text-[10px] sm:text-xs font-black text-white">{t.gameType.toUpperCase()}</span></div>
+                                          <div className="w-px h-5 sm:h-6 bg-white/10"></div>
+                                          <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Joueurs</span><span className="text-[10px] sm:text-xs font-black text-yellow-500 flex items-center gap-1"><User className="w-3 h-3" /> {t.currentPlayers || 0} / 9</span></div>
+                                      </div>
+                                      <button onClick={() => onJoinTable(t.id, Number(t.cave))} className="bg-white text-black h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all hover:scale-110 active:scale-95"><Play className="w-3 h-3 sm:w-4 sm:h-4 fill-current ml-0.5" /></button>
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+
+                  {/* Pagination Controls */}
+                  {filteredTables.length > itemsPerPage && (
+                    <div className="flex justify-center items-center gap-4 mt-8">
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      >
+                        <ChevronLeft className="w-6 h-6" />
+                      </button>
+                      
+                      <div className="flex gap-2">
+                        {Array.from({ length: Math.ceil(filteredTables.length / itemsPerPage) }, (_, i) => (
+                          <button
+                            key={i + 1}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={`w-10 h-10 rounded-xl font-black transition-all border ${
+                              currentPage === i + 1 
+                                ? 'bg-yellow-500 text-black border-yellow-500' 
+                                : 'bg-black/40 text-gray-400 border-white/10 hover:border-yellow-500/50'
+                            }`}
+                          >
+                            {i + 1}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredTables.length / itemsPerPage), prev + 1))}
+                        disabled={currentPage === Math.ceil(filteredTables.length / itemsPerPage)}
+                        className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      >
+                        <ChevronRight className="w-6 h-6" />
+                      </button>
+                    </div>
+                  )}
+              </div>
             </div>
-          </div>
         )}
       </main>
 
-      {/* Profile Modal */}
-      <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title="Mon Profil">
-        <div className="space-y-6">
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative w-24 h-24 rounded-full border-4 border-yellow-500 p-1 shadow-2xl">
-              <img src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${user.name}`} alt="avatar" className="rounded-full w-full h-full" />
-              <div className="absolute bottom-0 right-0 bg-yellow-500 p-1.5 rounded-full border-4 border-gray-900 shadow-lg">
-                <User className="w-4 h-4 text-black" />
-              </div>
-            </div>
-            <div className="text-center">
-              <h4 className="text-xl font-black text-white uppercase italic">{user.name}</h4>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Joueur AFRI<span className="text-yellow-500">POKS</span></p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center border border-yellow-500/20">
-                  <Wallet className="w-5 h-5 text-yellow-500" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-gray-500 font-black uppercase">Solde Actuel</p>
-                  <p className="text-lg font-black text-white">{solde?.toLocaleString()} MGA</p>
-                </div>
-              </div>
-              <button onClick={() => { setShowProfileModal(false); setShowDepositModal(true); }} className="px-4 py-2 bg-yellow-500 text-black text-[10px] font-black uppercase rounded-lg hover:bg-yellow-400 transition-all">Recharger</button>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Modifier mon pseudo</label>
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  value={pseudo} 
-                  onChange={(e) => setPseudo(e.target.value)}
-                  placeholder="Nouveau pseudo..."
-                  className="flex-1 bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
-                />
-                <button className="px-6 bg-white/5 border border-white/10 text-white font-black text-[10px] uppercase rounded-xl hover:bg-white/10 transition-all">Mettre à jour</button>
-              </div>
-            </div>
-          </div>
-
-          <button 
-            onClick={onLogout}
-            className="w-full py-4 bg-red-600/10 border border-red-600/30 hover:bg-red-600/20 text-red-500 rounded-2xl font-black uppercase tracking-widest transition-all mt-4 flex items-center justify-center gap-2"
-          >
-            <LogOut className="w-4 h-4" /> Déconnexion
-          </button>
-        </div>
-      </Modal>
-
-      {/* Deposit Modal */}
       <Modal isOpen={showDepositModal} onClose={() => setShowDepositModal(false)} title="Dépôt de Fonds">
         <div className="space-y-4">
-          <div className="p-4 bg-yellow-500/5 rounded-2xl border border-yellow-500/20">
-            <p className="text-[10px] text-gray-400 uppercase font-black mb-1">Votre Solde Actuel</p>
-            <p className="text-xl font-black text-white">{solde?.toLocaleString()} MGA</p>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Montant à déposer (MGA)</label>
-              <input 
-                type="number" 
-                value={depositAmount} 
-                onChange={(e) => setDepositAmount(e.target.value)}
-                placeholder="Ex: 5000"
-                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Numéro Mobile Money</label>
-              <input 
-                type="text" 
-                value={phoneNumber} 
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="Ex: 0340000000"
-                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Référence du transfert</label>
-              <input 
-                type="text" 
-                value={reference} 
-                onChange={(e) => setReference(e.target.value)}
-                placeholder="ID de transaction"
-                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-yellow-500 outline-none"
-              />
-            </div>
-          </div>
-          <button 
-            onClick={handleDeposit}
-            className="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-black rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-yellow-500/10 transition-all mt-4"
-          >
-            Confirmer le dépôt
-          </button>
+            <input type="number" value={depositAmount || ''} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Montant" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <input type="text" value={phoneNumber || ''} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Numéro Mobile Money" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <input type="text" value={mobileMoneyName || ''} onChange={(e) => setMobileMoneyName(e.target.value)} placeholder="Nom du compte" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <input type="text" value={reference || ''} onChange={(e) => setReference(e.target.value)} placeholder="Référence de la transaction" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <button onClick={handleDeposit} className="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl hover:bg-yellow-400 transition-colors uppercase tracking-widest">Confirmer le Dépôt</button>
         </div>
       </Modal>
 
-      {/* Withdraw Modal */}
-      <Modal isOpen={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} title="Demande de Retrait">
+      <Modal isOpen={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} title="Retrait de Fonds">
         <div className="space-y-4">
-          <div className="p-4 bg-red-500/5 rounded-2xl border border-red-500/20">
-            <p className="text-[10px] text-gray-400 uppercase font-black mb-1">Disponible pour retrait</p>
-            <p className="text-xl font-black text-white">{solde?.toLocaleString()} MGA</p>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Montant à retirer (MGA)</label>
-              <input 
-                type="number" 
-                value={withdrawAmount} 
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                placeholder="Ex: 2000"
-                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-red-500 outline-none"
-              />
+            <div className="text-center p-3 bg-white/5 rounded-xl border border-white/10">
+               <div className="text-[10px] text-gray-500 uppercase tracking-widest">Solde Retirable</div>
+               <div className="text-yellow-500 font-black text-lg">{solde?.toLocaleString()} MGA</div>
             </div>
-            <div>
-              <label className="text-[10px] font-black text-gray-500 uppercase ml-1">Numéro de réception</label>
-              <input 
-                type="text" 
-                value={withdrawPhone} 
-                onChange={(e) => setWithdrawPhone(e.target.value)}
-                placeholder="Ex: 0320000000"
-                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-red-500 outline-none"
-              />
-            </div>
-          </div>
-          <button 
-            onClick={handleWithdraw}
-            className="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-red-600/10 transition-all mt-4"
-          >
-            Confirmer le retrait
-          </button>
+            <input type="number" value={withdrawAmount || ''} onChange={(e) => setWithdrawAmount(e.target.value)} placeholder="Montant à retirer" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <input type="text" value={withdrawPhone || ''} onChange={(e) => setWithdrawPhone(e.target.value)} placeholder="Numéro Mobile Money" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <input type="text" value={withdrawMobileName || ''} onChange={(e) => setWithdrawMobileName(e.target.value)} placeholder="Nom du compte" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            <button onClick={handleWithdraw} className="w-full py-4 bg-red-600 text-white font-black rounded-2xl hover:bg-red-500 transition-colors uppercase tracking-widest">Confirmer le Retrait</button>
         </div>
       </Modal>
     </div>
   );
 };
 
-// Modals are handled within the same file for simplicity as requested
 const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }> = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-black text-yellow-500 italic uppercase tracking-tighter">{title}</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
-            <XCircle className="w-6 h-6" />
-          </button>
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-gray-900 border border-white/10 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-black text-yellow-500 italic uppercase tracking-tighter">{title}</h3>
+                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors"><XCircle className="w-6 h-6 text-gray-500 hover:text-white"/></button>
+                </div>
+                {children}
+            </div>
         </div>
-        {children}
-      </div>
-    </div>
-  );
+    );
 };
-
-// Update Dashboard.tsx to include the modals and their triggers
-// I'll re-read the full file to ensure I place the modals correctly and add missing icons/logic if needed.

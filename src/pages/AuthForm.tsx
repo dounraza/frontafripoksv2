@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { LogIn, UserPlus, Loader2 } from 'lucide-react';
 
 interface AuthFormProps {
-  onSuccess: (token: string, username: string) => void;
+  onSuccess: (token: string, username: string, id: string) => void;
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
@@ -36,7 +36,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
       if (!response.ok) throw new Error(data.error || 'Erreur authentification');
       
       if (isLogin) {
-        onSuccess(data.token, data.name);
+        localStorage.setItem('poker_user', JSON.stringify({
+          token: data.token,
+          name: data.name,
+          id: data.id
+        }));
+        onSuccess(data.token, data.name, data.id);
       } else {
         setIsLogin(true);
         setError('Compte créé, connectez-vous');

@@ -20,7 +20,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
         <button onClick={() => sendAction('all-in')} className="py-3 bg-yellow-950/40 border border-yellow-500/50 rounded-xl font-black text-yellow-500 uppercase text-xs">All-In</button>
       </div>
       <div className="flex items-center gap-2 w-[360px]">
-        <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(Number(e.target.value))} className="bg-gray-900 text-white font-black w-20 py-2.5 rounded-lg text-center text-sm" />
+        <input type="number" value={raiseAmount || ''} onChange={(e) => setRaiseAmount(e.target.value === '' ? 0 : Number(e.target.value))} className="bg-gray-900 text-white font-black w-20 py-2.5 rounded-lg text-center text-sm" />
         <button onClick={() => sendAction('raise', raiseAmount)} className="flex-1 bg-yellow-500 text-black py-2.5 rounded-lg font-black uppercase text-sm">Raise</button>
       </div>
     </div>
