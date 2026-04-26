@@ -22,15 +22,29 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [joinedTableId, setJoinedTableId] = useState<string | null>(null);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_URL);
+    console.log('Attempting to connect to socket at:', SOCKET_URL);
+    const newSocket = io(SOCKET_URL, {
+      transports: ['websocket', 'polling']
+    });
     setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      console.log('Socket connected successfully!');
+      setError(null);
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err);
+      setError(`Connection error: ${err.message}`);
+    });
 
     newSocket.on('tableUpdated', (data) => {
       setTableData(data);
     });
 
     newSocket.on('error', (err) => {
-      setError(err.message);
+      console.error('Socket error event:', err);
+      setError(err.message || 'An unknown error occurred');
     });
 
     return () => {
