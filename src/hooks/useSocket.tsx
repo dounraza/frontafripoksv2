@@ -31,6 +31,20 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     newSocket.on('connect', () => {
       console.log('Socket connected successfully!');
       setError(null);
+      
+      // Auto-rejoin logic
+      const activeTable = localStorage.getItem('active_table');
+      const savedUser = localStorage.getItem('poker_user');
+      if (activeTable && savedUser) {
+        const user = JSON.parse(savedUser);
+        console.log(`Auto-rejoining table ${activeTable} for ${user.name}`);
+        newSocket.emit('joinTable', { 
+          playerName: user.name, 
+          tableId: activeTable, 
+          buyIn: "0" // 0 because chips were returned to balance on disconnect
+        });
+        setJoinedTableId(activeTable);
+      }
     });
 
     newSocket.on('connect_error', (err) => {

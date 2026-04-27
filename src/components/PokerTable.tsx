@@ -19,15 +19,15 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-4%] left-1/2 -translate-x-1/2',   
-  'bottom-[18%] left-[-10%]',                  
-  'top-[38%] left-[-14%]',                     
-  'top-[18%] left-[-10%]',                     
-  'top-[-8%] left-1/2 -translate-x-1/2',       
+  'bottom-[-4%] left-1/4 -translate-x-1/2',   
+   'bottom-[18%] left-[-10%]',                  
+   'top-[38%] left-[-14%]',                     
+   'top-[18%] left-[-10%]',                     
+   'top-[-8%] left-1/2 -translate-x-1/2',       
   'top-[18%] right-[-10%]',                    
   'top-[38%] right-[-14%]',                    
   'bottom-[18%] right-[-10%]',                 
-  'bottom-[-4%] right-[28%]',                  
+  'bottom-[-4%] right-[8%]',                  
 ];
 
 export const PokerTable: React.FC<PokerTableProps> = ({ 
@@ -85,7 +85,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-      { x: 0, y: 300 },    { x: -220, y: 130 }, { x: -220, y: -50 }, { x: -140, y: -220 }, { x: 0, y: -300 }, { x: 140, y: -220 }, { x: 220, y: -50 }, { x: 180, y: 150 }, { x: 100, y: 300 },
+      { x: -120, y: 300 },  
+         { x: -220, y: 130 },
+          { x: -240, y: -50 },
+          { x: -220, y: -220 },
+            { x: 0, y: -420 }, 
+          { x: 218, y: -220 },
+            { x: 240, y: -60 },
+             { x: 220, y: 130 },
+              { x: 130, y: 300 },
     ];
     return offsets[idx] || { x: 0, y: 0 };
   };

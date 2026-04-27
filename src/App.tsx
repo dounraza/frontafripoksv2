@@ -16,6 +16,13 @@ function App() {
     const savedUser = localStorage.getItem('poker_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+  // Re-fetch solde when tableData is received for the first time after a refresh
+  useEffect(() => {
+    if (tableData && user) {
+      fetchSolde();
+    }
+  }, [tableData?.id, user?.id]);
   const [showProfile, setShowProfile] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -354,13 +361,22 @@ function App() {
           <div className="flex flex-col items-center w-full max-w-[1400px]">
             <div className="transition-all duration-700 origin-top flex flex-col items-center" style={{ transform: `scale(${scale})` }}>
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
-              <div className="w-full flex justify-center mt-2 px-4">
-                 <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+              <div className="w-full relative flex items-end justify-center mt-2 px-4 min-h-[120px]">
+                 {/* Chat ho an'ny MOBILE ihany: apetraka eo akaikin'ny ActionPanel */}
+                 <div className="sm:hidden absolute left-0 bottom-0 w-[130px] xs:w-[150px] z-[50]">
+                    <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
+                 </div>
+                 {/* ActionPanel mijanona ho center tsara */}
+                 <div className="flex justify-center w-full">
+                    <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+                 </div>
               </div>
             </div>
-            <div className="w-full max-w-[420px] px-2 mt-4">
-               <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-            </div>
+          </div>
+          
+          {/* Chat ho an'ny DESKTOP ihany: FIXED eo amin'ny sisiny */}
+          <div className="hidden sm:block fixed left-4 bottom-4 z-[2000] w-[300px] pointer-events-auto">
+             <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
           </div>
         </div>
       )}

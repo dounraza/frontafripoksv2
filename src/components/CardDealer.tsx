@@ -22,7 +22,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
     <div key={handKey} className="absolute top-0 z-20 flex perspective-1000 items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
         const delayMs = (idx * numPlayers + (dealOrder - 1)) * 300;
-        const endXOffset = idx === 0 ? -32 : 32; // Nampihena ny elanelana koa mba hifanaraka
+        const endXOffset = idx === 0 ? -28 : 28; // Nampifanakaiky kokoa ny karatra
 
         return (
           <MotionController
@@ -32,7 +32,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
             endX={`${endXOffset}px`}
             endY="0px"
             delay={`${delayMs}ms`}
-            className={isVertical ? 'scale-[0.7]' : 'scale-[0.55]'}
+            className={isVertical ? 'scale-[0.85]' : 'scale-[0.65]'}
           >
             <div 
               className="bg-black rounded-lg transition-transform duration-300"
