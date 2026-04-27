@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
-import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut, XCircle, CreditCard, Volume2, VolumeX, History } from 'lucide-react';
+import { Zap, Wallet, Home, DollarSign, Trophy, User, Target, Play, Dices, ChevronDown, History as HistoryIcon, Eye, EyeOff, ChevronLeft, ChevronRight, LogOut, XCircle, CreditCard, Globe, Loader2 } from 'lucide-react';
 import { useSocket } from '../hooks/useSocket';
 // @ts-ignore
 import { Chat } from '../components/Chat';
@@ -12,12 +12,19 @@ interface DashboardProps {
   onRefreshSolde: () => void;
   onLogout: () => void;
   onOpenProfile: () => void;
-  isMuted: boolean;
-  onToggleMute: () => void;
 }
 
+const COUNTRY_CODES = [
+  { code: '+261', country: 'Madagascar' },
+  { code: '+33', country: 'France' },
+  { code: '+241', country: 'Gabon' },
+  { code: '+237', country: 'Cameroun' },
+  { code: '+225', country: 'Côte d\'Ivoire' },
+  { code: '+221', country: 'Sénégal' }
+];
+
 export const Dashboard: React.FC<DashboardProps> = ({ 
-  onJoinTable, user, solde, onRefreshSolde, onLogout, onOpenProfile, isMuted, onToggleMute 
+  onJoinTable, user, solde, onRefreshSolde, onLogout, onOpenProfile 
 }) => {
   const [onlineCount, setOnlineCount] = useState(0);
   const { socket } = useSocket();
@@ -54,6 +61,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showSolde, setShowSolde] = useState(true);
   const [tables, setTables] = useState<any[]>([]);
   const [depositAmount, setDepositAmount] = useState('');
@@ -67,6 +75,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [gameFilter, setGameFilter] = useState<'All' | 'holdem' | 'omaha'>('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedCountryCode, setSelectedCountryCode] = useState('+261');
+  const [isProcessing, setIsProcessing] = useState(false);
   const itemsPerPage = 6;
 
   const slides = [
@@ -114,6 +124,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const handleDeposit = () => {
     if (!depositAmount || isNaN(Number(depositAmount)) || !phoneNumber || !reference) return;
+    setIsProcessing(true);
 
     fetch(`${API_URL}/api/solde/deposit`, {
       method: 'POST',
@@ -124,13 +135,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
       body: JSON.stringify({ 
         pseudo: user.name,
         montant: parseFloat(depositAmount),
-        numero: phoneNumber,
+        numero: `${selectedCountryCode}${phoneNumber}`,
         nom: mobileMoneyName,
         reference: reference
       })
     })
       .then(res => res.json())
       .then(data => {
+        setIsProcessing(false);
         if (data.error) {
           alert(`Erreur: ${data.error}`);
         } else {
@@ -143,7 +155,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           setTimeout(onRefreshSolde, 1000);
         }
       })
-      .catch(err => console.error('Error depositing:', err));
+      .catch(err => {
+        console.error('Error depositing:', err);
+        setIsProcessing(false);
+      });
   };
 
   const handleWithdraw = () => {
@@ -152,6 +167,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       alert("Solde insuffisant pour ce retrait");
       return;
     }
+    setIsProcessing(true);
 
     fetch(`${API_URL}/api/solde/withdraw`, {
       method: 'POST',
@@ -162,12 +178,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
       body: JSON.stringify({ 
         pseudo: user.name,
         montant: parseFloat(withdrawAmount),
-        numero: withdrawPhone,
+        numero: `${selectedCountryCode}${withdrawPhone}`,
         nom: withdrawMobileName
       })
     })
       .then(res => res.json())
       .then(data => {
+        setIsProcessing(false);
         if (data.error) {
           alert(`Erreur: ${data.error}`);
         } else {
@@ -179,7 +196,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           setTimeout(onRefreshSolde, 1000);
         }
       })
-      .catch(err => console.error('Error withdrawing:', err));
+      .catch(err => {
+        console.error('Error withdrawing:', err);
+        setIsProcessing(false);
+      });
   };
 
   const getAvatarUrl = (avatar_url?: string, name?: string) => {
@@ -227,24 +247,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <button onClick={() => { setShowWithdrawModal(true); setShowWalletMenu(false); }} className="flex items-center justify-end gap-2 w-full px-4 py-2 text-sm hover:bg-white/10 text-red-500 font-bold">Retrait <Wallet className="w-4 h-4" /></button>
                     </div>
                   )}
-                </div>
-
-                {/* History & Mute Buttons */}
-                <div className="flex items-center gap-1 sm:gap-2 mr-1">
-                   <button 
-                     onClick={() => setShowHistoryModal(true)}
-                     className="p-1.5 sm:p-2 bg-white/5 text-gray-400 rounded-full hover:text-white border border-white/5 transition-all"
-                     title="Historique"
-                   >
-                     <History className="w-4 h-4 sm:w-5 sm:h-5" />
-                   </button>
-                   <button 
-                     onClick={onToggleMute}
-                     className="p-1.5 sm:p-2 bg-white/5 text-gray-400 rounded-full hover:text-white border border-white/5 transition-all"
-                     title={isMuted ? "Réactiver le son" : "Couper le son"}
-                   >
-                     {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />}
-                   </button>
                 </div>
 
                 <span className="text-[10px] sm:text-sm font-bold text-white hidden xs:inline">{user.name}</span>
@@ -411,11 +413,34 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       <Modal isOpen={showDepositModal} onClose={() => setShowDepositModal(false)} title="Dépôt de Fonds">
         <div className="space-y-4">
+            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+               <label className="text-[10px] font-black text-gray-500 uppercase block mb-1">Pseudo</label>
+               <div className="text-white font-black">{user.name}</div>
+            </div>
             <input type="number" value={depositAmount || ''} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Montant" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
-            <input type="text" value={phoneNumber || ''} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Numéro Mobile Money" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            
+            <div className="flex gap-2">
+               <select 
+                 value={selectedCountryCode} 
+                 onChange={(e) => setSelectedCountryCode(e.target.value)}
+                 className="bg-black/60 border border-white/10 rounded-xl px-2 py-2 text-white text-xs outline-none"
+               >
+                 {COUNTRY_CODES.map(c => (
+                   <option key={c.code} value={c.code}>{c.code}</option>
+                 ))}
+               </select>
+               <input type="text" value={phoneNumber || ''} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Numéro Mobile Money" className="flex-1 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-white text-sm" />
+            </div>
+
             <input type="text" value={mobileMoneyName || ''} onChange={(e) => setMobileMoneyName(e.target.value)} placeholder="Nom du compte" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
             <input type="text" value={reference || ''} onChange={(e) => setReference(e.target.value)} placeholder="Référence de la transaction" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
-            <button onClick={handleDeposit} className="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl hover:bg-yellow-400 transition-colors uppercase tracking-widest">Confirmer le Dépôt</button>
+            <button 
+              onClick={handleDeposit} 
+              disabled={isProcessing}
+              className="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl hover:bg-yellow-400 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+            >
+              {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmer le Dépôt'}
+            </button>
         </div>
       </Modal>
 
@@ -425,10 +450,43 @@ export const Dashboard: React.FC<DashboardProps> = ({
                <div className="text-[10px] text-gray-500 uppercase tracking-widest">Solde Retirable</div>
                <div className="text-yellow-500 font-black text-lg">{solde?.toLocaleString()} MGA</div>
             </div>
+            
+            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+               <label className="text-[10px] font-black text-gray-500 uppercase block mb-1">Pseudo</label>
+               <div className="text-white font-black">{user.name}</div>
+            </div>
+
             <input type="number" value={withdrawAmount || ''} onChange={(e) => setWithdrawAmount(e.target.value)} placeholder="Montant à retirer" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
-            <input type="text" value={withdrawPhone || ''} onChange={(e) => setWithdrawPhone(e.target.value)} placeholder="Numéro Mobile Money" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
+            
+            <div className="flex gap-2">
+               <select 
+                 value={selectedCountryCode} 
+                 onChange={(e) => setSelectedCountryCode(e.target.value)}
+                 className="bg-black/60 border border-white/10 rounded-xl px-2 py-2 text-white text-xs outline-none"
+               >
+                 {COUNTRY_CODES.map(c => (
+                   <option key={c.code} value={c.code}>{c.code}</option>
+                 ))}
+               </select>
+               <input type="text" value={withdrawPhone || ''} onChange={(e) => setWithdrawPhone(e.target.value)} placeholder="Numéro Mobile Money" className="flex-1 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-white text-sm" />
+            </div>
+
             <input type="text" value={withdrawMobileName || ''} onChange={(e) => setWithdrawMobileName(e.target.value)} placeholder="Nom du compte" className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white" />
-            <button onClick={handleWithdraw} className="w-full py-4 bg-red-600 text-white font-black rounded-2xl hover:bg-red-500 transition-colors uppercase tracking-widest">Confirmer le Retrait</button>
+            <button 
+              onClick={handleWithdraw} 
+              disabled={isProcessing}
+              className="w-full py-4 bg-red-600 text-white font-black rounded-2xl hover:bg-red-500 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+            >
+              {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmer le Retrait'}
+            </button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showHistoryModal} onClose={() => setShowHistoryModal(false)} title="Historique">
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="p-4 bg-white/5 rounded-2xl border border-white/5 text-center text-gray-500 text-sm font-bold uppercase tracking-widest">
+                Aucun historique disponible
+            </div>
         </div>
       </Modal>
     </div>

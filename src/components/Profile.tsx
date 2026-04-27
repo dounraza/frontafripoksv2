@@ -8,7 +8,6 @@ interface UserProfile {
   mobile_money_provider?: string | null;
   mobile_money_number?: string | null;
   mobile_money_account_name?: string | null;
-  chips?: string | number;
 }
 
 interface ProfileProps {
@@ -145,9 +144,6 @@ export const Profile: React.FC<ProfileProps> = ({ currentUser, onClose, onProfil
 
             <div className="text-center">
               <p className="text-white font-black text-lg">{profileData.name}</p>
-              <div className="text-yellow-500 font-bold text-sm">
-                {Number(profileData.chips || 0).toLocaleString()} JETONS
-              </div>
             </div>
             
             <div className="border-t border-white/10 pt-4">

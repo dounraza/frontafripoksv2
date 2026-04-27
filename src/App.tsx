@@ -157,7 +157,32 @@ function App() {
     window.history.pushState({}, '', `/table/${selectedTable}`);
   };
 
-  if (!user) return <AuthForm onSuccess={(token, name, id) => setUser({ token, name, id })} />;
+  useEffect(() => {
+    // Initial path handle
+    if (user && window.location.pathname === '/') {
+      window.history.replaceState({}, '', '/dashboard');
+    }
+
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/') {
+         if (user) window.history.replaceState({}, '', '/dashboard');
+      } else if (path === '/dashboard') {
+         if (!user) {
+           window.history.replaceState({}, '', '/');
+         } else {
+           setIsReadyToPlay(false);
+         }
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [user]);
+
+  if (!user) return <AuthForm onSuccess={(token, name, id) => {
+    setUser({ token, name, id });
+    window.history.pushState({}, '', '/dashboard');
+  }} />;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] overflow-x-hidden">
