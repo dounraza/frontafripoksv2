@@ -316,66 +316,62 @@ function App() {
           onOpenProfile={() => setShowProfile(true)}
         />
       ) : (
-        <div className="flex flex-col items-center min-h-screen pb-10">
-          <div className="w-full max-w-[1400px] flex justify-between items-center py-4 px-6 z-50">
+        <div className="flex flex-col items-center min-h-screen bg-[#0a0a0a]">
+          <div className="w-full max-w-[1400px] flex justify-between items-center py-2 px-6 z-50 shrink-0">
              <button onClick={() => { 
                 leaveTable(); 
                 setIsReadyToPlay(false); 
                 localStorage.removeItem('active_table');
                 window.history.pushState({}, '', '/');
-             }} className="px-4 py-2 bg-black/40 text-gray-400 rounded-xl text-[10px] font-black uppercase border border-white/10 flex items-center gap-2 hover:text-white transition-all"><LogOut className="w-4 h-4" /> Quitter</button>
+             }} className="px-3 py-1.5 bg-black/40 text-gray-400 rounded-xl text-[10px] font-black uppercase border border-white/10 flex items-center gap-2 hover:text-white transition-all"><LogOut className="w-4 h-4" /> Quitter</button>
              
              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 mr-1">
                    <button 
                      onClick={() => setShowHistory(true)}
-                     className="p-2.5 bg-black/40 text-gray-400 rounded-full hover:text-white border border-white/10 transition-all hover:bg-white/5"
+                     className="p-2 bg-black/40 text-gray-400 rounded-full hover:text-white border border-white/10 transition-all hover:bg-white/5"
                      title="Historique"
                    >
-                     <History className="w-5 h-5" />
+                     <History className="w-4 h-4" />
                    </button>
                    <button 
                      onClick={() => setIsMuted(!isMuted)}
-                     className="p-2.5 bg-black/40 text-gray-400 rounded-full hover:text-white border border-white/10 transition-all hover:bg-white/5"
+                     className="p-2 bg-black/40 text-gray-400 rounded-full hover:text-white border border-white/10 transition-all hover:bg-white/5"
                      title={isMuted ? "Réactiver le son" : "Couper le son"}
                    >
-                     {isMuted ? <VolumeX className="w-5 h-5 text-red-500" /> : <Volume2 className="w-5 h-5 text-green-500" />}
+                     {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4 text-green-500" />}
                    </button>
                 </div>
 
-                <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-2xl border border-white/5 shadow-xl">
+                <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-2xl border border-white/5 shadow-xl">
                    <button onClick={() => setShowProfile(true)} className="flex flex-col items-end mr-1 hover:opacity-80 transition-opacity">
-                     <div className="text-white font-black text-[11px] uppercase italic tracking-tighter flex items-center gap-1.5">{user.name} <User className="w-3 h-3" /></div>
-                     <div className="flex items-center gap-1.5">
-                        <Wallet className="w-3.5 h-3.5 text-yellow-500" />
-                        <div className="text-sm font-black text-yellow-500">{(myPlayer?.chips || 0).toLocaleString()} <span className="text-[10px]">MGA</span></div>
+                     <div className="text-white font-black text-[10px] uppercase italic tracking-tighter flex items-center gap-1">{user.name} <User className="w-2.5 h-2.5" /></div>
+                     <div className="flex items-center gap-1">
+                        <Wallet className="w-3 h-3 text-yellow-500" />
+                        <div className="text-xs font-black text-yellow-500">{(myPlayer?.chips || 0).toLocaleString()}</div>
                      </div>
                   </button>
-                  <div className="relative w-10 h-10 rounded-full border-2 border-yellow-500 p-0.5 overflow-hidden shadow-lg shadow-yellow-500/10">
+                  <div className="relative w-8 h-8 rounded-full border border-yellow-500 p-0.5 overflow-hidden">
                      <img src={getAvatarUrl(user.avatar_url, user.name)} alt="avatar" className="rounded-full w-full h-full object-cover" />
                   </div>
                </div>
              </div>
           </div>
 
-          <div className="flex flex-col items-center w-full max-w-[1400px]">
-            <div className="transition-all duration-700 origin-top flex flex-col items-center" style={{ transform: `scale(${scale})` }}>
+          <div className="w-full flex flex-col items-center justify-start pt-2">
+            <div className="transition-all duration-700 origin-top flex flex-col items-center" style={{ transform: `scale(${scale})`, height: `${940 * scale}px` }}>
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
-              <div className="w-full relative flex items-end justify-center mt-2 px-4 min-h-[120px]">
-                 {/* Chat ho an'ny MOBILE ihany: apetraka eo akaikin'ny ActionPanel */}
-                 <div className="sm:hidden absolute left-0 bottom-0 w-[130px] xs:w-[150px] z-[50]">
-                    <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-                 </div>
+              <div className="w-full relative flex items-end justify-center mt-2 px-4 pointer-events-none">
                  {/* ActionPanel mijanona ho center tsara */}
-                 <div className="flex justify-center w-full">
+                 <div className="flex justify-center w-full z-[100] pointer-events-auto">
                     <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
                  </div>
               </div>
             </div>
           </div>
           
-          {/* Chat ho an'ny DESKTOP ihany: FIXED eo amin'ny sisiny */}
-          <div className="hidden sm:block fixed left-4 bottom-4 z-[2000] w-[300px] pointer-events-auto">
+          {/* Chat nafindra any AMBONY HAVIA */}
+          <div className="fixed left-2 top-20 z-[2000] w-[140px] xs:w-[160px] sm:w-[300px] pointer-events-auto">
              <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
           </div>
         </div>

@@ -144,7 +144,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                       {player.lastAction}
                     </div>
                   )}
-                  {showCards && player.lastAction !== 'fold' && (
+                  {showCards && player.lastAction !== 'fold' ? (
                     <CardDealer 
                       cards={player.cards}
                       dealOrigin={{ x: `${-offset.x}px`, y: `${-offset.y - 20}px` }}
@@ -152,7 +152,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                       isRevealed={player.id === currentUserId || isShowdown}
                       isShowdown={isShowdown} isVertical={isVertical}
                     />
-                  )}
+                  ) : null}
                 </div>
               );
            })}
