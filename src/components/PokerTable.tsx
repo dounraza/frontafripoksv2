@@ -19,15 +19,15 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-4%] left-1/4 -translate-x-1/2',   
-   'bottom-[20%] left-[-10%]',                  
-   'top-[27%] left-[-10%]',                     
-  'top-[-1%] left-[-2%]',                     
- 'top-[-8%] left-1/2 -translate-x-1/2',       
-'top-[8%] right-[-10%]',                    
+  'bottom-[-8%] left-1/4 -translate-x-1/2',   
+   'bottom-[24%] left-[-10%]',                  
+   'top-[30%] left-[-10%]',                     
+  'top-[0%] left-[-2%]',                     
+ 'top-[-5%] left-1/2 -translate-x-1/2',       
+'top-[12%] right-[-10%]',                    
 'top-[38%] right-[-10%]',                    
 'bottom-[18%] right-[-10%]',                 
-  'bottom-[-4%] right-[8%]',                  
+  'bottom-[-8%] right-[8%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
   tableData, currentUserId, currentUserName, isVertical, sendAction, callAmount, isMyTurn 
@@ -122,10 +122,10 @@ export const PokerTable: React.FC<PokerTableProps> = ({
       <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[14px] border-[#3d2b1f] table-surface"
         style={{ 
           width: 'auto', 
-          height: '75vh', 
+          height: '85vh', 
           aspectRatio: '10/16',
           maxWidth: '92vw',
-          maxHeight: '75vh'
+          maxHeight: '85vh'
         }}>
         
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>

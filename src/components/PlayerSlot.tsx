@@ -115,7 +115,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
         </div>
 
         {/* TRAPEZE - Misy anarana, chips, ary D/SB/BB */}
-        <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center mb-4"
+        <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center mb-10"
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '10px' }}>
           
           <div className="flex flex-col items-center gap-1 mb-0.5">
