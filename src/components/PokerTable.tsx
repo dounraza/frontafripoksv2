@@ -187,17 +187,17 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               opacity: 0;
             }
           `}</style>
-          <div className="w-auto h-auto gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 z-10 opacity-100 min-h-[85px]">
-            {communityCards.map((card: any, idx: number) => (
+          <div className="w-auto h-auto gap-2 px-3 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 z-10 opacity-100 min-h-[70px]">            {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
-                className="animate-community-card scale-[0.85] origin-center"
+                className="animate-community-card scale-[0.8] origin-center"
                 style={{ animationDelay: `${idx * 0.4}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
             ))}
           </div>
+
 
           <div className="absolute top-[-5%] left-0 right-0 z-20 flex flex-col items-center" ref={potRef}>
              <ChipPot 
