@@ -49,8 +49,7 @@ export const isPlayerTurn = (tableData: any, socketId: string | undefined) => {
   const currentPlayer = tableData.players.find((p: any) => p.position === tableData.currentPlayerIndex);
   
   // Un joueur ne peut avoir son tour que s'il est réellement dans la main
-  // (Pas couché et présent au début de la distribution)
-  if (!currentPlayer || currentPlayer.folded || currentPlayer.inHand === false) return false;
+  if (!currentPlayer || currentPlayer.status === 'folded' || currentPlayer.status === 'out' || currentPlayer.status === 'waiting') return false;
   
   return currentPlayer?.id === socketId;
 };

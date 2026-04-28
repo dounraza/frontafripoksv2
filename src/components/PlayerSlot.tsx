@@ -79,7 +79,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
     return () => clearInterval(timer);
   }, [isActive]);
 
-  const isInHand = player.inHand || (player.cards && player.cards.length > 0) || player.lastAction;
+  const isInHand = player.status === 'active' || player.status === 'all-in';
   
   return (
     <div 

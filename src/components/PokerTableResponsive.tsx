@@ -124,7 +124,28 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
            {players.map((player: any) => {
               const seatIdx = player.position;
               const offset = getSeatOffset(seatIdx);
-              const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') && player.lastAction !== 'out';
+              
+              // Déterminer s'il y a un vrai affrontement (Showdown avec au moins 2 joueurs actifs)
+              const activePlayersCount = players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length;
+              const isRealShowdown = isShowdown && activePlayersCount > 1;
+
+              const myPlayer = players.find((p: any) => p.id === currentUserId);
+              const amIStillActive = myPlayer && myPlayer.status !== 'folded' && myPlayer.status !== 'out';
+              
+              // Révéler les cartes au showdown ou pour soi-même
+              const isRevealed = amIStillActive && (
+                (player.id === currentUserId) || 
+                (isRealShowdown)
+              );
+
+              // NE PAS RESTER SI ON NAFFICHE PAS : 
+              // Au showdown, on ne montre la carte que si elle est révélée.
+              const shouldShowAtShowdown = isShowdown ? isRevealed : true;
+              const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') 
+                                && player.status !== 'out' 
+                                && player.status !== 'waiting'
+                                && player.status !== 'folded'
+                                && shouldShowAtShowdown;
 
               return (
                 <div key={`${player.id}-${handKey}`} className="absolute z-[200]" 
@@ -139,13 +160,13 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
                       {player.lastAction}
                     </div>
                   )}
-                  {showCards && player.lastAction !== 'fold' ? (
+                  {showCards ? (
                     <div className={isVertical ? "scale-[0.7] origin-center" : ""}>
                       <CardDealer 
                         cards={player.cards}
                         dealOrigin={{ x: `${-offset.x}px`, y: `${-offset.y}px` }}
                         dealOrder={1} numPlayers={players.length} handKey={handKey}
-                        isRevealed={player.id === currentUserId || isMyTurn || isShowdown}
+                        isRevealed={isRevealed}
                         isShowdown={isShowdown} isVertical={isVertical}
                       />
                     </div>
@@ -177,12 +198,27 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
              />
           </div>
 
-          <div className={`w-auto h-auto gap-1.5 sm:gap-4 px-3 sm:px-6 flex items-center justify-center bg-[#0a2e1a]/40 rounded-xl shadow-inner border border-white/5 relative z-10 min-h-[80px] sm:min-h-[120px] ${isVertical ? 'scale-[0.85]' : ''}`}>
+          <style>{`
+            @keyframes slide-in-right {
+              0% { transform: translateX(50px) scale(var(--card-scale, 1)); opacity: 0; }
+              100% { transform: translateX(0) scale(var(--card-scale, 1)); opacity: 1; }
+            }
+            .animate-community-card {
+              animation: slide-in-right 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              opacity: 0;
+            }
+          `}</style>
+          <div 
+            className={`transition-all duration-700 gap-1.5 px-3 flex items-center justify-center bg-[#0a2e1a]/40 rounded-xl shadow-inner border border-white/5 relative z-10 min-h-[70px] sm:min-h-[110px] ${
+              isVertical ? 'scale-[0.85]' : ''
+            }`}
+            style={{ '--card-scale': communityCards.length >= 5 ? '0.85' : '1' } as React.CSSProperties}
+          >
             {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
-                className="animate-community-card"
-                style={{ animationDelay: `${idx * 0.3}s` }}
+                className="animate-community-card origin-center shrink-0"
+                style={{ animationDelay: `${idx * 0.6}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>

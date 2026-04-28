@@ -105,9 +105,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   React.useEffect(() => {
     if (winnerSeatIdx !== undefined) {
-      // Wait for community cards (0.4s delay each + 0.8s animation)
-      // For 5 cards, it takes about 2.8s to be fully shown
-      const delay = communityCards.length > 0 ? (communityCards.length * 400) + 1200 : 1000;
+      // Wait for community cards (0.7s delay each + 1.2s animation + buffer)
+      const delay = communityCards.length > 0 ? (communityCards.length * 700) + 1500 : 1000;
       const timer = setTimeout(() => {
         setDelayedWinnerIdx(winnerSeatIdx);
       }, delay);
@@ -136,14 +135,13 @@ export const PokerTable: React.FC<PokerTableProps> = ({
            {players.map((player: any) => {
               const seatIdx = player.position;
               const offset = getSeatOffset(seatIdx);
-              const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') && player.lastAction !== 'out';
               
               // Déterminer s'il y a un vrai affrontement (Showdown avec au moins 2 joueurs actifs)
-              const activePlayersCount = players.filter((p: any) => p.lastAction !== 'fold' && p.lastAction !== 'out').length;
+              const activePlayersCount = players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length;
               const isRealShowdown = isShowdown && activePlayersCount > 1;
 
               const myPlayer = players.find((p: any) => p.id === currentUserId);
-              const amIStillActive = myPlayer && myPlayer.lastAction !== 'fold' && myPlayer.lastAction !== 'out';
+              const amIStillActive = myPlayer && myPlayer.status !== 'folded' && myPlayer.status !== 'out';
               
               // Si je ne suis plus actif, je ne révèle plus rien. 
               // Sinon, je révèle mes cartes ou le showdown.
@@ -151,6 +149,16 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                 (player.id === currentUserId) || 
                 (isRealShowdown)
               );
+
+              // NE PAS RESTER SI ON NAFFICHE PAS : 
+              // Au showdown, on ne montre la carte que si elle est révélée.
+              // En cours de jeu, on montre la carte (face cachée) si le joueur est actif.
+              const shouldShowAtShowdown = isShowdown ? isRevealed : true;
+              const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') 
+                                && player.status !== 'out' 
+                                && player.status !== 'waiting'
+                                && player.status !== 'folded'
+                                && shouldShowAtShowdown;
 
               if (!seatCoords[seatIdx]) return null;
 
@@ -161,12 +169,12 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                       {player.lastAction}
                     </div>
                   )}
-                  {showCards && player.lastAction !== 'fold' ? (
+                  {showCards ? (
                     <CardDealer 
                       cards={player.cards}
                       dealOrigin={{ x: `${-offset.x}px`, y: `${-offset.y - 20}px` }}
                       dealOrder={1} numPlayers={players.length} handKey={handKey}
-                      isRevealed={isRevealed && player.lastAction !== 'fold'}
+                      isRevealed={isRevealed}
                       isShowdown={isShowdown} isVertical={isVertical}
                     />
                   ) : null}
@@ -188,20 +196,25 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
           <style>{`
             @keyframes slide-in-right {
-              0% { transform: translateX(50px); opacity: 0; }
-              100% { transform: translateX(0); opacity: 1; }
+              0% { transform: translateX(50px) scale(var(--card-scale, 1)); opacity: 0; }
+              100% { transform: translateX(0) scale(var(--card-scale, 1)); opacity: 1; }
             }
             .animate-community-card {
-              animation: slide-in-right 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              animation: slide-in-right 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
               opacity: 0;
             }
           `}</style>
-          <div className="w-[220px] h-[70px] gap-1 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 z-10 opacity-100 shrink-0 overflow-hidden">
+          <div 
+            className={`transition-all duration-700 gap-1.5 px-3 flex items-center justify-center bg-[#1e5a3d]/30 rounded-2xl shadow-inner border-2 border-white/10 z-10 opacity-100 shrink-0 ${
+              communityCards.length >= 5 ? 'h-[80px] min-w-[220px]' : 'h-[88px] min-w-[240px]'
+            }`}
+            style={{ '--card-scale': communityCards.length >= 5 ? '0.9' : '1.05' } as React.CSSProperties}
+          >
             {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
-                className="animate-community-card scale-[0.85] origin-center shrink-0"
-                style={{ animationDelay: `${idx * 0.4}s` }}
+                className="animate-community-card origin-center shrink-0"
+                style={{ animationDelay: `${idx * 0.7}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
