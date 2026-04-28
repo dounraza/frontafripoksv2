@@ -176,7 +176,16 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         </div>
 
         {/* POT AND COMMUNITY CARDS */}
-        <div className="flex flex-col items-center z-10 relative gap-6">
+        <div className="flex flex-col items-center z-10 relative gap-8 mt-[-40px]">
+          <div className="z-20 flex flex-col items-center" ref={potRef}>
+             <ChipPot 
+               amount={displayPot} 
+               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
+               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x || 0}px` : `0px`} 
+               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
+             />
+          </div>
+
           <style>{`
             @keyframes slide-in-right {
               0% { transform: translateX(50px); opacity: 0; }
@@ -197,16 +206,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
             ))}
-          </div>
-
-
-          <div className="absolute top-[-5%] left-0 right-0 z-20 flex flex-col items-center" ref={potRef}>
-             <ChipPot 
-               amount={displayPot} 
-               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
-               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x || 0}px` : `0px`} 
-               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
-             />
           </div>
         </div>
 
