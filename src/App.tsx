@@ -316,58 +316,52 @@ function App() {
           onOpenProfile={() => setShowProfile(true)}
         />
       ) : (
-        <div className="flex flex-col items-center h-screen bg-[#0a0a0a] overflow-hidden">
-          <div className="w-full max-w-[1400px] flex justify-between items-center py-2 px-6 z-50 shrink-0">
+        <div className="flex flex-col h-screen bg-[#0a0a0a] overflow-hidden">
+          {/* 4% - LE QUITTER DANS TABL */}
+          <div className="h-[4vh] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
              <button onClick={() => { 
                 leaveTable(); 
                 setIsReadyToPlay(false); 
                 localStorage.removeItem('active_table');
                 window.history.pushState({}, '', '/');
-             }} className="px-3 py-1.5 bg-black/40 text-gray-400 rounded-xl text-[10px] font-black uppercase border border-white/10 flex items-center gap-2 hover:text-white transition-all"><LogOut className="w-4 h-4" /> Quitter</button>
+             }} className="h-[70%] px-2 bg-black/40 text-gray-400 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 hover:text-white transition-all shrink-0">
+               <LogOut className="w-3 h-3" /> Quitter
+             </button>
              
-             <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 mr-1">
-                   <button 
-                     onClick={() => setShowHistory(true)}
-                     className="p-2 bg-black/40 text-gray-400 rounded-full hover:text-white border border-white/10 transition-all hover:bg-white/5"
-                     title="Historique"
-                   >
-                     <History className="w-4 h-4" />
-                   </button>
-                   <button 
-                     onClick={() => setIsMuted(!isMuted)}
-                     className="p-2 bg-black/40 text-gray-400 rounded-full hover:text-white border border-white/10 transition-all hover:bg-white/5"
-                     title={isMuted ? "Réactiver le son" : "Couper le son"}
-                   >
-                     {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4 text-green-500" />}
+             <div className="flex items-center gap-2 h-full">
+                <div className="flex items-center gap-1">
+                   <button onClick={() => setShowHistory(true)} className="p-1 text-gray-400 hover:text-white transition-all"><History className="w-3.5 h-3.5" /></button>
+                   <button onClick={() => setIsMuted(!isMuted)} className="p-1 text-gray-400 hover:text-white transition-all">
+                     {isMuted ? <VolumeX className="w-3.5 h-3.5 text-red-500" /> : <Volume2 className="w-3.5 h-3.5 text-green-500" />}
                    </button>
                 </div>
-
-                <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-2xl border border-white/5 shadow-xl">
-                   <button onClick={() => setShowProfile(true)} className="flex flex-col items-end mr-1 hover:opacity-80 transition-opacity">
-                     <div className="text-white font-black text-[10px] uppercase italic tracking-tighter flex items-center gap-1">{user.name} <User className="w-2.5 h-2.5" /></div>
-                     <div className="flex items-center gap-1">
-                        <Wallet className="w-3 h-3 text-yellow-500" />
-                        <div className="text-xs font-black text-yellow-500">{(myPlayer?.chips || 0).toLocaleString()}</div>
-                     </div>
-                  </button>
-                  <div className="relative w-8 h-8 rounded-full border border-yellow-500 p-0.5 overflow-hidden">
-                     <img src={getAvatarUrl(user.avatar_url, user.name)} alt="avatar" className="rounded-full w-full h-full object-cover" />
-                  </div>
-               </div>
+                <div className="flex items-center gap-2 bg-black/40 h-[80%] px-2 rounded-full border border-white/5">
+                   <span className="text-white font-black text-[9px] uppercase tracking-tighter">{user.name}</span>
+                   <div className="flex items-center gap-1 border-l border-white/10 pl-2">
+                      <Wallet className="w-2.5 h-2.5 text-yellow-500" />
+                      <div className="text-[10px] font-black text-yellow-500">{(myPlayer?.chips || 0).toLocaleString()}</div>
+                   </div>
+                </div>
              </div>
           </div>
 
-          <div className="flex-1 w-full flex flex-col items-center justify-between overflow-hidden p-2">
-            <div className="flex-1 w-full flex items-center justify-center min-h-0 mt-10">
+          {/* 70% - LA PLACEMENT DE LA TABLE */}
+          <div className="h-[70vh] w-full flex items-center justify-center overflow-hidden relative">
+            <div className="w-full h-full flex items-center justify-center">
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
-            
-            <div className="w-full max-w-[580px] py-4 shrink-0 relative">
-               {/* Bouton Chat collé à droite pour ne pas gêner la table */}
-               <div className="absolute top-0 right-0 -translate-y-full mb-4 z-[3000]">
-                  <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-               </div>
+          </div>
+          
+          {/* 1% - LE BOUTON CHAT */}
+          <div className="h-[1vh] w-full relative z-[3000] flex justify-end px-4">
+             <div className="absolute bottom-0 right-4 transform translate-y-1/2">
+                <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
+             </div>
+          </div>
+
+          {/* 25% - LE BLOC ACTION PLAYER */}
+          <div className="h-[25vh] w-full flex items-center justify-center bg-gradient-to-t from-black to-transparent px-2 shrink-0">
+            <div className="w-full max-w-[500px]">
                <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
           </div>

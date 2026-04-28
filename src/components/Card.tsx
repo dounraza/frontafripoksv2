@@ -30,17 +30,17 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
     </div>
   );
 
-  // TAILLE RÉDUITE (60x84)
-  if (hidden) return <div className="w-[60px] h-[84px] min-w-[60px] min-h-[84px]">{CardBack}</div>;
+  // TAILLE RÉDUITE (48x67)
+  if (hidden) return <div className="w-[48px] h-[67px] min-w-[48px] min-h-[67px]">{CardBack}</div>;
 
   return (
-    <div className="w-[60px] h-[84px] min-w-[60px] min-h-[84px] perspective-1000 antialiased">
+    <div className="w-[48px] h-[67px] min-w-[48px] min-h-[67px] perspective-1000 antialiased">
       <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${revealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
         {/* Front Side */}
-        <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-between p-1 sm:p-1.5 font-black ${suitColors[suit]}`}>
-          <div className="text-sm self-start leading-none">{displayValue}</div>
-          <div className="text-2xl leading-none">{suitIcons[suit]}</div>
-          <div className="text-sm self-end rotate-180 leading-none">{displayValue}</div>
+        <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-between p-1 sm:p-1 font-black ${suitColors[suit]}`}>
+          <div className="text-[10px] self-start leading-none">{displayValue}</div>
+          <div className="text-xl leading-none">{suitIcons[suit]}</div>
+          <div className="text-[10px] self-end rotate-180 leading-none">{displayValue}</div>
         </div>
         
         {/* Back Side */}

@@ -19,14 +19,14 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-8%] left-1/4 -translate-x-1/2',   
-   'bottom-[24%] left-[-10%]',                  
-   'top-[30%] left-[-10%]',                     
-  'top-[0%] left-[-2%]',                     
- 'top-[-5%] left-1/2 -translate-x-1/2',       
-'top-[12%] right-[-10%]',                    
-'top-[38%] right-[-10%]',                    
-'bottom-[18%] right-[-10%]',                 
+  'bottom-[-12%] left-1/4 -translate-x-1/2',   
+   'bottom-[10%] left-[-25%]',                  
+   'top-[25%] left-[-25%]',                     
+  'top-[0%] left-[-10%]',                     
+ 'top-[-15%] left-1/2 -translate-x-1/2',       
+'top-[0%] right-[-25%]',                    
+'top-[28%] right-[-30%]',                    
+'bottom-[5%] right-[-30%]',                 
   'bottom-[-8%] right-[8%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
@@ -84,15 +84,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-     { x: -80, y: 170 },     // Seat 0
-     { x: -130, y:50 }, // Seat 1
-       { x: -140, y: -105 },   // Seat 2
-      { x: -110, y: -250 },// Seat 3
-     { x: 0, y: -270 },   // Seat 4
-     { x: 120, y: -210 }, // Seat 5
-     { x: 130, y: -50 },    // Seat 6
-     { x: 130, y: 50 },  // Seat 7
-      { x: 75, y: 180 },  // Seat 8
+     { x: -60, y: 140 },     // Seat 0
+     { x: -140, y:52 }, // Seat 1
+       { x: -140, y: -95 },   // Seat 2
+      { x: -110, y: -205 },// Seat 3
+     { x: 0, y: -230 },   // Seat 4
+    { x: 140, y: -200 }, // Seat 5
+    { x: 150, y: -80 },    // Seat 6
+    { x: 140, y: 70 },  // Seat 7
+      { x: 45, y: 120 },  // Seat 8
     ];
     return offsets[idx] || { x: 0, y: 0 };
   };
@@ -118,14 +118,14 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   }, [winnerSeatIdx, communityCards.length]);
 
   return (
-    <div className="flex flex-col items-center w-full">
-      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[14px] border-[#3d2b1f] table-surface"
+    <div className="flex flex-col items-center w-full h-full justify-center">
+      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
         style={{ 
           width: 'auto', 
-          height: '85vh', 
+          height: '95%', 
           aspectRatio: '10/16',
-          maxWidth: '92vw',
-          maxHeight: '85vh'
+          maxWidth: '95vw',
+          maxHeight: '100%'
         }}>
         
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
@@ -187,7 +187,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               opacity: 0;
             }
           `}</style>
-          <div className="w-auto h-auto gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 z-10 opacity-100 min-h-[100px]">            {communityCards.map((card: any, idx: number) => (
+          <div className="w-auto h-auto gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 z-10 opacity-100 min-h-[85px]">
+            {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
                 className="animate-community-card scale-[0.85] origin-center"
