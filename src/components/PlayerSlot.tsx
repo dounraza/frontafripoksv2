@@ -39,6 +39,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   };
 
   const avatarUrl = getAvatarUrl();
+  const isLoser = !isWinner && isShowdown;
   const [timeLeft, setTimeLeft] = useState(15);
   const [displayChips, setDisplayChips] = useState(player.chips);
   const [showResult, setShowResult] = useState(false);
@@ -114,13 +115,18 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
         </div>
 
         {/* TRAPEZE - Misy anarana, chips, ary D/SB/BB */}
-        <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-16px] relative border-x border-t border-white/10 flex flex-col items-center"
+        <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center mb-4"
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '10px' }}>
           
           <div className="flex flex-col items-center gap-1 mb-0.5">
              <div className="flex items-center justify-center gap-1.5">
-               <div className={`text-[10px] font-black uppercase italic ${(showResult && (isCurrentUser || isShowdown)) ? 'text-yellow-400 animate-pulse' : 'text-white'}`}>
-                  {(showResult && (isCurrentUser || isShowdown)) ? player.handResult : player.name}
+               <div className={`text-[10px] font-black uppercase italic
+                 ${(showResult && isCurrentUser) ? 'text-yellow-400 animate-pulse' : ''}
+                 ${isLoser ? 'text-red-500' : 'text-white'}
+               `}>
+                  {(showResult && isCurrentUser)
+                      ? player.handResult
+                      : player.name}
                </div>
                <div className="flex gap-1">
                  {isDealer && <span className="w-5 h-5 bg-white text-black rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-gray-300">D</span>}

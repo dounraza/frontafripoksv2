@@ -84,15 +84,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-     { x: -80, y: 180 },     // Seat 0
-     { x: -130, y: 55 }, // Seat 1
-       { x: -140, y: -115 },   // Seat 2
-      { x: -110, y: -260 },// Seat 3
-     { x: 0, y: -280 },   // Seat 4
-     { x: 120, y: -220 }, // Seat 5
-     { x: 130, y: -60 },    // Seat 6
-     { x: 130, y: 60 },  // Seat 7
-      { x: 75, y: 190 },  // Seat 8
+     { x: -80, y: 170 },     // Seat 0
+     { x: -130, y:50 }, // Seat 1
+       { x: -140, y: -105 },   // Seat 2
+      { x: -110, y: -250 },// Seat 3
+     { x: 0, y: -270 },   // Seat 4
+     { x: 120, y: -210 }, // Seat 5
+     { x: 130, y: -50 },    // Seat 6
+     { x: 130, y: 50 },  // Seat 7
+      { x: 75, y: 180 },  // Seat 8
     ];
     return offsets[idx] || { x: 0, y: 0 };
   };
