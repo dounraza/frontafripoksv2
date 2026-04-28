@@ -47,10 +47,10 @@ export const Chat: React.FC<ChatProps> = ({ tableId, playerName, socket }) => {
   };
 
   return (
-    <>
+    <div className="relative flex flex-col items-center">
       <button 
         onClick={toggleChat}
-        className="p-3 bg-yellow-500 rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95 relative"
+        className="p-3 bg-yellow-500 rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95 relative z-[3001]"
       >
         {isOpen ? <X className="w-5 h-5 text-black" /> : <MessageSquare className="w-5 h-5 text-black" />}
         {unreadCount > 0 && (
@@ -61,7 +61,7 @@ export const Chat: React.FC<ChatProps> = ({ tableId, playerName, socket }) => {
       </button>
 
       {isOpen && (
-        <div className="fixed top-32 left-2 sm:top-auto sm:bottom-20 sm:left-6 z-[60] w-[260px] sm:w-[320px] h-[300px] sm:h-[400px] bg-[#1a1a1a] border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-top-10 sm:slide-in-from-bottom-10 duration-200">
+        <div className="absolute bottom-full right-0 mb-2 z-[3000] w-[240px] sm:w-[300px] h-[300px] sm:h-[400px] bg-[#1a1a1a]/95 border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200 origin-bottom-right backdrop-blur-md">
           <div className="p-3 border-b border-white/10 bg-black/60 flex justify-between items-center cursor-pointer" onClick={toggleChat}>
             <h3 className="text-xs font-black italic text-white uppercase tracking-tighter flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -94,6 +94,6 @@ export const Chat: React.FC<ChatProps> = ({ tableId, playerName, socket }) => {
           </form>
         </div>
       )}
-    </>
+    </div>
   );
 };

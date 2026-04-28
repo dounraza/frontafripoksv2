@@ -192,7 +192,7 @@ function App() {
   }} />;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] overflow-x-hidden">
+    <div className="h-screen bg-[#0a0a0a] overflow-hidden">
       {alertConfig && <Alert message={alertConfig.message} type={alertConfig.type} onClose={() => setAlertConfig(null)} />}
       
       {showProfile && user && (
@@ -226,7 +226,7 @@ function App() {
       )}
       
       {showRecave && (
-        <div className="min-h-screen bg-black/95 flex items-center justify-center p-4 z-[2000] fixed inset-0 backdrop-blur-md">
+        <div className="h-screen bg-black/95 flex items-center justify-center p-4 z-[2000] fixed inset-0 backdrop-blur-md">
           <div className="bg-[#1a1a1a] p-8 rounded-3xl border-2 border-red-500/30 shadow-[0_0_50px_rgba(239,68,68,0.2)] max-w-sm w-full flex flex-col items-center gap-6 animate-in zoom-in-95 duration-300">
             <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
                <Wallet className="w-10 h-10 text-red-500" />
@@ -271,7 +271,7 @@ function App() {
       )}
 
       {showJoinForm ? (
-        <div className="min-h-screen bg-black/90 flex items-center justify-center p-4 z-[1000] fixed inset-0">
+        <div className="h-screen bg-black/90 flex items-center justify-center p-4 z-[1000] fixed inset-0">
           <div className="bg-[#1a1a1a] p-8 rounded-3xl border border-yellow-500/30 shadow-2xl max-w-sm w-full flex flex-col items-center gap-6">
             <h2 className="text-2xl font-black text-yellow-500 uppercase tracking-tighter">Entrer Cave</h2>
             <div className="w-full space-y-4">
@@ -316,7 +316,7 @@ function App() {
           onOpenProfile={() => setShowProfile(true)}
         />
       ) : (
-        <div className="flex flex-col items-center min-h-screen bg-[#0a0a0a]">
+        <div className="flex flex-col items-center h-screen bg-[#0a0a0a] overflow-hidden">
           <div className="w-full max-w-[1400px] flex justify-between items-center py-2 px-6 z-50 shrink-0">
              <button onClick={() => { 
                 leaveTable(); 
@@ -358,21 +358,18 @@ function App() {
              </div>
           </div>
 
-          <div className="w-full flex flex-col items-center justify-start pt-2">
-            <div className="transition-all duration-700 origin-top flex flex-col items-center" style={{ transform: `scale(${scale})`, height: `${940 * scale}px` }}>
+          <div className="flex-1 w-full flex flex-col items-center justify-between overflow-hidden p-2">
+            <div className="flex-1 w-full flex items-center justify-center min-h-0">
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
-              <div className="w-full relative flex items-end justify-center mt-2 px-4 pointer-events-none">
-                 {/* ActionPanel mijanona ho center tsara */}
-                 <div className="flex justify-center w-full z-[100] pointer-events-auto">
-                    <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
-                 </div>
-              </div>
             </div>
-          </div>
-          
-          {/* Chat nafindra any AMBONY HAVIA */}
-          <div className="fixed left-2 top-20 z-[2000] w-[140px] xs:w-[160px] sm:w-[300px] pointer-events-auto">
-             <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
+            
+            <div className="w-full max-w-[580px] py-4 shrink-0 relative">
+               {/* Bouton Chat collé à droite pour ne pas gêner la table */}
+               <div className="absolute top-0 right-0 -translate-y-full mb-4 z-[3000]">
+                  <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
+               </div>
+               <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+            </div>
           </div>
         </div>
       )}

@@ -25,7 +25,7 @@ interface PlayerSlotProps {
 
 export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
   player, isActive, isWinner, positionClass, shouldGatherBets, isDealer, isSB, isBB,
-  isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, id
+  isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, id, isShowdown
 }) => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   
@@ -41,6 +41,18 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   const avatarUrl = getAvatarUrl();
   const [timeLeft, setTimeLeft] = useState(15);
   const [displayChips, setDisplayChips] = useState(player.chips);
+  const [showResult, setShowResult] = useState(false);
+  
+  useEffect(() => {
+    if (isShowdown && player.handResult && player.lastAction !== 'fold' && player.lastAction !== 'out') {
+      const interval = setInterval(() => {
+        setShowResult(prev => !prev);
+      }, 3000);
+      return () => clearInterval(interval);
+    } else {
+      setShowResult(false);
+    }
+  }, [isShowdown, player.handResult, player.lastAction]);
   
   // Sync display chips with delay if winner
   useEffect(() => {
@@ -92,8 +104,8 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
       <div className="relative flex flex-col items-center">
         {/* AVATAR */}
         <div className="relative mt-4 z-10">
-          {isActive && <div className="absolute inset-[-12px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
-          <div className={`w-24 h-24 min-w-[96px] min-h-[96px] rounded-full p-1 shadow-2xl transition-all duration-300
+          {isActive && <div className="absolute inset-[-8px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
+          <div className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full p-1 shadow-2xl transition-all duration-300
             ${isActive ? 'bg-gradient-to-tr from-yellow-600 via-yellow-200 to-yellow-600 scale-105' : 'bg-gradient-to-tr from-gray-700 to-gray-900'}`}>
             <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden border-2 border-black/50">
                 <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
@@ -102,20 +114,20 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
         </div>
 
         {/* TRAPEZE - Misy anarana, chips, ary D/SB/BB */}
-        <div className="glass-panel p-2 min-w-[130px] text-center mt-[-22px] relative border-x border-t border-white/10 flex flex-col items-center"
-           style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '12px' }}>
+        <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-16px] relative border-x border-t border-white/10 flex flex-col items-center"
+           style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '10px' }}>
           
-          <div className="flex items-center justify-center gap-2 mb-1">
-             <div className={`text-[12px] font-black uppercase italic ${player.handResult ? 'text-yellow-400 animate-pulse' : 'text-white'}`}>
-                {player.handResult ? player.handResult : player.name}
+          <div className="flex items-center justify-center gap-1.5 mb-0.5">
+             <div className={`text-[10px] font-black uppercase italic ${(showResult && (isCurrentUser || isShowdown)) ? 'text-yellow-400 animate-pulse' : 'text-white'}`}>
+                {(showResult && (isCurrentUser || isShowdown)) ? player.handResult : player.name}
              </div>
-             <div className="flex gap-1">
-               {isDealer && <span className="w-5 h-5 bg-white text-black rounded-full text-[10px] font-black flex items-center justify-center">D</span>}
-               {isSB && <span className="w-5 h-5 bg-blue-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">SB</span>}
-               {isBB && <span className="w-5 h-5 bg-red-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">BB</span>}
+             <div className="flex gap-0.5">
+               {isDealer && <span className="w-4 h-4 bg-white text-black rounded-full text-[9px] font-black flex items-center justify-center">D</span>}
+               {isSB && <span className="w-4 h-4 bg-blue-600 text-white rounded-full text-[8px] font-black flex items-center justify-center">SB</span>}
+               {isBB && <span className="w-4 h-4 bg-red-600 text-white rounded-full text-[8px] font-black flex items-center justify-center">BB</span>}
              </div>
           </div>
-          <div className="text-yellow-400 text-[14px] font-black">{Number(displayChips).toLocaleString()}</div>
+          <div className="text-yellow-400 text-[12px] font-black">{Number(displayChips).toLocaleString()}</div>
           
           {isActive && (
             <div className="absolute bottom-0 left-0 h-[4px] transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(0,0,0,0.5)]" 

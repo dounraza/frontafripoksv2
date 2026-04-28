@@ -20,15 +20,16 @@ interface PokerTableProps {
 
 const PLAYER_POSITIONS = [
   'bottom-[-4%] left-1/4 -translate-x-1/2',   
-   'bottom-[20%] left-[-10%]',                  
-   'top-[27%] left-[-10%]',                     
-  'top-[-1%] left-[-2%]',                     
- 'top-[-8%] left-1/2 -translate-x-1/2',       
-'top-[8%] right-[-10%]',                    
-'top-[38%] right-[-10%]',                    
-'bottom-[18%] right-[-10%]',                 
+   'bottom-[18%] left-[-10%]',                  
+   'top-[38%] left-[-14%]',                     
+   'top-[18%] left-[-10%]',                     
+   'top-[-8%] left-1/2 -translate-x-1/2',       
+  'top-[18%] right-[-10%]',                    
+  'top-[38%] right-[-14%]',                    
+  'bottom-[18%] right-[-10%]',                 
   'bottom-[-4%] right-[8%]',                  
 ];
+
 export const PokerTable: React.FC<PokerTableProps> = ({ 
   tableData, currentUserId, currentUserName, isVertical, sendAction, callAmount, isMyTurn 
 }) => {
@@ -84,19 +85,21 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-     { x: -80, y: 190 },     // Seat 0
-     { x: -130, y: 55 }, // Seat 1
-       { x: -140, y: -115 },   // Seat 2
-      { x: -110, y: -260 },// Seat 3
-     { x: 0, y: -280 },   // Seat 4
-     { x: 120, y: -220 }, // Seat 5
-     { x: 130, y: -60 },    // Seat 6
-     { x: 130, y: 60 },  // Seat 7
-      { x: 75, y: 190 },  // Seat 8
+      { x: -120, y: 300 },  
+         { x: -220, y: 130 },
+          { x: -240, y: -50 },
+          { x: -220, y: -220 },
+            { x: 0, y: -420 }, 
+          { x: 218, y: -220 },
+            { x: 240, y: -60 },
+             { x: 220, y: 130 },
+              { x: 130, y: 300 },
     ];
     return offsets[idx] || { x: 0, y: 0 };
   };
 
+  const tableWidth = isVertical ? 500 : 420;
+  const tableHeight = isVertical ? 800 : 820;
 
   // Animation logic for Pot -> Winner with Delay
   const firstWinner = players.find((p: any) => winnerIds.includes(p.id));
@@ -119,17 +122,11 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[14px] border-[#3d2b1f] table-surface"
-        style={{ 
-          width: 'auto', 
-          height: '75vh', 
-          aspectRatio: '10/16',
-          maxWidth: '92vw',
-          maxHeight: '75vh'
-        }}>
+      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-[240px] border-[14px] border-[#3d2b1f] table-surface"
+        style={{ width: `${tableWidth}px`, height: `${tableHeight}px`, aspectRatio: `${tableWidth}/${tableHeight}` }}>
         
-        <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
-        <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
+        <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-[228px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
+        <div className="absolute inset-[6px] border-[#2c6e49] rounded-[228px] border-[3px]"></div>
         
         {/* CARDS LAYER */}
         <div className="absolute inset-0 pointer-events-none z-[100]">
@@ -138,20 +135,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               const offset = getSeatOffset(seatIdx);
               const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') && player.lastAction !== 'out';
               
-              // Déterminer s'il y a un vrai affrontement (Showdown avec au moins 2 joueurs actifs)
-              const activePlayersCount = players.filter((p: any) => p.lastAction !== 'fold' && p.lastAction !== 'out').length;
-              const isRealShowdown = isShowdown && activePlayersCount > 1;
-
-              const myPlayer = players.find((p: any) => p.id === currentUserId);
-              const amIStillActive = myPlayer && myPlayer.lastAction !== 'fold' && myPlayer.lastAction !== 'out';
-              
-              // Si je ne suis plus actif, je ne révèle plus rien. 
-              // Sinon, je révèle mes cartes ou le showdown.
-              const isRevealed = amIStillActive && (
-                (player.id === currentUserId) || 
-                (isRealShowdown)
-              );
-
               if (!seatCoords[seatIdx]) return null;
 
               return (
@@ -166,7 +149,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                       cards={player.cards}
                       dealOrigin={{ x: `${-offset.x}px`, y: `${-offset.y - 20}px` }}
                       dealOrder={1} numPlayers={players.length} handKey={handKey}
-                      isRevealed={isRevealed && player.lastAction !== 'fold'}
+                      isRevealed={player.id === currentUserId || isMyTurn || isShowdown}
                       isShowdown={isShowdown} isVertical={isVertical}
                     />
                   ) : null}
@@ -195,11 +178,11 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
              />
           </div>
-          <div className="w-auto h-auto gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 relative z-10 opacity-100 min-h-[100px]">
+          <div className="w-auto h-auto gap-4 px-6 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 relative z-10 opacity-100 min-h-[120px]">
             {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
-                className="animate-community-card scale-[0.85] origin-center"
+                className="animate-community-card"
                 style={{ animationDelay: `${idx * 0.4}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />

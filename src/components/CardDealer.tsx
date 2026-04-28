@@ -22,7 +22,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
     <div key={handKey} className="absolute top-0 z-20 flex perspective-1000 items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
         const delayMs = (idx * numPlayers + (dealOrder - 1)) * 300;
-        const endXOffset = idx === 0 ? -28 : 28; // Nampifanakaiky kokoa ny karatra
+        const endXOffset = idx === 0 ? -20 : 20; // Rapproché de -28/28 à -20/20
 
         return (
           <MotionController
@@ -46,7 +46,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
               <Card 
                 value={card?.value || ''} 
                 suit={card?.suit || ''} 
-                revealed={isRevealed || isShowdown} 
+                revealed={isRevealed} 
                 hidden={false} 
               />
             </div>
