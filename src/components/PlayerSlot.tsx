@@ -117,14 +117,16 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
         <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-16px] relative border-x border-t border-white/10 flex flex-col items-center"
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '10px' }}>
           
-          <div className="flex items-center justify-center gap-1.5 mb-0.5">
-             <div className={`text-[10px] font-black uppercase italic ${(showResult && (isCurrentUser || isShowdown)) ? 'text-yellow-400 animate-pulse' : 'text-white'}`}>
-                {(showResult && (isCurrentUser || isShowdown)) ? player.handResult : player.name}
-             </div>
-             <div className="flex gap-0.5">
-               {isDealer && <span className="w-4 h-4 bg-white text-black rounded-full text-[9px] font-black flex items-center justify-center">D</span>}
-               {isSB && <span className="w-4 h-4 bg-blue-600 text-white rounded-full text-[8px] font-black flex items-center justify-center">SB</span>}
-               {isBB && <span className="w-4 h-4 bg-red-600 text-white rounded-full text-[8px] font-black flex items-center justify-center">BB</span>}
+          <div className="flex flex-col items-center gap-1 mb-0.5">
+             <div className="flex items-center justify-center gap-1.5">
+               <div className={`text-[10px] font-black uppercase italic ${(showResult && (isCurrentUser || isShowdown)) ? 'text-yellow-400 animate-pulse' : 'text-white'}`}>
+                  {(showResult && (isCurrentUser || isShowdown)) ? player.handResult : player.name}
+               </div>
+               <div className="flex gap-1">
+                 {isDealer && <span className="w-5 h-5 bg-white text-black rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-gray-300">D</span>}
+                 {isSB && <span className="w-5 h-5 bg-blue-600 text-white rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-blue-800">SB</span>}
+                 {isBB && <span className="w-5 h-5 bg-red-600 text-white rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-red-800">BB</span>}
+               </div>
              </div>
           </div>
           <div className="text-yellow-400 text-[12px] font-black">{Number(displayChips).toLocaleString()}</div>

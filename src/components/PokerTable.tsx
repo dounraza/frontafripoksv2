@@ -84,7 +84,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-     { x: -80, y: 190 },     // Seat 0
+     { x: -80, y: 180 },     // Seat 0
      { x: -130, y: 55 }, // Seat 1
        { x: -140, y: -115 },   // Seat 2
       { x: -110, y: -260 },// Seat 3
@@ -157,7 +157,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               return (
                 <div key={`${player.id}-${handKey}`} className="absolute z-[200]" style={{ left: `calc(50% + ${offset.x}px)`, top: `calc(50% + ${offset.y + 20}px)`, transform: 'translate(-50%, -50%)' }}>
                   {player.lastAction && (
-                    <div className="absolute z-[300] top-8 -left-24 bg-yellow-500 text-black px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap">
+                    <div className="absolute z-[300] top-8 -left-16 bg-yellow-500 text-black px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap">
                       {player.lastAction}
                     </div>
                   )}
@@ -187,16 +187,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               opacity: 0;
             }
           `}</style>
-          <div className="relative z-20 flex flex-col items-center" ref={potRef}>
-             <ChipPot 
-               amount={displayPot} 
-               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
-               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x || 0}px` : `0px`} 
-               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
-             />
-          </div>
-          <div className="w-auto h-auto gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 relative z-10 opacity-100 min-h-[100px]">
-            {communityCards.map((card: any, idx: number) => (
+          <div className="w-auto h-auto gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/20 rounded-xl shadow-inner border-2 border-white/5 z-10 opacity-100 min-h-[100px]">            {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
                 className="animate-community-card scale-[0.85] origin-center"
@@ -205,6 +196,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
             ))}
+          </div>
+
+          <div className="absolute top-[-5%] left-0 right-0 z-20 flex flex-col items-center" ref={potRef}>
+             <ChipPot 
+               amount={displayPot} 
+               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
+               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x || 0}px` : `0px`} 
+               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
+             />
           </div>
         </div>
 

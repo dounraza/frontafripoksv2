@@ -359,7 +359,7 @@ function App() {
           </div>
 
           <div className="flex-1 w-full flex flex-col items-center justify-between overflow-hidden p-2">
-            <div className="flex-1 w-full flex items-center justify-center min-h-0">
+            <div className="flex-1 w-full flex items-center justify-center min-h-0 mt-10">
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
             
