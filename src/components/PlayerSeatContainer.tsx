@@ -23,13 +23,15 @@ interface PlayerSeatContainerProps {
   isMeActive: boolean;
   isVertical: boolean;
   handKey: number;
+  currentEmoji: string | null;
+  sendEmoji: (emoji: string) => void;
 }
 
 export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) => {
   const { 
     player, isActive, isWinner, positionClass, shouldGatherBets, 
     seatNumber, isShowdown, isRevealed, isMeActive, gameState, isVertical, handKey,
-    isCurrentUser, centerX, centerY, gatheringPlayerId 
+    isCurrentUser, centerX, centerY, gatheringPlayerId, currentEmoji, sendEmoji 
   } = props;
 
   const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold';
@@ -40,8 +42,8 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     // Ovay eto ny transform raha tianao hovana isaky ny seat
     // Ny sanda positif (ohatra "translate-y-5") dia hampidina ny karatra
     const transforms: { [key: number]: string } = {
-      0: "-translate-y-35 translate-x-2",
-      1: "-translate-y-35 translate-x-15",
+      0: "-translate-y-27 translate-x-2",
+      1: "-translate-y-29 translate-x-15",
       2: "translate-y-12 translate-x-15",
       3: "translate-y-12 translate-x-15",
       4: "translate-y-11",
@@ -75,7 +77,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
         )}
 
         {/* COMPONENT PLAYER SLOT (Avatar + Trapeze + Info) */}
-        <PlayerSlot {...props} />
+        <PlayerSlot {...props} sendEmoji={sendEmoji} />
 
         {/* BET CHIPS */}
         {!shouldGatherBets && player.bet > 0 && (

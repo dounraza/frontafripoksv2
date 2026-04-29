@@ -19,8 +19,8 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-10%] left-1/4 -translate-x-1/2',   
-   'bottom-[10%] left-[-15%]',                  
+  'bottom-[-3%] left-1/4 -translate-x-1/2',   
+   'bottom-[15%] left-[-15%]',                  
    'top-[20%] left-[-17%]',                     
    'top-[0%] left-[-10%]',                     
  'top-[-13%] left-1/2 -translate-x-1/2',       
@@ -30,8 +30,9 @@ const PLAYER_POSITIONS = [
   'bottom-[-8%] right-[1%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
-  tableData, currentUserId, currentUserName, isVertical, sendAction, callAmount, isMyTurn 
+  tableData, currentUserId, currentUserName, isVertical, sendAction, sendEmoji, callAmount, isMyTurn 
 }) => {
+  const { newEmoji } = useSocket();
   if (!tableData) return null;
 
   const isShowdown = tableData.gameState === 'showdown';
@@ -101,7 +102,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   const getSeatOffset = (idx: number) => {
     const offsets = [
      { x: -60, y: 140 },     // Seat 0
-     { x: -140, y:52 }, // Seat 1
+     { x: -140, y:32 }, // Seat 1
        { x: -140, y: -95 },   // Seat 2
       { x: -110, y: -205 },// Seat 3
      { x: 0, y: -230 },   // Seat 4
@@ -137,10 +138,10 @@ export const PokerTable: React.FC<PokerTableProps> = ({
       <div className="relative mt-20 transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
         style={{ 
           width: 'auto', 
-          height: '90%', 
+          height: '95%', 
           aspectRatio: '10/16',
           maxWidth: '95vw',
-          maxHeight: '95%'
+          maxHeight: '98%'
         }}>
         
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
@@ -219,6 +220,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               isRevealed={isRevealed}
               isMeActive={amIStillActive || false}
               handKey={handKey}
+              currentEmoji={newEmoji?.playerName === player.name ? newEmoji.emoji : null}
+              sendEmoji={sendEmoji}
             />
           );
         })}

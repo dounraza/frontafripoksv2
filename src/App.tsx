@@ -11,7 +11,7 @@ import { LogOut, Wallet, User, History, Volume2, VolumeX } from 'lucide-react';
 import { getCallAmount, isPlayerTurn } from './utils/pokerLogic';
 
 function App() {
-  const { socket, tableData, joinTable, leaveTable, sendAction } = useSocket();
+  const { socket, tableData, joinTable, leaveTable, sendAction, sendEmoji } = useSocket();
   const [user, setUser] = useState<{token: string, name: string, id: string, avatar_url?: string} | null>(() => {
     const savedUser = localStorage.getItem('poker_user');
     return savedUser ? JSON.parse(savedUser) : null;
@@ -345,10 +345,10 @@ function App() {
              </div>
           </div>
 
-          {/* 70% - LA PLACEMENT DE LA TABLE */}
-          <div className="h-[70vh] w-full flex items-center justify-center overflow-hidden relative">
+          {/* 79% - LA PLACEMENT DE LA TABLE */}
+          <div className="h-[79vh] w-full flex items-center justify-center overflow-hidden relative">
             <div className="w-full h-full flex items-center justify-center">
-              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} sendEmoji={sendEmoji} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
           </div>
           
@@ -359,9 +359,9 @@ function App() {
              </div>
           </div>
 
-          {/* 25% - LE BLOC ACTION PLAYER */}
-          <div className="h-[25vh] w-full flex items-center justify-center bg-gradient-to-t from-black to-transparent px-2 shrink-0">
-            <div className="w-full max-w-[500px]">
+          {/* 10% - LE BLOC ACTION PLAYER */}
+          <div className="h-[10vh] w-full flex items-center justify-center bg-gradient-to-t from-black to-transparent px-2 shrink-0">
+            <div className="w-full max-w-[420px]">
                <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
           </div>

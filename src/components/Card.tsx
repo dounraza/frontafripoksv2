@@ -30,17 +30,17 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
     </div>
   );
 
-  // TAILLE AJUSTÉE (40x64 pour mobile, 50x72 pour desktop)
-  if (hidden) return <div className="w-[40px] h-[64px] min-w-[40px] min-h-[64px] sm:w-[50px] sm:h-[72px] sm:min-w-[50px] sm:min-h-[72px]">{CardBack}</div>;
+  // TAILLE AJUSTÉE (32x52 pour mobile, 40x58 pour desktop)
+  if (hidden) return <div className="w-[32px] h-[52px] min-w-[32px] min-h-[52px] sm:w-[40px] sm:h-[58px] sm:min-w-[40px] sm:min-h-[58px]">{CardBack}</div>;
 
   return (
-    <div className="w-[40px] h-[64px] min-w-[40px] min-h-[64px] sm:w-[50px] sm:h-[72px] sm:min-w-[50px] sm:min-h-[72px] perspective-1000 antialiased">
+    <div className="w-[32px] h-[52px] min-w-[32px] min-h-[52px] sm:w-[40px] sm:h-[58px] sm:min-w-[40px] sm:min-h-[58px] perspective-1000 antialiased">
       <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${revealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
         {/* Front Side */}
-        <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border-2 border-gray-300 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.5)] flex flex-col items-center justify-between p-1 font-black ${suitColors[suit]}`}>
-          <div className="text-[10px] sm:text-[14px] self-start leading-none">{displayValue}</div>
-          <div className="text-xl sm:text-3xl leading-none drop-shadow-md my-auto">{suitIcons[suit]}</div>
-          <div className="text-[10px] sm:text-[14px] self-end rotate-180 leading-none">{displayValue}</div>
+        <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border-2 border-gray-300 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.5)] flex flex-col items-center justify-between p-0.5 font-black ${suitColors[suit]}`}>
+          <div className="text-[8px] sm:text-[10px] self-start leading-none">{displayValue}</div>
+          <div className="text-base sm:text-xl leading-none drop-shadow-md my-auto">{suitIcons[suit]}</div>
+          <div className="text-[8px] sm:text-[10px] self-end rotate-180 leading-none">{displayValue}</div>
         </div>
         
         {/* Back Side */}

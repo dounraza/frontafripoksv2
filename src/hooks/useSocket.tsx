@@ -11,6 +11,8 @@ interface SocketContextType {
   joinTable: (playerName: string, tableId: string, buyIn: string) => void;
   leaveTable: () => void;
   sendAction: (action: string, amount?: number) => void;
+  sendEmoji: (emoji: string) => void;
+  newEmoji: { playerName: string, emoji: string } | null;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -20,6 +22,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [tableData, setTableData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [joinedTableId, setJoinedTableId] = useState<string | null>(null);
+  const [newEmoji, setNewEmoji] = useState<{ playerName: string, emoji: string } | null>(null);
 
   useEffect(() => {
     const checkTokenAndConnect = () => {
@@ -69,6 +72,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         setTableData(data);
       });
 
+      newSocket.on('newEmoji', (data) => {
+        setNewEmoji(data);
+        setTimeout(() => setNewEmoji(null), 3000); // Clear emoji after 3 seconds
+      });
+
       newSocket.on('error', (err) => {
         console.error('Socket error event:', err);
         setError(err.message || 'An unknown error occurred');
@@ -111,8 +119,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [socket, joinedTableId]);
 
+  const sendEmoji = useCallback((emoji: string) => {
+    if (socket && joinedTableId) {
+      socket.emit('emoji', { tableId: joinedTableId, emoji });
+    }
+  }, [socket, joinedTableId]);
+
   return (
-    <SocketContext.Provider value={{ socket, tableData, error, joinTable, leaveTable, sendAction }}>
+    <SocketContext.Provider value={{ socket, tableData, error, joinTable, leaveTable, sendAction, sendEmoji, newEmoji }}>
       {children}
     </SocketContext.Provider>
   );
