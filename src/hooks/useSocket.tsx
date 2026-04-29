@@ -22,55 +22,72 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [joinedTableId, setJoinedTableId] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('poker_user');
-    const token = savedUser ? JSON.parse(savedUser).token : null;
+    const checkTokenAndConnect = () => {
+      const savedUser = localStorage.getItem('poker_user');
+      const token = savedUser ? JSON.parse(savedUser).token : null;
 
-    console.log('Attempting to connect to socket at:', SOCKET_URL, token ? '(with token)' : '(no token)');
-    
-    const newSocket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
-      auth: { token }
-    });
-    
-    setSocket(newSocket);
-
-    newSocket.on('connect', () => {
-      console.log('Socket connected successfully!');
-      setError(null);
-      
-      // Auto-rejoin logic
-      const activeTable = localStorage.getItem('active_table');
-      const savedUserCurrent = localStorage.getItem('poker_user');
-      if (activeTable && savedUserCurrent) {
-        const user = JSON.parse(savedUserCurrent);
-        console.log(`Auto-rejoining table ${activeTable} for ${user.name}`);
-        // Note:playerName n'est plus strictement nécessaire côté backend car il utilise le token
-        newSocket.emit('joinTable', { 
-          tableId: activeTable, 
-          buyIn: "0" 
-        });
-        setJoinedTableId(activeTable);
+      if (!token) {
+        console.log('No token found, waiting for login...');
+        return;
       }
-    });
 
-    newSocket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err);
-      setError(`Connection error: ${err.message}`);
-    });
+      if (socket) return; // Already connected
 
-    newSocket.on('tableUpdated', (data) => {
-      setTableData(data);
-    });
+      console.log('Attempting to connect to socket at:', SOCKET_URL, '(with token)');
+      
+      const newSocket = io(SOCKET_URL, {
+        transports: ['websocket', 'polling'],
+        auth: { token }
+      });
+      
+      setSocket(newSocket);
 
-    newSocket.on('error', (err) => {
-      console.error('Socket error event:', err);
-      setError(err.message || 'An unknown error occurred');
-    });
+      newSocket.on('connect', () => {
+        console.log('Socket connected successfully!');
+        setError(null);
+        
+        // Auto-rejoin logic
+        const activeTable = localStorage.getItem('active_table');
+        const savedUserCurrent = localStorage.getItem('poker_user');
+        if (activeTable && savedUserCurrent) {
+          const user = JSON.parse(savedUserCurrent);
+          console.log(`Auto-rejoining table ${activeTable} for ${user.name}`);
+          newSocket.emit('joinTable', { 
+            tableId: activeTable, 
+            buyIn: "0" 
+          });
+          setJoinedTableId(activeTable);
+        }
+      });
+
+      newSocket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err);
+        setError(`Connection error: ${err.message}`);
+      });
+
+      newSocket.on('tableUpdated', (data) => {
+        setTableData(data);
+      });
+
+      newSocket.on('error', (err) => {
+        console.error('Socket error event:', err);
+        setError(err.message || 'An unknown error occurred');
+      });
+    };
+
+    checkTokenAndConnect();
+
+    // Re-check periodically or listen for storage changes if needed
+    const interval = setInterval(checkTokenAndConnect, 2000);
 
     return () => {
-      newSocket.disconnect();
+      clearInterval(interval);
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
     };
-  }, []);
+  }, [socket]);
 
   const joinTable = useCallback((playerName: string, tableId: string, buyIn: string) => {
     if (socket) {

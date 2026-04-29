@@ -7,7 +7,6 @@ import { EmptySlot } from './EmptySlot';
 import { useSocket } from '../hooks/useSocket';
 import { isPlayerTurn, getPlayerRoleInfo } from '../utils/pokerLogic';
 import { CardDealer } from './CardDealer';
-import { ActionPanel } from './ActionPanel';
 
 interface PokerTableProps {
   tableData: any;
