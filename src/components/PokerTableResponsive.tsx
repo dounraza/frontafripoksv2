@@ -130,22 +130,23 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
               const isRealShowdown = isShowdown && activePlayersCount > 1;
 
               const myPlayer = players.find((p: any) => p.id === currentUserId);
-              const amIStillActive = myPlayer && myPlayer.status !== 'folded' && myPlayer.status !== 'out';
+              const amIStillActive = myPlayer && 
+                                    myPlayer.status !== 'folded' && 
+                                    myPlayer.status !== 'out' && 
+                                    myPlayer.lastAction !== 'fold';
               
               // Révéler les cartes au showdown ou pour soi-même
-              const isRevealed = amIStillActive && (
-                (player.id === currentUserId) || 
-                (isRealShowdown)
-              );
+              // FA TOKON ACTIVE NY CURRENT USER VAO MISEHO NY AMBINY
+              const isRevealed = amIStillActive && ((player.id === currentUserId) || (isShowdown && isRealShowdown));
 
               // NE PAS RESTER SI ON NAFFICHE PAS : 
-              // Au showdown, on ne montre la carte que si elle est révélée.
-              const shouldShowAtShowdown = isShowdown ? isRevealed : true;
+              // Raha nanao fold ny current user dia afenina daholo ny karatra rehetra (1vs1)
+              const isPlayerFolded = player.status === 'folded' || player.lastAction === 'fold' || player.status === 'out';
               const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') 
                                 && player.status !== 'out' 
                                 && player.status !== 'waiting'
-                                && player.status !== 'folded'
-                                && shouldShowAtShowdown;
+                                && !isPlayerFolded
+                                && isRevealed;
 
               return (
                 <div key={`${player.id}-${handKey}`} className="absolute z-[200]" 
@@ -161,7 +162,7 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
                     </div>
                   )}
                   {showCards ? (
-                    <div className={isVertical ? "scale-[0.7] origin-center" : ""}>
+                    <div className="origin-center">
                       <CardDealer 
                         cards={player.cards}
                         dealOrigin={{ x: `${-offset.x}px`, y: `${-offset.y}px` }}

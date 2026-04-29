@@ -22,10 +22,16 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [joinedTableId, setJoinedTableId] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('Attempting to connect to socket at:', SOCKET_URL);
+    const savedUser = localStorage.getItem('poker_user');
+    const token = savedUser ? JSON.parse(savedUser).token : null;
+
+    console.log('Attempting to connect to socket at:', SOCKET_URL, token ? '(with token)' : '(no token)');
+    
     const newSocket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      auth: { token }
     });
+    
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -34,14 +40,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       
       // Auto-rejoin logic
       const activeTable = localStorage.getItem('active_table');
-      const savedUser = localStorage.getItem('poker_user');
-      if (activeTable && savedUser) {
-        const user = JSON.parse(savedUser);
+      const savedUserCurrent = localStorage.getItem('poker_user');
+      if (activeTable && savedUserCurrent) {
+        const user = JSON.parse(savedUserCurrent);
         console.log(`Auto-rejoining table ${activeTable} for ${user.name}`);
+        // Note:playerName n'est plus strictement nécessaire côté backend car il utilise le token
         newSocket.emit('joinTable', { 
-          playerName: user.name, 
           tableId: activeTable, 
-          buyIn: "0" // 0 because chips were returned to balance on disconnect
+          buyIn: "0" 
         });
         setJoinedTableId(activeTable);
       }
@@ -68,6 +74,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   const joinTable = useCallback((playerName: string, tableId: string, buyIn: string) => {
     if (socket) {
+      // On envoieplayerName pour compatibilité mais le backend utilisera le token
       socket.emit('joinTable', { playerName, tableId, buyIn });
       setJoinedTableId(tableId);
     }

@@ -32,7 +32,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
             endX={`${endXOffset}px`}
             endY="0px"
             delay={`${delayMs}ms`}
-            className={isVertical ? 'scale-[0.9]' : 'scale-[0.7]'}
+            className="origin-center"
           >
             <div 
               className="bg-black rounded-lg transition-transform duration-300"

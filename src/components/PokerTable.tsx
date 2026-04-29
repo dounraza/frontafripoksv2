@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlayerSlot } from './PlayerSlot';
+import { PlayerSeatContainer } from './PlayerSeatContainer';
 import { Card } from './Card';
 import { ChipPot } from './ChipPot';
 import { EmptySlot } from './EmptySlot';
@@ -19,15 +20,15 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-12%] left-1/4 -translate-x-1/2',   
-   'bottom-[10%] left-[-25%]',                  
-   'top-[25%] left-[-25%]',                     
-  'top-[0%] left-[-10%]',                     
- 'top-[-15%] left-1/2 -translate-x-1/2',       
-'top-[0%] right-[-25%]',                    
-'top-[28%] right-[-30%]',                    
-'bottom-[5%] right-[-30%]',                 
-  'bottom-[-8%] right-[8%]',                  
+  'bottom-[-10%] left-1/4 -translate-x-1/2',   
+   'bottom-[10%] left-[-15%]',                  
+   'top-[20%] left-[-17%]',                     
+   'top-[0%] left-[-10%]',                     
+ 'top-[-13%] left-1/2 -translate-x-1/2',       
+'top-[0%] right-[-15%]',                    
+'top-[21%] right-[-15%]',                    
+'bottom-[15%] right-[-15%]',                 
+  'bottom-[-8%] right-[1%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
   tableData, currentUserId, currentUserName, isVertical, sendAction, callAmount, isMyTurn 
@@ -36,7 +37,23 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   const isShowdown = tableData.gameState === 'showdown';
   const winnerIds = tableData.winnerInfo?.map((w: any) => w.playerId) || [];
-  const players = tableData.players || [];
+  
+  // TEST MODE
+  const IS_TEST_MODE = false; 
+  let players = tableData.players || [];
+  
+  /* 
+  if (IS_TEST_MODE) {
+    players = [
+      { id: '4', name: 'Bot 4', position: 4, chips: 500, status: 'active', cards: [{value: 'A', suit: 'h'}, {value: 'K', suit: 'h'}], bet: 100, lastAction: 'raise' },
+      { id: '5', name: 'Bot 5', position: 5, chips: 800, status: 'active', cards: [{value: '7', suit: 'd'}, {value: '8', suit: 'd'}], bet: 50, lastAction: 'call' },
+      { id: '6', name: 'Bot 6', position: 6, chips: 200, status: 'active', cards: [{value: 'J', suit: 's'}, {value: '10', suit: 'c'}], bet: 0, lastAction: 'check' },
+      { id: '7', name: 'Bot 7', position: 7, chips: 1200, status: 'active', cards: [{value: '2', suit: 'h'}, {value: 'Q', suit: 's'}], bet: 200, lastAction: 'raise' },
+      { id: '8', name: 'Bot 8', position: 8, chips: 900, status: 'active', cards: [{value: 'K', suit: 's'}, {value: 'K', suit: 'c'}], bet: 0, lastAction: 'check' },
+    ];
+  }
+  */
+
   const communityCards = tableData.communityCards || [];
   
   const currentBetsSum = players.reduce((sum: number, p: any) => sum + (p.bet || 0), 0);
@@ -70,17 +87,17 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           };
         }
       }
-      setSeatCoords(newCoords);
+      // Raha misy fiovana vao manao set
+      setSeatCoords((prev: any) => JSON.stringify(prev) !== JSON.stringify(newCoords) ? newCoords : prev);
     };
     updateSeatCoords();
     window.addEventListener('resize', updateSeatCoords);
-    // Timeout to ensure elements are rendered
     const timer = setTimeout(updateSeatCoords, 500);
     return () => {
         window.removeEventListener('resize', updateSeatCoords);
         clearTimeout(timer);
     };
-  }, [players, tableData.gameState]);
+  }, []); // Esorina ny dependency raha tsy ilaina isaky ny miova ny data
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
@@ -118,71 +135,18 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full h-full justify-center">
-      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
+      <div className="relative mt-20 transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
         style={{ 
           width: 'auto', 
-          height: '95%', 
+          height: '90%', 
           aspectRatio: '10/16',
           maxWidth: '95vw',
-          maxHeight: '100%'
+          maxHeight: '95%'
         }}>
         
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
         
-        {/* CARDS LAYER */}
-        <div className="absolute inset-0 pointer-events-none z-[100]">
-           {players.map((player: any) => {
-              const seatIdx = player.position;
-              const offset = getSeatOffset(seatIdx);
-              
-              // Déterminer s'il y a un vrai affrontement (Showdown avec au moins 2 joueurs actifs)
-              const activePlayersCount = players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length;
-              const isRealShowdown = isShowdown && activePlayersCount > 1;
-
-              const myPlayer = players.find((p: any) => p.id === currentUserId);
-              const amIStillActive = myPlayer && myPlayer.status !== 'folded' && myPlayer.status !== 'out';
-              
-              // Si je ne suis plus actif, je ne révèle plus rien. 
-              // Sinon, je révèle mes cartes ou le showdown.
-              const isRevealed = amIStillActive && (
-                (player.id === currentUserId) || 
-                (isRealShowdown)
-              );
-
-              // NE PAS RESTER SI ON NAFFICHE PAS : 
-              // Au showdown, on ne montre la carte que si elle est révélée.
-              // En cours de jeu, on montre la carte (face cachée) si le joueur est actif.
-              const shouldShowAtShowdown = isShowdown ? isRevealed : true;
-              const showCards = (tableData.gameState === 'playing' || tableData.gameState === 'showdown') 
-                                && player.status !== 'out' 
-                                && player.status !== 'waiting'
-                                && player.status !== 'folded'
-                                && shouldShowAtShowdown;
-
-              if (!seatCoords[seatIdx]) return null;
-
-              return (
-                <div key={`${player.id}-${handKey}`} className="absolute z-[200]" style={{ left: `calc(50% + ${offset.x}px)`, top: `calc(50% + ${offset.y + 20}px)`, transform: 'translate(-50%, -50%)' }}>
-                  {player.lastAction && (
-                    <div className="absolute z-[300] top-0 -left-16 bg-yellow-500 text-black px-2 py-0.5 rounded font-black text-[10px] uppercase shadow-lg whitespace-nowrap">
-                      {player.lastAction}
-                    </div>
-                  )}
-                  {showCards ? (
-                    <CardDealer 
-                      cards={player.cards}
-                      dealOrigin={{ x: `${-offset.x}px`, y: `${-offset.y - 20}px` }}
-                      dealOrder={1} numPlayers={players.length} handKey={handKey}
-                      isRevealed={isRevealed}
-                      isShowdown={isShowdown} isVertical={isVertical}
-                    />
-                  ) : null}
-                </div>
-              );
-           })}
-        </div>
-
         {/* POT AND COMMUNITY CARDS */}
         <div className="flex flex-col items-center z-10 relative gap-8 mt-[-40px]">
           <div className="z-20 flex flex-col items-center" ref={potRef}>
@@ -227,17 +191,35 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           const player = players.find((p: any) => p.position === idx);
           if (!player) return <EmptySlot key={`empty-${idx}`} positionClass={PLAYER_POSITIONS[idx]} />;
           const { isDealer, isSB, isBB } = getPlayerRoleInfo(player, tableData);
+          
+          const myPlayer = players.find((p: any) => p.id === currentUserId);
+          const amIStillActive = myPlayer && 
+                                myPlayer.status !== 'folded' && 
+                                myPlayer.status !== 'out' && 
+                                myPlayer.lastAction !== 'fold';
+          const isRealShowdown = isShowdown && players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length > 1;
+          const isRevealed = amIStillActive && (player.id === currentUserId || isRealShowdown);
 
           return (
-            <PlayerSlot 
-              key={player.id} id={`seat-${idx}`} player={player} isActive={isPlayerTurn(tableData, player.id)} 
-              isWinner={winnerIds.includes(player.id) && delayedWinnerIdx !== undefined} isDealer={isDealer} isSB={isSB} isBB={isBB}
-              positionClass={PLAYER_POSITIONS[idx]} shouldGatherBets={tableData.gatheringBets} 
-              dealOrigin={{ x: "0px", y: "0px" }} seatNumber={idx} isShowdown={isShowdown}
-              handKey={handKey} gameState={tableData.gameState}
+            <PlayerSeatContainer 
+              key={player.id}
+              player={player} 
+              isActive={isPlayerTurn(tableData, player.id)} 
+              isWinner={winnerIds.includes(player.id) && delayedWinnerIdx !== undefined} 
+              isDealer={isDealer} isSB={isSB} isBB={isBB}
+              positionClass={PLAYER_POSITIONS[idx]} 
+              shouldGatherBets={tableData.gatheringBets} 
+              seatNumber={idx} 
+              isShowdown={isShowdown}
+              gameState={tableData.gameState}
               isCurrentUser={player.id === currentUserId || player.name.trim().toLowerCase() === currentUserName?.trim().toLowerCase()}
-              centerX={seatCoords[idx]?.x || 0} centerY={seatCoords[idx]?.y || 0} 
-              gatheringPlayerId={tableData.gatheringPlayerId} isVertical={true}
+              centerX={seatCoords[idx]?.x || 0} 
+              centerY={seatCoords[idx]?.y || 0} 
+              gatheringPlayerId={tableData.gatheringPlayerId} 
+              isVertical={isVertical}
+              isRevealed={isRevealed}
+              isMeActive={amIStillActive || false}
+              handKey={handKey}
             />
           );
         })}

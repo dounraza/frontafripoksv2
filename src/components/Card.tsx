@@ -10,8 +10,8 @@ interface CardProps {
 const suitColors: Record<string, string> = {
   h: 'text-red-600',
   d: 'text-red-600',
-  c: 'text-gray-900',
-  s: 'text-gray-900',
+  c: 'text-black',
+  s: 'text-black',
 };
 
 const suitIcons: Record<string, string> = {
@@ -25,22 +25,22 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
   const displayValue = value === 'T' ? '10' : value;
 
   const CardBack = (
-    <div className="w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20 bg-black">
-      <img src="/logo.ico" alt="logo" className="w-full h-full object-contain" />
+    <div className="w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20 bg-black overflow-hidden p-1">
+      <img src="/logo.ico" alt="logo" className="w-full h-full object-contain opacity-80" />
     </div>
   );
 
-  // TAILLE AJUSTÉE (42x60) - PLUS LISIBLE SUR MOBILE
-  if (hidden) return <div className="w-[42px] h-[60px] min-w-[42px] min-h-[60px]">{CardBack}</div>;
+  // TAILLE AJUSTÉE (50x72) - MBOLA AZO VAKIANA TSARA
+  if (hidden) return <div className="w-[50px] h-[72px] min-w-[50px] min-h-[72px]">{CardBack}</div>;
 
   return (
-    <div className="w-[42px] h-[60px] min-w-[42px] min-h-[60px] perspective-1000 antialiased">
+    <div className="w-[50px] h-[72px] min-w-[50px] min-h-[72px] perspective-1000 antialiased">
       <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${revealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
         {/* Front Side */}
-        <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border border-gray-400 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.4)] flex flex-col items-center justify-between p-0 font-black ${suitColors[suit]}`}>
-          <div className="text-[9px] self-start leading-none pl-0.5 pt-0.5">{displayValue}</div>
-          <div className="text-xl leading-none drop-shadow-sm">{suitIcons[suit]}</div>
-          <div className="text-[9px] self-end rotate-180 leading-none pr-0.5 pb-0.5">{displayValue}</div>
+        <div className={`absolute inset-0 backface-hidden w-full h-full bg-white border-2 border-gray-300 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.5)] flex flex-col items-center justify-between p-1 font-black ${suitColors[suit]}`}>
+          <div className="text-[14px] self-start leading-none">{displayValue}</div>
+          <div className="text-3xl leading-none drop-shadow-md my-auto">{suitIcons[suit]}</div>
+          <div className="text-[14px] self-end rotate-180 leading-none">{displayValue}</div>
         </div>
         
         {/* Back Side */}
