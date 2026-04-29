@@ -275,3 +275,113 @@ html, body {
   @apply absolute z-20 text-white font-black opacity-80;
   font-size: 6px;
 }
+
+/* Media Queries pour la réactivité */
+
+@media (max-width: 1024px) {
+  /* Tablettes */
+  .table-surface {
+    border-width: 10px !important;
+  }
+  .glass-panel {
+    min-width: 100px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobiles classiques */
+  .table-surface {
+    border-width: 8px !important;
+  }
+  .w-14.h-14 {
+    width: 3.25rem !important;
+    height: 3.25rem !important;
+    min-width: 3.25rem !important;
+    min-height: 3.25rem !important;
+  }
+  .glass-panel {
+    min-width: 90px !important;
+    padding: 4px !important;
+  }
+  .text-\[12px\] {
+    font-size: 10px !important;
+  }
+  .text-\[10px\] {
+    font-size: 9px !important;
+  }
+  /* Action Panel */
+  .w-\[360px\], .w-\[280px\] {
+    width: 300px !important;
+  }
+  .gap-2 {
+    gap: 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Petits mobiles / Portrait */
+  .table-surface {
+    border-width: 6px !important;
+    max-width: 98vw !important;
+    transform: scale(0.95);
+  }
+  
+  /* Avatars */
+  .w-14.h-14 {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-width: 2.75rem !important;
+    min-height: 2.75rem !important;
+  }
+  
+  /* Panneaux d'information des joueurs */
+  .glass-panel {
+    min-width: 80px !important;
+    padding: 3px !important;
+    clip-path: polygon(0% 0%, 100% 0%, 92% 70%, 88% 92%, 80% 100%, 20% 100%, 12% 92%, 8% 70%) !important;
+  }
+  
+  /* Textes */
+  .text-\[12px\] {
+    font-size: 9px !important;
+  }
+  .text-\[10px\] {
+    font-size: 7.5px !important;
+  }
+  .text-\[8px\] {
+    font-size: 6.5px !important;
+  }
+  
+  /* Action Panel compact */
+  .w-\[360px\], .w-\[280px\] {
+    width: 260px !important;
+  }
+  .py-2, .sm\:py-3 {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+  .rounded-2xl {
+    border-radius: 1rem !important;
+  }
+  
+  /* Jetons et Mises */
+  .min-w-\[35px\] {
+    min-width: 28px !important;
+    padding: 1px 4px !important;
+  }
+  .w-5.h-5 {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+  
+  /* Cartes Communes */
+  .h-\[88px\] {
+    height: 70px !important;
+  }
+  .min-w-\[240px\] {
+    min-width: 200px !important;
+  }
+  .gap-1\.5 {
+    gap: 4px !important;
+  }
+}

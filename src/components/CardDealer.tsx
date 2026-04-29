@@ -22,7 +22,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
     <div key={handKey} className="absolute top-0 z-20 flex perspective-1000 items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
         const delayMs = (idx * numPlayers + (dealOrder - 1)) * 300;
-        const endXOffset = idx === 0 ? -16 : 16; // Rapproché pour cartes plus petites (40px)
+        const endXOffset = idx === 0 ? -12 : 12; // Chevauchement pour cartes plus grandes
 
         return (
           <MotionController

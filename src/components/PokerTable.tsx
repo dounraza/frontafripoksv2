@@ -19,14 +19,14 @@ interface PokerTableProps {
 }
 
 const PLAYER_POSITIONS = [
-  'bottom-[-3%] left-1/4 -translate-x-1/2',   
-   'bottom-[15%] left-[-15%]',                  
-   'top-[20%] left-[-17%]',                     
-   'top-[0%] left-[-10%]',                     
- 'top-[-13%] left-1/2 -translate-x-1/2',       
-'top-[0%] right-[-15%]',                    
-'top-[21%] right-[-15%]',                    
-'bottom-[15%] right-[-15%]',                 
+  'bottom-[0%] sm:left-1/4 left-[20%] -translate-x-1/2',   
+  'bottom-[15%] sm:left-[-15%] left-[-5%]',                  
+  'top-[20%] sm:left-[-17%] left-[-8%]',                     
+  'top-[2%] sm:left-[-10%] left-[-2%]',                     
+  'top-[-10%] sm:top-[-13%] left-1/2 -translate-x-1/2',       
+  'top-[2%] sm:right-[-15%] right-[-2%]',                    
+  'top-[21%] sm:right-[-15%] right-[-8%]',                    
+  'bottom-[15%] sm:right-[-15%] right-[-5%]',                 
   'bottom-[-8%] right-[1%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
@@ -170,9 +170,9 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           `}</style>
           <div 
             className={`transition-all duration-700 gap-1.5 px-3 flex items-center justify-center bg-[#1e5a3d]/30 rounded-2xl shadow-inner border-2 border-white/10 z-10 opacity-100 shrink-0 ${
-              communityCards.length >= 5 ? 'h-[80px] min-w-[220px]' : 'h-[88px] min-w-[240px]'
+              communityCards.length >= 5 ? 'h-[90px] min-w-[240px]' : 'h-[100px] min-w-[260px]'
             }`}
-            style={{ '--card-scale': communityCards.length >= 5 ? '0.9' : '1.05' } as React.CSSProperties}
+            style={{ '--card-scale': communityCards.length >= 5 ? '1.0' : '1.1' } as React.CSSProperties}
           >
             {communityCards.map((card: any, idx: number) => (
               <div 

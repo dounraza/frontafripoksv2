@@ -345,8 +345,8 @@ function App() {
              </div>
           </div>
 
-          {/* 79% - LA PLACEMENT DE LA TABLE */}
-          <div className="h-[79vh] w-full flex items-center justify-center overflow-hidden relative">
+          {/* 85% - LA PLACEMENT DE LA TABLE */}
+          <div className="h-[85vh] w-full flex items-center justify-center overflow-hidden relative">
             <div className="w-full h-full flex items-center justify-center">
               <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} sendEmoji={sendEmoji} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>

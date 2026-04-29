@@ -39,18 +39,22 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
   // Asehoy foana ny mpilalao fa ny karatra no afenina any ambany raha nanao fold
   
   const getCardTransform = (seat: number) => {
-    // Ovay eto ny transform raha tianao hovana isaky ny seat
-    // Ny sanda positif (ohatra "translate-y-5") dia hampidina ny karatra
+    // sm: correspond au WEB/Desktop, les classes sans préfixe sont pour le MOBILE
     const transforms: { [key: number]: string } = {
-      0: "-translate-y-27 translate-x-2",
-      1: "-translate-y-29 translate-x-15",
-      2: "translate-y-12 translate-x-15",
-      3: "translate-y-12 translate-x-15",
-      4: "translate-y-11",
-      5: "translate-y-13 -translate-x-15",
-      6: "translate-y-13 -translate-x-15",
-      7: "-translate-y-35 -translate-x-15",
-      8: "-translate-y-35 -translate-x-19",
+      // Joueur en bas à gauche
+      0: "sm:-translate-y-27 sm:translate-x-2 -translate-y-22 translate-x-1",
+      // Joueurs à gauche (bas vers haut)
+      1: "sm:-translate-y-29 sm:translate-x-15 -translate-y-20 translate-x-10",
+      2: "sm:translate-y-12 sm:translate-x-15 translate-y-10 translate-x-10",
+      3: "sm:translate-y-12 sm:translate-x-15 translate-y-8 translate-x-8",
+      // Joueur en haut
+      4: "sm:translate-y-11 translate-y-10",
+      // Joueurs à droite (haut vers bas)
+      5: "sm:translate-y-13 sm:-translate-x-15 translate-y-8 -translate-x-8",
+      6: "sm:translate-y-13 sm:-translate-x-15 translate-y-10 -translate-x-10",
+      7: "sm:-translate-y-35 sm:-translate-x-15 -translate-y-25 -translate-x-10",
+      // Joueur en bas à droite
+      8: "sm:-translate-y-35 sm:-translate-x-19 -translate-y-25 -translate-x-10",
     };
     return transforms[seat] || "translate-y-5";
   };
