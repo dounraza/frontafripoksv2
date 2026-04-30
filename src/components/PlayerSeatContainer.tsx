@@ -34,7 +34,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     isCurrentUser, centerX, centerY, gatheringPlayerId, currentEmoji, sendEmoji 
   } = props;
 
-  const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold';
+  const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold' || player.lastAction === 'auto-fold' || gameState === 'all_fold';
   
   // Asehoy foana ny mpilalao fa ny karatra no afenina any ambany raha nanao fold
   
@@ -42,7 +42,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     // Mobile (sans préfixe) : plus compact / Desktop (sm:) : standard
     const transforms: { [key: number]: string } = {
       0: "sm:-translate-y-30 sm:translate-x-1 -translate-y-20 translate-x-2",
-      1: "sm:-translate-y-28 sm:translate-x-16 -translate-y-20 translate-x-12",
+      1: "sm:-translate-y-20 sm:translate-x-16 -translate-y-20 translate-x-12",
       2: "sm:translate-y-12 sm:translate-x-16 translate-y-8 translate-x-12",
       3: "sm:translate-y-12 sm:translate-x-16 translate-y-8 translate-x-8",
       4: "sm:translate-y-12 translate-y-8",
@@ -54,11 +54,13 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     return transforms[seat] || "translate-y-5";
   };
 
-  const showCards = (gameState === 'playing' || gameState === 'showdown') 
-                    && player.status !== 'out' 
-                    && player.status !== 'waiting'
-                    && !isFolded
-                    && isMeActive; // Raha nanao fold ny current user dia afenina daholo ny karatra
+  // Si le joueur courant a foldé (!isMeActive), il ne doit pas voir les cartes des autres.
+  // On masque si gameState est 'playing' ET que ce n'est pas moi.
+  const showCards = !isFolded && 
+                    (gameState === 'playing' || gameState === 'showdown') && 
+                    player.status !== 'out' && 
+                    player.status !== 'waiting' &&
+                    (!isMeActive ? isCurrentUser : true);
 
   return (
     <div className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>

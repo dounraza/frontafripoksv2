@@ -164,21 +164,21 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               100% { transform: translateX(0) scale(var(--card-scale, 1)); opacity: 1; }
             }
             .animate-community-card {
-              animation: slide-in-right 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              animation: slide-in-right 2.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
               opacity: 0;
             }
           `}</style>
           <div 
             className={`transition-all duration-700 gap-1.5 px-3 flex items-center justify-center bg-[#1e5a3d]/30 rounded-2xl shadow-inner border-2 border-white/10 z-10 opacity-100 shrink-0 ${
               communityCards.length >= 5 ? 'h-[90px] min-w-[240px]' : 'h-[100px] min-w-[260px]'
-            }`}
+            } ${tableData.gameState === 'all_fold' ? 'hidden' : ''}`}
             style={{ '--card-scale': communityCards.length >= 5 ? '1.0' : '1.1' } as React.CSSProperties}
           >
             {communityCards.map((card: any, idx: number) => (
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
                 className="animate-community-card origin-center shrink-0"
-                style={{ animationDelay: `${idx * 0.7}s` }}
+                style={{ animationDelay: `${idx * 1.0}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>

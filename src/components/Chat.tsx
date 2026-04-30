@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Socket } from 'socket.io-client';
-import { MessageSquare, X } from 'lucide-react';
+import { MessageSquare, X, Send } from 'lucide-react';
 
 interface ChatProps {
   tableId: string | number;
@@ -90,7 +90,13 @@ export const Chat: React.FC<ChatProps> = ({ tableId, playerName, socket }) => {
               placeholder="Aa..."
               className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
             />
-            <button type="submit" className="text-[10px] font-black text-yellow-500 uppercase px-2">Send</button>
+            <button 
+              type="submit" 
+              disabled={!input.trim()}
+              className="text-yellow-500 px-2 disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </button>
           </form>
         </div>
       )}

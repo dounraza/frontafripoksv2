@@ -141,25 +141,31 @@ function App() {
   const [showExitPopup, setShowExitPopup] = useState(false);
 
   useEffect(() => {
-    if (isReadyToPlay && !gameStartTime && user?.id) {
+    // Le compteur ne s'active que s'il y a au moins 2 joueurs
+    const hasEnoughPlayers = tableData && tableData.players && tableData.players.length >= 2;
+
+    if (isReadyToPlay && hasEnoughPlayers && !gameStartTime && user?.id) {
       const now = Date.now();
       setGameStartTime(now);
       localStorage.setItem(`game_start_time_${user.id}`, now.toString());
-    } else if (!isReadyToPlay && user?.id) {
-      setGameStartTime(null);
-      localStorage.removeItem(`game_start_time_${user.id}`);
     }
-  }, [isReadyToPlay, user?.id]);
+  }, [isReadyToPlay, gameStartTime, user?.id, tableData]);
 
   useEffect(() => {
     if (!gameStartTime) return;
     const interval = setInterval(() => {
-      const elapsed = Date.now() - gameStartTime;
-      const remaining = 45 * 60 * 1000 - elapsed;
-      setTimeRemaining(remaining > 0 ? remaining : 0);
+      // Vérifier toujours le nombre de joueurs en temps réel
+      const hasEnoughPlayers = tableData && tableData.players && tableData.players.length >= 2;
+      
+      if (hasEnoughPlayers) {
+        const elapsed = Date.now() - gameStartTime;
+        const remaining = 45 * 60 * 1000 - elapsed;
+        setTimeRemaining(remaining > 0 ? remaining : 0);
+      }
+      // Si moins de 2 joueurs, on ne décrémente pas, le temps reste figé
     }, 1000);
     return () => clearInterval(interval);
-  }, [gameStartTime]);
+  }, [gameStartTime, tableData]);
 
   const handleJoin = () => {
     if (isProcessingRecave) return;

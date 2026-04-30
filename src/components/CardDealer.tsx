@@ -44,12 +44,12 @@ export const CardDealer: React.FC<CardDealerProps> = ({
               }}
             >
               <Card 
-                value={card?.value || ''} 
-                suit={card?.suit || ''} 
-                revealed={isRevealed} 
-                hidden={false} 
-              />
-            </div>
+              value={card?.value || ''} 
+              suit={card?.suit || ''} 
+              revealed={isRevealed} 
+              hidden={false} 
+              size={isRevealed ? 'large' : 'normal'}
+              />            </div>
           </MotionController>
         );
       })}

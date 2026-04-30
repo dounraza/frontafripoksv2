@@ -87,6 +87,15 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   
   const [showPicker, setShowPicker] = useState(false);
 
+  const getEmojiPosition = () => {
+    // Siège 0 et 8 (en bas de table)
+    if (seatNumber === 0 || seatNumber === 8) {
+      return "absolute -top-20 left-1/2 transform -translate-x-1/2 z-[100]";
+    }
+    // Autres sièges (côtés/haut)
+    return "absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-[100]";
+  };
+
   return (
     <div 
       id={id || `seat-${seatNumber}`}
@@ -114,7 +123,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           {isActive && <div className="absolute inset-[-8px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
           
           {currentEmoji && (
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-full p-2 text-2xl z-50 animate-bounce shadow-xl border border-gray-200">
+            <div className={`${getEmojiPosition()} bg-white/90 rounded-full p-2 text-3xl animate-bounce shadow-xl border border-gray-200`}>
                 {currentEmoji}
             </div>
           )}
