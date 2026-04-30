@@ -39,22 +39,17 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
   // Asehoy foana ny mpilalao fa ny karatra no afenina any ambany raha nanao fold
   
   const getCardTransform = (seat: number) => {
-    // sm: correspond au WEB/Desktop, les classes sans préfixe sont pour le MOBILE
+    // Mobile (sans préfixe) : plus compact / Desktop (sm:) : standard
     const transforms: { [key: number]: string } = {
-      // Joueur en bas à gauche
-      0: "sm:-translate-y-27 sm:translate-x-2 -translate-y-22 translate-x-1",
-      // Joueurs à gauche (bas vers haut)
-      1: "sm:-translate-y-29 sm:translate-x-15 -translate-y-20 translate-x-10",
-      2: "sm:translate-y-12 sm:translate-x-15 translate-y-10 translate-x-10",
-      3: "sm:translate-y-12 sm:translate-x-15 translate-y-8 translate-x-8",
-      // Joueur en haut
-      4: "sm:translate-y-11 translate-y-10",
-      // Joueurs à droite (haut vers bas)
-      5: "sm:translate-y-13 sm:-translate-x-15 translate-y-8 -translate-x-8",
-      6: "sm:translate-y-13 sm:-translate-x-15 translate-y-10 -translate-x-10",
-      7: "sm:-translate-y-35 sm:-translate-x-15 -translate-y-25 -translate-x-10",
-      // Joueur en bas à droite
-      8: "sm:-translate-y-35 sm:-translate-x-19 -translate-y-25 -translate-x-10",
+      0: "sm:-translate-y-30 sm:translate-x-1 -translate-y-20 translate-x-2",
+      1: "sm:-translate-y-28 sm:translate-x-16 -translate-y-20 translate-x-12",
+      2: "sm:translate-y-12 sm:translate-x-16 translate-y-8 translate-x-12",
+      3: "sm:translate-y-12 sm:translate-x-16 translate-y-8 translate-x-8",
+      4: "sm:translate-y-12 translate-y-8",
+      5: "sm:translate-y-12 sm:-translate-x-16 translate-y-8 -translate-x-8",
+      6: "sm:translate-y-12 sm:-translate-x-16 translate-y-10 -translate-x-10",
+      7: "sm:-translate-y-30 sm:-translate-x-16 -translate-y-20 -translate-x-12",
+      8: "sm:-translate-y-28 sm:-translate-x-2 -translate-y-20 -translate-x-2",
     };
     return transforms[seat] || "translate-y-5";
   };

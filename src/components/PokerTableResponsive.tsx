@@ -21,7 +21,7 @@ interface PokerTableProps {
 // POSITIONS EXACTES DU BACKUP
 const PLAYER_POSITIONS = [
   'bottom-[-4%] left-1/4 -translate-x-1/2',   
-   'bottom-[18%] left-[-10%]',                  
+   'bottom-[20%] left-[-10%]',                  
    'top-[38%] left-[-8%]',                     
    'top-[18%] left-[-10%]',                     
    'top-[-6%] left-1/2 -translate-x-1/2',       

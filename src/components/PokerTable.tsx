@@ -20,8 +20,8 @@ interface PokerTableProps {
 
 const PLAYER_POSITIONS = [
   'bottom-[0%] sm:left-1/4 left-[20%] -translate-x-1/2',   
-  'bottom-[15%] sm:left-[-15%] left-[-5%]',                  
-  'top-[20%] sm:left-[-17%] left-[-8%]',                     
+  'bottom-[20%] sm:left-[-15%] left-[-8%]',                  
+  'top-[26%] sm:left-[-15%] left-[-8%]',                     
   'top-[2%] sm:left-[-10%] left-[-2%]',                     
   'top-[-10%] sm:top-[-13%] left-1/2 -translate-x-1/2',       
   'top-[2%] sm:right-[-15%] right-[-2%]',                    

@@ -132,6 +132,35 @@ function App() {
     }
   }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, fetchSolde]);
 
+  const [gameStartTime, setGameStartTime] = useState<number | null>(() => {
+    if (!user?.id) return null;
+    const saved = localStorage.getItem(`game_start_time_${user.id}`);
+    return saved ? parseInt(saved) : null;
+  });
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [showExitPopup, setShowExitPopup] = useState(false);
+
+  useEffect(() => {
+    if (isReadyToPlay && !gameStartTime && user?.id) {
+      const now = Date.now();
+      setGameStartTime(now);
+      localStorage.setItem(`game_start_time_${user.id}`, now.toString());
+    } else if (!isReadyToPlay && user?.id) {
+      setGameStartTime(null);
+      localStorage.removeItem(`game_start_time_${user.id}`);
+    }
+  }, [isReadyToPlay, user?.id]);
+
+  useEffect(() => {
+    if (!gameStartTime) return;
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - gameStartTime;
+      const remaining = 45 * 60 * 1000 - elapsed;
+      setTimeRemaining(remaining > 0 ? remaining : 0);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [gameStartTime]);
+
   const handleJoin = () => {
     if (isProcessingRecave) return;
     const amount = parseInt(buyIn);
@@ -156,6 +185,9 @@ function App() {
     }
     joinTable(user!.name, selectedTable, String(amount)); 
     setIsReadyToPlay(true);
+    const now = Date.now();
+    setGameStartTime(now);
+    localStorage.setItem(`game_start_time_${user!.id}`, now.toString());
     setShowJoinForm(false);
     setShowRecave(false);
     localStorage.setItem('active_table', selectedTable);
@@ -319,14 +351,31 @@ function App() {
         <div className="flex flex-col h-screen bg-[#0a0a0a] overflow-hidden">
           {/* 4% - LE QUITTER DANS TABL */}
           <div className="h-[4vh] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
-             <button onClick={() => { 
-                leaveTable(); 
-                setIsReadyToPlay(false); 
-                localStorage.removeItem('active_table');
-                window.history.pushState({}, '', '/');
-             }} className="h-[70%] px-2 bg-black/40 text-gray-400 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 hover:text-white transition-all shrink-0">
-               <LogOut className="w-3 h-3" /> Quitter
+             <button onClick={() => {
+                if (timeRemaining > 0) {
+                  setShowExitPopup(true);
+                } else {
+                  leaveTable();
+                  setIsReadyToPlay(false);
+                  localStorage.removeItem('active_table');
+                  localStorage.removeItem('game_start_time');
+                  window.history.pushState({}, '', '/');
+                }
+             }} className={`h-[70%] px-2 bg-black/40 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 transition-all shrink-0 ${timeRemaining > 0 ? 'text-red-500' : 'text-gray-400 hover:text-white'}`}>
+               <LogOut className="w-3 h-3" /> 
+               {timeRemaining > 0 ? `${Math.floor(timeRemaining / 60000)}:${Math.floor((timeRemaining % 60000) / 1000).toString().padStart(2, '0')}` : 'Quitter'}
              </button>
+             
+             {showExitPopup && (
+                <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-[#1a1a1a] p-6 rounded-3xl border border-red-500/50 shadow-2xl max-w-xs text-center">
+                        <h3 className="text-xl font-black text-red-500 uppercase">Attention !</h3>
+                        <p className="text-white text-sm mt-2">Vous devez rester jouer au moins 45 minutes avant de pouvoir quitter la table.</p>
+                        <p className="text-yellow-500 font-bold mt-2">Temps restant : {Math.floor(timeRemaining / 60000)} min</p>
+                        <button onClick={() => setShowExitPopup(false)} className="mt-6 w-full py-2 bg-white text-black font-black uppercase rounded-lg">Compris</button>
+                    </div>
+                </div>
+             )}
              
              <div className="flex items-center gap-2 h-full">
                 <div className="flex items-center gap-1">
