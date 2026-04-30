@@ -48,7 +48,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
               suit={card?.suit || ''} 
               revealed={isRevealed} 
               hidden={false} 
-              size={isRevealed ? 'large' : 'normal'}
+              size={isRevealed ? 'normal' : 'small'}
               />            </div>
           </MotionController>
         );

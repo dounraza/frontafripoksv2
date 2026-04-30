@@ -7,6 +7,7 @@ import { EmptySlot } from './EmptySlot';
 import { useSocket } from '../hooks/useSocket';
 import { isPlayerTurn, getPlayerRoleInfo } from '../utils/pokerLogic';
 import { CardDealer } from './CardDealer';
+import { BetChips } from './BetChips';
 
 interface PokerTableProps {
   tableData: any;

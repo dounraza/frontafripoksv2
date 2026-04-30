@@ -61,7 +61,7 @@ export const Chat: React.FC<ChatProps> = ({ tableId, playerName, socket }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full right-0 mb-2 z-[3000] w-[240px] sm:w-[300px] h-[300px] sm:h-[400px] bg-[#1a1a1a]/95 border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200 origin-bottom-right backdrop-blur-md">
+        <div className="absolute bottom-full right-0 mb-2 z-[3000] w-[260px] sm:w-[300px] h-[300px] sm:h-[400px] bg-[#1a1a1a]/95 border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200 origin-bottom-right backdrop-blur-md">
           <div className="p-3 border-b border-white/10 bg-black/60 flex justify-between items-center cursor-pointer" onClick={toggleChat}>
             <h3 className="text-xs font-black italic text-white uppercase tracking-tighter flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -83,19 +83,19 @@ export const Chat: React.FC<ChatProps> = ({ tableId, playerName, socket }) => {
             })}
             <div ref={chatEndRef} />
           </div>
-          <form onSubmit={sendMessage} className="p-2 border-t border-white/10 bg-black/60 flex gap-2">
+          <form onSubmit={sendMessage} className="p-1.5 border-t border-white/10 bg-black/60 flex gap-1.5 items-center">
             <input 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Aa..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+              className="flex-1 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
             />
             <button 
               type="submit" 
               disabled={!input.trim()}
-              className="text-yellow-500 px-2 disabled:opacity-50"
+              className="bg-yellow-500 p-2 rounded-full disabled:opacity-50 shrink-0"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-3.5 h-3.5 text-black" />
             </button>
           </form>
         </div>

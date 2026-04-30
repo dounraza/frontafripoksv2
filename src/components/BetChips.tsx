@@ -64,15 +64,41 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
   if (currentAmount <= 0 && !animateGather) return null;
 
   const getPositionStyle = () => {
-    // Décalage augmenté pour faire "entrer" les jetons vers le centre de la table
-    // Sièges à gauche (1, 2, 3) -> Jetons plus vers la DROITE
-    if ([1, 2, 3].includes(seatNumber)) return { top: '50%', left: '130px', transform: 'translateY(-50%)' };
-    // Sièges à droite (5, 6, 7) -> Jetons plus vers la GAUCHE
-    if ([5, 6, 7].includes(seatNumber)) return { top: '50%', right: '130px', transform: 'translateY(-50%)' };
-    // Siège en haut (4) -> Jetons plus vers le BAS
-    if (seatNumber === 4) return { top: '150px', left: '50%', transform: 'translateX(-50%)' };
-    // Sièges en bas (0, 8) -> Jetons plus vers le HAUT
-    return { bottom: '150px', left: '50%', transform: 'translateX(-50%)' };
+    // Décalage pour aligner les jetons selon la demande :
+    // Seat 0 et 8 : en haut de son avatar (au-dessus)
+    if (seatNumber === 0 ) {
+      return { bottom: '90px', left: '60%', transform: 'translateX(-50%)' };
+    }
+    // Seat 4 : en bas du trapeze (au-dessous)
+    if (seatNumber === 4) {
+      return { top: '12vh', left: '50%', transform: 'translateX(-50%)' };
+    }
+    // Seat 1, 2, 3 : en bas et a droite du trapeze
+    if ([1].includes(seatNumber)) {
+      return { top: '-10vh', left: '8vh' };
+    }
+    if ([2].includes(seatNumber)) {
+      return { top: '1vh', left: '10vh' };
+    }
+    if ([3].includes(seatNumber)) {
+      return { top: '7vh', left: '14vh' };
+    }
+
+    // Seat 5, 6, 7 : en bas et a droite du trapeze
+     if ([5].includes(seatNumber)) {
+      return { top: '7vh', left: '-13vh' };
+    }
+      if ([6].includes(seatNumber)) {
+      return { top: '10vh', left: '-13vh' };
+    }
+    if ([7].includes(seatNumber)) {
+      return { top: '-13vh', left: '-13vh' };
+    }
+    if ([8].includes(seatNumber)) {
+     return { top: '-24vh', left: '-18vh' };
+    }
+    // Par défaut (milieu si inconnu)
+    return { bottom: '140px', left: '50%', transform: 'translateX(-50%)' };
   };
 
   const targetX = SEAT_ANIMATION_TARGETS[seatNumber]?.x || '0px';
