@@ -77,7 +77,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCountryCode, setSelectedCountryCode] = useState('+261');
   const [isProcessing, setIsProcessing] = useState(false);
-  const itemsPerPage = 6;
+  const [itemsPerPage, setItemsPerPage] = useState(window.innerWidth < 768 ? 3 : 6);
+
+  useEffect(() => {
+    const handleResize = () => setItemsPerPage(window.innerWidth < 768 ? 3 : 6);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const slides = [
     { title: 'COIN REWARDS', desc: 'Gagnez des jetons en jouant', img: '/image/4.jpg' },
@@ -349,7 +355,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <div className="flex justify-between items-center">
                       <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-[50vh] sm:max-h-none pr-2 custom-scrollbar">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-[70vh] sm:max-h-none pr-2 custom-scrollbar">
                       {paginatedTables.map((t) => (
                           <div key={t.id} className="group relative w-full h-40 sm:h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
                               <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />

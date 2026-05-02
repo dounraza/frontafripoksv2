@@ -167,8 +167,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
         
         {/* LOGO DÉCORATIF AU MILIEU DE LA TABLE */}
-        <div className="absolute flex flex-col items-center justify-center opacity-30 select-none pointer-events-none">
-          <img src="/logo.ico" alt="AFRIPOKS Logo" className="w-16 h-16 sm:w-24 sm:h-24 object-contain mix-blend-screen" />
+        <div className="absolute flex flex-col items-center justify-center opacity-100 select-none pointer-events-none">
+          <img src="/logo.ico" alt="AFRIPOKS Logo" className="w-20 h-20 sm:w-28 sm:h-28 object-contain" />
         </div>
         
         {/* POT AND COMMUNITY CARDS */}
