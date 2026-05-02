@@ -24,14 +24,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [joinedTableId, setJoinedTableId] = useState<string | null>(null);
   const [newEmoji, setNewEmoji] = useState<{ playerName: string, emoji: string } | null>(null);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('poker_user');
-    const token = savedUser ? JSON.parse(savedUser).token : null;
-
-    if (!token) return;
+  const connectSocket = useCallback((token: string) => {
+    if (socket) return; // Déjà connecté
 
     const newSocket = io(SOCKET_URL, {
-      transports: ['websocket'], // Forcer websocket pour plus de fluidité
+      transports: ['websocket'],
       auth: { token },
       reconnection: true,
       reconnectionAttempts: 10,
@@ -61,15 +58,21 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setNewEmoji(data);
       setTimeout(() => setNewEmoji(null), 3000);
     });
+  }, [socket]);
+
+  useEffect(() => {
+    // Tentative de connexion automatique au démarrage si token présent
+    const savedUser = localStorage.getItem('poker_user');
+    const token = savedUser ? JSON.parse(savedUser).token : null;
+    if (token) connectSocket(token);
 
     return () => {
-      newSocket.disconnect();
+      if (socket) socket.disconnect();
     };
-  }, []); // Exécuter une seule fois au montage
+  }, [connectSocket]);
 
   const joinTable = useCallback((playerName: string, tableId: string, buyIn: string) => {
     if (socket) {
-      // On envoieplayerName pour compatibilité mais le backend utilisera le token
       socket.emit('joinTable', { playerName, tableId, buyIn });
       setJoinedTableId(tableId);
     }
@@ -84,11 +87,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [socket, joinedTableId]);
 
   const sendAction = useCallback((action: string, amount: number = 0) => {
-    console.log(`Sending action: ${action}, amount: ${amount}, tableId: ${joinedTableId}`);
     if (socket && joinedTableId) {
       socket.emit('playerAction', { tableId: joinedTableId, action, amount });
-    } else {
-      console.warn('Socket or tableId missing, cannot send action', { socket: !!socket, joinedTableId });
     }
   }, [socket, joinedTableId]);
 
@@ -99,7 +99,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [socket, joinedTableId]);
 
   return (
-    <SocketContext.Provider value={{ socket, tableData, error, joinTable, leaveTable, sendAction, sendEmoji, newEmoji }}>
+    <SocketContext.Provider value={{ socket, tableData, error, joinTable, leaveTable, sendAction, sendEmoji, newEmoji, connectSocket }}>
       {children}
     </SocketContext.Provider>
   );

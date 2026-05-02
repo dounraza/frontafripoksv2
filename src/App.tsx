@@ -229,6 +229,7 @@ function App() {
 
   if (!user) return <AuthForm onSuccess={(token, name, id) => {
     setUser({ token, name, id });
+    connectSocket(token); // Lancer la connexion socket ici
     window.history.pushState({}, '', '/dashboard');
   }} />;
 
