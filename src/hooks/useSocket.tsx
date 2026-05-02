@@ -114,8 +114,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [socket, joinedTableId]);
 
   const sendAction = useCallback((action: string, amount: number = 0) => {
+    console.log(`Sending action: ${action}, amount: ${amount}, tableId: ${joinedTableId}`);
     if (socket && joinedTableId) {
       socket.emit('playerAction', { tableId: joinedTableId, action, amount });
+    } else {
+      console.warn('Socket or tableId missing, cannot send action', { socket: !!socket, joinedTableId });
     }
   }, [socket, joinedTableId]);
 
