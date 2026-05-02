@@ -228,9 +228,10 @@ function App() {
   }, [user]);
 
   if (!user) return <AuthForm onSuccess={(token, name, id) => {
+    localStorage.setItem('poker_user', JSON.stringify({ token, name, id }));
     setUser({ token, name, id });
-    connectSocket(token); // Lancer la connexion socket ici
-    window.history.pushState({}, '', '/dashboard');
+    connectSocket(token);
+    window.location.reload();
   }} />;
 
   return (
