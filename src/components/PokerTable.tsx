@@ -184,7 +184,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               100% { transform: translateX(0) scale(var(--card-scale, 1)); opacity: 1; }
             }
             .animate-community-card {
-              animation: slide-in-right 2.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              animation: slide-in-right 3.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
               opacity: 0;
             }
           `}</style>
@@ -198,7 +198,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
                 className="animate-community-card origin-center shrink-0"
-                style={{ animationDelay: `${idx * 1.0}s` }}
+                style={{ animationDelay: `${idx * 1.5}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
