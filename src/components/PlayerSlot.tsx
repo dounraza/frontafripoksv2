@@ -88,12 +88,8 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   const [showPicker, setShowPicker] = useState(false);
 
   const getEmojiPosition = () => {
-    // Siège 0 et 8 (en bas de table)
-    if (seatNumber === 0 || seatNumber === 8) {
-      return "absolute -top-20 left-1/2 transform -translate-x-1/2 z-[100]";
-    }
-    // Autres sièges (côtés/haut)
-    return "absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-[100]";
+    // Tous les émojis apparaissent au-dessus de l'avatar
+    return "absolute -top-16 left-1/2 transform -translate-x-1/2 z-[100]";
   };
 
   return (

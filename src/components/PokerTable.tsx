@@ -5,6 +5,7 @@ import { Card } from './Card';
 import { ChipPot } from './ChipPot';
 import { EmptySlot } from './EmptySlot';
 import { useSocket } from '../hooks/useSocket';
+import { useSound } from '../hooks/useSound';
 import { isPlayerTurn, getPlayerRoleInfo } from '../utils/pokerLogic';
 import { CardDealer } from './CardDealer';
 import { BetChips } from './BetChips';
@@ -34,6 +35,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   tableData, currentUserId, currentUserName, isVertical, sendAction, sendEmoji, callAmount, isMyTurn 
 }) => {
   const { newEmoji } = useSocket();
+  
   if (!tableData) return null;
 
   const isShowdown = tableData.gameState === 'showdown';
@@ -120,6 +122,22 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   const firstWinner = players.find((p: any) => winnerIds.includes(p.id));
   const winnerSeatIdx = firstWinner ? firstWinner.position : undefined;
   const [delayedWinnerIdx, setDelayedWinnerIdx] = React.useState<number | undefined>(undefined);
+  
+  const { playSound } = useSound();
+
+  // Jouer le son de partage de cartes quand les cartes communautaires changent
+  React.useEffect(() => {
+    if (communityCards.length > 0) {
+      playSound('share-cards');
+    }
+  }, [communityCards.length]);
+
+  // Jouer le son de victoire
+  React.useEffect(() => {
+    if (winnerIds.length > 0) {
+      playSound('win');
+    }
+  }, [winnerIds.length]);
 
   React.useEffect(() => {
     if (winnerSeatIdx !== undefined) {
@@ -148,15 +166,16 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
         
+        {/* LOGO DÉCORATIF AU MILIEU DE LA TABLE */}
+        <div className="absolute flex flex-col items-center justify-center opacity-30 select-none pointer-events-none">
+          <img src="/logo.ico" alt="AFRIPOKS Logo" className="w-16 h-16 sm:w-24 sm:h-24 object-contain mix-blend-screen" />
+        </div>
+        
         {/* POT AND COMMUNITY CARDS */}
-        <div className="flex flex-col items-center z-10 relative gap-8 mt-[-40px]">
+        <div className="flex flex-col items-center z-10 relative gap-8 mt-[-110px]">
           <div className="z-20 flex flex-col items-center" ref={potRef}>
-             <ChipPot 
-               amount={displayPot} 
-               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
-               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x || 0}px` : `0px`} 
-               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y || 0}px` : `0px`} 
-             />
+             <img src="/image/jetonMany.png" alt="Jetons" className="w-24 h-24 sm:w-32 sm:h-32 object-contain" />
+             <div className="text-yellow-500 font-black text-lg sm:text-xl mt-2">{displayPot.toLocaleString()} MGA</div>
           </div>
 
           <style>{`
@@ -170,10 +189,10 @@ export const PokerTable: React.FC<PokerTableProps> = ({
             }
           `}</style>
           <div 
-            className={`transition-all duration-700 gap-1.5 px-3 flex items-center justify-center bg-[#1e5a3d]/30 rounded-2xl shadow-inner border-2 border-white/10 z-10 opacity-100 shrink-0 ${
-              communityCards.length >= 5 ? 'h-[90px] min-w-[240px]' : 'h-[100px] min-w-[260px]'
+            className={`transition-all duration-700 gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/30 rounded-2xl shadow-inner border-2 border-white/10 z-10 opacity-100 shrink-0 ${
+              communityCards.length >= 5 ? 'h-[120px] min-w-[300px]' : 'h-[130px] min-w-[320px]'
             } ${tableData.gameState === 'all_fold' ? 'hidden' : ''}`}
-            style={{ '--card-scale': communityCards.length >= 5 ? '1.0' : '1.1' } as React.CSSProperties}
+            style={{ '--card-scale': communityCards.length >= 5 ? '1.15' : '1.25' } as React.CSSProperties}
           >
             {communityCards.map((card: any, idx: number) => (
               <div 

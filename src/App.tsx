@@ -9,22 +9,18 @@ import { ActionPanel } from './components/ActionPanel';
 import { Profile } from './components/Profile';
 import { LogOut, Wallet, User, History, Volume2, VolumeX } from 'lucide-react';
 import { getCallAmount, isPlayerTurn } from './utils/pokerLogic';
+import { useSound } from './hooks/useSound';
 
 function App() {
   const { socket, tableData, joinTable, leaveTable, sendAction, sendEmoji } = useSocket();
+  const { isMuted, toggleMute } = useSound();
+  
   const [user, setUser] = useState<{token: string, name: string, id: string, avatar_url?: string} | null>(() => {
     const savedUser = localStorage.getItem('poker_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  // Re-fetch solde when tableData is received for the first time after a refresh
-  useEffect(() => {
-    if (tableData && user) {
-      fetchSolde();
-    }
-  }, [tableData?.id, user?.id]);
   const [showProfile, setShowProfile] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [isReadyToPlay, setIsReadyToPlay] = useState(() => {
     const pathTableId = window.location.pathname.startsWith('/table/') ? window.location.pathname.split('/')[2] : null;
@@ -42,6 +38,13 @@ function App() {
   const [isProcessingRecave, setIsProcessingRecave] = useState(false);
   const [scale, setScale] = useState(1);
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
+
+  // Re-fetch solde when tableData is received for the first time after a refresh
+  useEffect(() => {
+    if (tableData && user) {
+      fetchSolde();
+    }
+  }, [tableData?.id, user?.id]);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -345,7 +348,7 @@ function App() {
           solde={solde}
           onRefreshSolde={fetchSolde}
           isMuted={isMuted}
-          onToggleMute={() => setIsMuted(!isMuted)}
+          onToggleMute={toggleMute}
           onJoinTable={(id, min) => { setSelectedTable(String(id)); setMinBuyIn(min); setBuyIn(String(min)); setShowJoinForm(true); }} 
           onLogout={() => {
             localStorage.removeItem('poker_user');
@@ -386,7 +389,7 @@ function App() {
              <div className="flex items-center gap-2 h-full">
                 <div className="flex items-center gap-1">
                    <button onClick={() => setShowHistory(true)} className="p-1 text-gray-400 hover:text-white transition-all"><History className="w-3.5 h-3.5" /></button>
-                   <button onClick={() => setIsMuted(!isMuted)} className="p-1 text-gray-400 hover:text-white transition-all">
+                   <button onClick={toggleMute} className="p-1 text-gray-400 hover:text-white transition-all">
                      {isMuted ? <VolumeX className="w-3.5 h-3.5 text-red-500" /> : <Volume2 className="w-3.5 h-3.5 text-green-500" />}
                    </button>
                 </div>

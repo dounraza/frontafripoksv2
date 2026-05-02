@@ -349,7 +349,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <div className="flex justify-between items-center">
                       <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-[50vh] sm:max-h-none pr-2 custom-scrollbar">
                       {paginatedTables.map((t) => (
                           <div key={t.id} className="group relative w-full h-40 sm:h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
                               <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
@@ -372,21 +372,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
                   {/* Pagination Controls */}
                   {filteredTables.length > itemsPerPage && (
-                    <div className="flex justify-center items-center gap-4 mt-8">
+                    <div className="flex justify-center items-center gap-2 mt-4 sm:mt-8 pb-4">
                       <button 
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
                         className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                       >
-                        <ChevronLeft className="w-6 h-6" />
+                        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                       </button>
                       
-                      <div className="flex gap-2">
+                      <div className="flex gap-1">
                         {Array.from({ length: Math.ceil(filteredTables.length / itemsPerPage) }, (_, i) => (
                           <button
                             key={i + 1}
                             onClick={() => setCurrentPage(i + 1)}
-                            className={`w-10 h-10 rounded-xl font-black transition-all border ${
+                            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl font-black transition-all border ${
                               currentPage === i + 1 
                                 ? 'bg-yellow-500 text-black border-yellow-500' 
                                 : 'bg-black/40 text-gray-400 border-white/10 hover:border-yellow-500/50'
@@ -402,7 +402,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         disabled={currentPage === Math.ceil(filteredTables.length / itemsPerPage)}
                         className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                       >
-                        <ChevronRight className="w-6 h-6" />
+                        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                       </button>
                     </div>
                   )}
@@ -410,6 +410,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
         )}
       </main>
+
 
       <Modal isOpen={showDepositModal} onClose={() => setShowDepositModal(false)} title="Dépôt de Fonds">
         <div className="space-y-4">
