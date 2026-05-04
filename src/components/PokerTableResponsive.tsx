@@ -163,7 +163,7 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full p-0 m-0 overflow-visible">
-      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#0a2e1a] to-[#051a0f] shadow-[0_0_80px_rgba(0,0,0,0.9),inset_0_0_120px_rgba(0,0,0,0.6)] flex items-center justify-center rounded-[200px] border-[4px] border-[#1e5a3d]/30 w-[92%] max-w-[500px] aspect-[10/16]"
+      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#0a2e1a] to-[#051a0f] shadow-[0_0_80px_rgba(0,0,0,0.9),inset_0_0_120px_rgba(0,0,0,0.6)] flex items-center justify-center rounded-[200px] border-[4px] border-[#1e5a3d]/30 w-[98vw] max-w-[600px] aspect-[9/16]"
         style={{ margin: '0 auto' }}>
         
         <div className="absolute inset-[2px] bg-cover opacity-5 pointer-events-none rounded-[198px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>

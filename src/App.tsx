@@ -360,8 +360,8 @@ function App() {
         />
       ) : (
         <div className="flex flex-col h-screen bg-[#0a0a0a] overflow-hidden">
-          {/* 4% - LE QUITTER DANS TABL */}
-          <div className="h-[4vh] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
+          {/* HEADER: 4% */}
+          <div className="h-[4%] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
              <button onClick={() => {
                 if (timeRemaining > 0) {
                   setShowExitPopup(true);
@@ -405,22 +405,16 @@ function App() {
              </div>
           </div>
 
-          {/* 85% - LA PLACEMENT DE LA TABLE */}
-          <div className="h-[85vh] w-full flex items-center justify-center overflow-hidden relative">
-            <div className="w-full h-full flex items-center justify-center" style={{ transform: isReadyToPlay ? `scale(${scale})` : 'none', transformOrigin: 'center' }}>
-              <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} sendEmoji={sendEmoji} callAmount={callAmount} isMyTurn={isMyTurn} />
+          {/* TABLE AREA: 86% */}
+          <div className="h-[86%] w-full flex items-center justify-center overflow-hidden relative">
+            <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} sendEmoji={sendEmoji} callAmount={callAmount} isMyTurn={isMyTurn} />
+            <div className="absolute bottom-4 right-4 z-[3000]">
+                <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
             </div>
           </div>
           
-          {/* 1% - LE BOUTON CHAT */}
-          <div className="h-[1vh] w-full relative z-[3000] flex justify-end px-4">
-             <div className="absolute bottom-0 right-4 transform translate-y-1/2">
-                <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />
-             </div>
-          </div>
-
-          {/* 10% - LE BLOC ACTION PLAYER */}
-          <div className="h-[10vh] w-full flex items-center justify-center bg-gradient-to-t from-black to-transparent px-2 shrink-0">
+          {/* ACTION PANEL: 10% */}
+          <div className="h-[10%] w-full flex items-center justify-center bg-gradient-to-t from-black to-transparent px-2 shrink-0">
             <div className="w-full max-w-[420px]">
                <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>
