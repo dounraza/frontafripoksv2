@@ -153,14 +153,14 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   }, [winnerSeatIdx, communityCards.length]);
 
   return (
-    <div className="flex flex-col items-center w-full h-full justify-center">
-      <div className="relative mt-20 transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
+    <div className="flex flex-col items-center w-full h-full justify-center overflow-visible">
+      <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
         style={{ 
           width: 'auto', 
-          height: '95%', 
+          height: '90%', 
           aspectRatio: '10/16',
-          maxWidth: '95vw',
-          maxHeight: '98%'
+          maxWidth: '90vw',
+          maxHeight: '90%'
         }}>
         
         <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>

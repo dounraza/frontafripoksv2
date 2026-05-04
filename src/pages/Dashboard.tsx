@@ -355,9 +355,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <div className="flex justify-between items-center">
                       <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-[70vh] sm:max-h-none pr-2 custom-scrollbar">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-none pr-2 custom-scrollbar">
                       {paginatedTables.map((t) => (
-                          <div key={t.id} className="group relative w-full h-40 sm:h-48 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
+                          <div key={t.id} className="group relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
                               <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                               <div className="absolute top-4 sm:top-5 right-4 sm:right-5 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-full shadow-lg"><span className="font-black text-[9px] sm:text-[10px] tracking-wider uppercase">{t.cave} MGA</span></div>
