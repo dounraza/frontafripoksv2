@@ -17,25 +17,19 @@ interface CardDealerProps {
 export const CardDealer: React.FC<CardDealerProps> = ({
   cards, gameType, dealOrigin, dealOrder, numPlayers, handKey, isRevealed, isShowdown, isVertical
 }) => {
-  // Par défaut 2 cartes pour Hold'em, mais on s'adapte au nombre de cartes reçues (ex: 4 pour Omaha)
   const defaultCount = gameType === 'omaha' ? 4 : 2;
   const cardCount = cards && cards.length > 0 ? cards.length : defaultCount;
   const displayCards = cards && cards.length > 0 ? cards : Array(cardCount).fill(null);
 
   return (
-    <div key={handKey} className="absolute top-0 z-20 flex perspective-1000 items-center justify-center">
+    <div key={handKey} className="absolute top-0 z-20 flex items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
-        const delayMs = (idx * numPlayers + (dealOrder - 1)) * 300;
-        
-        // Calcul dynamique des offsets pour centrer n'importe quel nombre de cartes
-        // Pour 2 cartes : -12, 12
-        // Pour 4 cartes : -24, -8, 8, 24
-        const spread = 24; // Espace total approximatif
+        // Augmentation du délai pour un effet "vrai jeu de cartes" plus lent et naturel
+        const delayMs = ((dealOrder - 1) * cardCount + idx) * 300; 
+        const spread = 20; 
         const endXOffset = (idx - (cardCount - 1) / 2) * spread;
-        
-        // Rotation progressive pour un effet éventail
         const rotation = (idx - (cardCount - 1) / 2) * 10;
-
+        
         return (
           <MotionController
             key={idx}
