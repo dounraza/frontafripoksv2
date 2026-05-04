@@ -77,10 +77,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCountryCode, setSelectedCountryCode] = useState('+261');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [itemsPerPage, setItemsPerPage] = useState(window.innerWidth < 768 ? 3 : 6);
+  const [itemsPerPage, setItemsPerPage] = useState(window.innerWidth < 1024 ? 3 : 6);
 
   useEffect(() => {
-    const handleResize = () => setItemsPerPage(window.innerWidth < 768 ? 3 : 6);
+    const handleResize = () => setItemsPerPage(window.innerWidth < 1024 ? 3 : 6);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -221,6 +221,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   );
 
   const paginatedTables = filteredTables.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const isMobileOrTablet = itemsPerPage === 3;
+  const tablesToDisplay = isMobileOrTablet ? filteredTables : paginatedTables;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
@@ -376,9 +378,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       ))}
                   </div>
 
-                  {/* Pagination Controls - Hidden on Mobile */}
-                  {!isMobile && filteredTables.length > itemsPerPage && (
-                    <div className="flex justify-center items-center gap-4 mt-8 sm:mt-12 pb-12 relative z-[100] pointer-events-auto">
+                  {/* Pagination Controls - Strictly Hidden on Mobile/Tablet */}
+                  {!isMobileOrTablet && filteredTables.length > itemsPerPage && (
+                    <div className="hidden md:flex justify-center items-center gap-4 mt-8 sm:mt-12 pb-12 relative z-[100] pointer-events-auto">
                       <button 
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
@@ -507,19 +509,12 @@ const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; chi
             <div className="bg-gray-900 border border-white/10 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-black text-yellow-500 italic uppercase tracking-tighter">{title}</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors"><XCircle className="w-6 h-6 text-gray-500 hover:text-whit               {children}
-            </div>
-        </div>
-    );
-};e="w-6 h-6 text-gray-500 hover:text-white"/></button>
+                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+                        <XCircle className="w-6 h-6 text-gray-500 hover:text-white"/>
+                    </button>
                 </div>
                 {children}
             </div>
         </div>
-    );
-};      </div>
-        </div>
-    );
-};v>
     );
 };
