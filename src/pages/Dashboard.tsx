@@ -356,7 +356,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pr-2 custom-scrollbar">
-                      {paginatedTables.map((t) => (
+                      {tablesToDisplay.map((t) => (
                           <div key={t.id} className="group relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
                               <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
@@ -376,9 +376,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       ))}
                   </div>
 
-                  {/* Pagination Controls */}
-                  {filteredTables.length > itemsPerPage && (
-                    <div className="flex justify-center items-center gap-4 mt-8 sm:mt-12 pb-12 relative pointer-events-auto">
+                  {/* Pagination Controls - Hidden on Mobile */}
+                  {!isMobile && filteredTables.length > itemsPerPage && (
+                    <div className="flex justify-center items-center gap-4 mt-8 sm:mt-12 pb-12 relative z-[100] pointer-events-auto">
                       <button 
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
@@ -507,9 +507,7 @@ const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; chi
             <div className="bg-gray-900 border border-white/10 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-black text-yellow-500 italic uppercase tracking-tighter">{title}</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors"><XCircle className="w-6 h-6 text-gray-500 hover:text-white"/></button>
-                </div>
-                {children}
+                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors"><XCircle className="w-6 h-6 text-gray-500 hover:text-whit               {children}
             </div>
         </div>
     );
@@ -518,5 +516,10 @@ const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; chi
                 {children}
             </div>
         </div>
+    );
+};      </div>
+        </div>
+    );
+};v>
     );
 };
