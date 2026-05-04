@@ -355,7 +355,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <div className="flex justify-between items-center">
                       <h1 className="text-xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">{view === 'cashGames' ? 'CASH GAMES' : 'TOURNOIS'} <span className="text-yellow-500 ml-1 sm:ml-2">LOBBY</span></h1>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-none pr-2 custom-scrollbar">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pr-2 custom-scrollbar">
                       {paginatedTables.map((t) => (
                           <div key={t.id} className="group relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all bg-gray-900/40 backdrop-blur-sm">
                               <img src={getTableImage(t.id)} className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity group-hover:opacity-40" alt="Table background" />
@@ -378,23 +378,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
                   {/* Pagination Controls */}
                   {filteredTables.length > itemsPerPage && (
-                    <div className="flex justify-center items-center gap-2 mt-4 sm:mt-8 pb-4">
+                    <div className="flex justify-center items-center gap-4 mt-8 sm:mt-12 pb-12 relative pointer-events-auto">
                       <button 
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
-                        className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                        className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 active:scale-90 disabled:opacity-20 disabled:cursor-not-allowed transition-all cursor-pointer touch-manipulation"
                       >
-                        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <ChevronLeft className="w-6 h-6" />
                       </button>
                       
-                      <div className="flex gap-1">
+                      <div className="flex gap-2">
                         {Array.from({ length: Math.ceil(filteredTables.length / itemsPerPage) }, (_, i) => (
                           <button
                             key={i + 1}
                             onClick={() => setCurrentPage(i + 1)}
-                            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl font-black transition-all border ${
+                            className={`w-12 h-12 rounded-2xl font-black transition-all border flex items-center justify-center active:scale-90 cursor-pointer touch-manipulation ${
                               currentPage === i + 1 
-                                ? 'bg-yellow-500 text-black border-yellow-500' 
+                                ? 'bg-yellow-500 text-black border-yellow-500 shadow-[0_0_20px_rgba(234,179,8,0.3)]' 
                                 : 'bg-black/40 text-gray-400 border-white/10 hover:border-yellow-500/50'
                             }`}
                           >
@@ -406,9 +406,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <button 
                         onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredTables.length / itemsPerPage), prev + 1))}
                         disabled={currentPage === Math.ceil(filteredTables.length / itemsPerPage)}
-                        className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                        className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 active:scale-90 disabled:opacity-20 disabled:cursor-not-allowed transition-all cursor-pointer touch-manipulation"
                       >
-                        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <ChevronRight className="w-6 h-6" />
                       </button>
                     </div>
                   )}
@@ -508,6 +508,12 @@ const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; chi
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-black text-yellow-500 italic uppercase tracking-tighter">{title}</h3>
                     <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors"><XCircle className="w-6 h-6 text-gray-500 hover:text-white"/></button>
+                </div>
+                {children}
+            </div>
+        </div>
+    );
+};e="w-6 h-6 text-gray-500 hover:text-white"/></button>
                 </div>
                 {children}
             </div>
