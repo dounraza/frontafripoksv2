@@ -94,8 +94,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
 
   return (
     <div 
-      id={id || `seat-${seatNumber}`}
-      className={`absolute flex flex-col items-center gap-2 ${positionClass} ${isWinner ? 'z-30 scale-110' : 'z-20'} transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}
+      className={`relative flex flex-col items-center gap-2 ${isWinner ? 'z-30 scale-110' : 'z-20'} transition-all duration-500`}
       style={{ opacity: isFolded ? 0.4 : ((isActive || isCurrentUser) ? 1 : 0.8) }}
     >
       <style>{`

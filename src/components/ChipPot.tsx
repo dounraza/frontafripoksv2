@@ -7,23 +7,15 @@ interface ChipPotProps {
   targetY?: string;
 }
 
-const PotChip = ({ color, index, stackIndex }: { color: any, index: number, stackIndex: number }) => (
+const PotChip = ({ index, stackIndex }: { index: number, stackIndex: number }) => (
   <div 
-    className="w-8 h-8 rounded-full border-[2px] border-dashed flex items-center justify-center shadow-2xl transition-transform"
+    className="w-10 h-10 transition-transform"
     style={{ 
-      backgroundColor: color.main,
-      borderColor: 'rgba(255,255,255,0.4)',
-      boxShadow: `0 ${index * 1.5 + 1.5}px 0 rgba(0,0,0,0.6), 0 8px 15px rgba(0,0,0,0.4)`,
       transform: `translateY(-${index * 3}px) rotate(${stackIndex * 15}deg)`,
-      backgroundImage: `
-        repeating-conic-gradient(from 0deg, rgba(255,255,255,0.2) 0deg 20deg, transparent 20deg 40deg),
-        radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), transparent)
-      `,
+      zIndex: 10 - index
     }}
   >
-    <div className="w-4 h-4 rounded-full border border-white/20 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-        <div className="w-full h-full rounded-full border-[0.5px] border-white/10" />
-    </div>
+    <img src="/image/jeton.png" alt="chip" className="w-full h-full object-contain drop-shadow-lg" />
   </div>
 );
 
@@ -43,17 +35,6 @@ export const ChipPot: React.FC<ChipPotProps> = ({ amount, winnerPosition, target
   }, [amount, prevAmount]);
 
   if (amount <= 0 && !winnerPosition) return null;
-
-  const getChipColor = (i: number) => {
-    const colors = [
-      { main: '#10b981', stripe: '#ffffff' }, // Green
-      { main: '#1f2937', stripe: '#ffffff' }, // Black
-      { main: '#8b5cf6', stripe: '#ffffff' }, // Purple
-      { main: '#f59e0b', stripe: '#ffffff' }, // Orange
-      { main: '#ef4444', stripe: '#ffffff' }  // Red
-    ];
-    return colors[i % colors.length];
-  };
 
   const stackCount = Math.max(Math.min(Math.ceil(amount / 500) + 1, 5), 1);
 
@@ -87,11 +68,11 @@ export const ChipPot: React.FC<ChipPotProps> = ({ amount, winnerPosition, target
         }
       `}</style>
       
-      <div className="flex gap-2 pot-floating">
+      <div className="flex gap-1 pot-floating">
         {Array.from({ length: stackCount }).map((_, i) => (
-            <div key={i} className="flex flex-col-reverse -space-y-8" style={{ animationDelay: `${i * 0.2}s` }}>
+            <div key={i} className="flex flex-col-reverse -space-y-7" style={{ animationDelay: `${i * 0.2}s` }}>
             {Array.from({ length: 2 + (i % 2) }).map((_, j) => (
-                <PotChip key={j} color={getChipColor(i)} index={j} stackIndex={i} />
+                <PotChip key={j} index={j} stackIndex={i} />
             ))}
             </div>
         ))}

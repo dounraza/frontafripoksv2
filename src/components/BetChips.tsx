@@ -67,11 +67,11 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
     // Décalage pour aligner les jetons selon la demande :
     // Seat 0 et 8 : en haut de son avatar (au-dessus)
     if (seatNumber === 0 ) {
-      return { bottom: '-23vh', left: '80%', transform: 'translateX(-50%)' };
+      return { bottom: '15vh', left: '80%', transform: 'translateX(-50%)' };
     }
     // Seat 4 : en bas du trapeze (au-dessous)
     if (seatNumber === 4) {
-      return { top: '12vh', left: '50%', transform: 'translateX(-50%)' };
+      return { top: '12vh', left: '40%', transform: 'translateX(-50%)' };
     }
     // Seat 1, 2, 3 : en bas et a droite du trapeze
     if ([1].includes(seatNumber)) {
@@ -86,16 +86,16 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
 
     // Seat 5, 6, 7 : en bas et a droite du trapeze
      if ([5].includes(seatNumber)) {
-      return { top: '7vh', left: '-13vh' };
+      return { top: '7vh', left: '-3vh' };
     }
       if ([6].includes(seatNumber)) {
-      return { top: '10vh', left: '-13vh' };
+      return { top: '10vh', left: '-5vh' };
     }
     if ([7].includes(seatNumber)) {
-      return { top: '-13vh', left: '-13vh' };
+      return { top: '8vh', left: '-3vh' };
     }
     if ([8].includes(seatNumber)) {
-     return { top: '-24vh', left: '-18vh' };
+     return { top: '-6vh', left: '4vh' };
     }
     // Par défaut (milieu si inconnu)
     return { bottom: '140px', left: '50%', transform: 'translateX(-50%)' };

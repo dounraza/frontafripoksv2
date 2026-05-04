@@ -5,6 +5,7 @@ import { PlayerSlot } from './PlayerSlot'; // Mbola hampiasaina kely ho an'ny lo
 
 interface PlayerSeatContainerProps {
   player: any;
+  gameType?: string;
   isActive: boolean;
   isWinner: boolean;
   positionClass: string;
@@ -39,19 +40,19 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
   // Asehoy foana ny mpilalao fa ny karatra no afenina any ambany raha nanao fold
   
   const getCardTransform = (seat: number) => {
-    // Mobile (sans préfixe) : plus compact / Desktop (sm:) : standard
+    // Valeurs ajustées pour être plus proche de l'avatar
     const transforms: { [key: number]: string } = {
-      0: "sm:-translate-y-30 sm:translate-x-1 -translate-y-20 translate-x-2",
-      1: "sm:-translate-y-20 sm:translate-x-16 -translate-y-20 translate-x-12",
-      2: "sm:translate-y-12 sm:translate-x-16 translate-y-8 translate-x-12",
-      3: "sm:translate-y-12 sm:translate-x-16 translate-y-8 translate-x-8",
-      4: "sm:translate-y-12 translate-y-8",
-      5: "sm:translate-y-12 sm:-translate-x-16 translate-y-8 -translate-x-8",
-      6: "sm:translate-y-12 sm:-translate-x-16 translate-y-10 -translate-x-10",
-      7: "sm:-translate-y-30 sm:-translate-x-16 -translate-y-20 -translate-x-12",
-      8: "sm:-translate-y-28 sm:-translate-x-2 -translate-y-20 -translate-x-2",
+      0: "sm:-translate-y-0 sm:translate-x-1 translate-y-8 translate-x-4",
+      1: "sm:translate-y-8 sm:translate-x-4 translate-y-8 translate-x-4",
+      2: "sm:translate-y-4 sm:translate-x-8 translate-y-4 translate-x-6",
+      3: "sm:translate-y-4 sm:translate-x-8 translate-y-6 translate-x-3",
+      4: "sm:translate-y-4 -translate-y-0",
+      5: "sm:translate-y-4 sm:-translate-x-8 translate-y-6 -translate-x-4",
+      6: "sm:translate-y-4 sm:-translate-x-8 translate-y-6 -translate-x-6",
+      7: "sm:-translate-y-16 sm:-translate-x-8 translate-y-4 -translate-x-6",
+      8: "sm:-translate-y-14 sm:-translate-x-2 translate-y-4 -translate-x-2",
     };
-    return transforms[seat] || "translate-y-5";
+    return transforms[seat] || "translate-y-2";
   };
 
   // Si le joueur courant a foldé (!isMeActive), il ne doit pas voir les cartes des autres.
@@ -63,12 +64,13 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     (!isMeActive ? isCurrentUser : true);
 
   return (
-    <div className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>
+    <div id={`seat-${seatNumber}`} className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>
         {/* TOERANA MISY NY KARATRA - Flex container miaraka amin'ny translate */}
         {showCards && (
             <div className={`flex justify-center items-center z-50 ${getCardTransform(seatNumber)}`}>
                 <CardDealer 
                     cards={player.cards}
+                    gameType={props.gameType}
                     dealOrigin={{ x: "0px", y: "0px" }}
                     dealOrder={1} numPlayers={9} handKey={handKey}
                     isRevealed={isRevealed}

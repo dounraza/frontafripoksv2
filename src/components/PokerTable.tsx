@@ -28,8 +28,8 @@ const PLAYER_POSITIONS = [
   'top-[-10%] sm:top-[-13%] left-1/2 -translate-x-1/2',       
   'top-[2%] sm:right-[-15%] right-[-2%]',                    
   'top-[21%] sm:right-[-15%] right-[-8%]',                    
-  'bottom-[15%] sm:right-[-15%] right-[-5%]',                 
-  'bottom-[-8%] right-[1%]',                  
+  'bottom-[25%] sm:right-[-15%] right-[-5%]',                 
+  'bottom-[-2%] right-[1%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
   tableData, currentUserId, currentUserName, isVertical, sendAction, sendEmoji, callAmount, isMyTurn 
@@ -45,17 +45,9 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   const IS_TEST_MODE = false; 
   let players = tableData.players || [];
   
-  /* 
   if (IS_TEST_MODE) {
-    players = [
-      { id: '4', name: 'Bot 4', position: 4, chips: 500, status: 'active', cards: [{value: 'A', suit: 'h'}, {value: 'K', suit: 'h'}], bet: 100, lastAction: 'raise' },
-      { id: '5', name: 'Bot 5', position: 5, chips: 800, status: 'active', cards: [{value: '7', suit: 'd'}, {value: '8', suit: 'd'}], bet: 50, lastAction: 'call' },
-      { id: '6', name: 'Bot 6', position: 6, chips: 200, status: 'active', cards: [{value: 'J', suit: 's'}, {value: '10', suit: 'c'}], bet: 0, lastAction: 'check' },
-      { id: '7', name: 'Bot 7', position: 7, chips: 1200, status: 'active', cards: [{value: '2', suit: 'h'}, {value: 'Q', suit: 's'}], bet: 200, lastAction: 'raise' },
-      { id: '8', name: 'Bot 8', position: 8, chips: 900, status: 'active', cards: [{value: 'K', suit: 's'}, {value: 'K', suit: 'c'}], bet: 0, lastAction: 'check' },
-    ];
+    // Logic removed
   }
-  */
 
   const communityCards = tableData.communityCards || [];
   
@@ -111,7 +103,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
      { x: 0, y: -230 },   // Seat 4
     { x: 140, y: -200 }, // Seat 5
     { x: 150, y: -80 },    // Seat 6
-    { x: 140, y: 70 },  // Seat 7
+    { x: 140, y: 80 },  // Seat 7
       { x: 45, y: 120 },  // Seat 8
     ];
     return offsets[idx] || { x: 0, y: 0 };
@@ -124,6 +116,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   const [delayedWinnerIdx, setDelayedWinnerIdx] = React.useState<number | undefined>(undefined);
   
   const { playSound } = useSound();
+  const lastPlayedActionRef = React.useRef<{[key: string]: string}>({});
 
   // Jouer le son de partage de cartes quand les cartes communautaires changent
   React.useEffect(() => {
@@ -139,10 +132,31 @@ export const PokerTable: React.FC<PokerTableProps> = ({
     }
   }, [winnerIds.length]);
 
+  // Sons des actions des joueurs (Optimisé pour ne jouer qu'une fois)
+  React.useEffect(() => {
+    players.forEach((p: any) => {
+      const actionKey = `${p.id}-${p.lastAction}`;
+      if (p.lastAction && lastPlayedActionRef.current[p.id] !== actionKey) {
+        lastPlayedActionRef.current[p.id] = actionKey;
+        switch (p.lastAction) {
+          case 'fold': playSound('fold'); break;
+          case 'call': playSound('call'); break;
+          case 'raise': playSound('raise'); break;
+          case 'all-in': playSound('allin'); break;
+          case 'check': playSound('check'); break;
+        }
+      }
+      // Reset si plus d'action
+      if (!p.lastAction) {
+        lastPlayedActionRef.current[p.id] = '';
+      }
+    });
+  }, [players]);
+
   React.useEffect(() => {
     if (winnerSeatIdx !== undefined) {
-      // Wait for community cards (0.7s delay each + 1.2s animation + buffer)
-      const delay = communityCards.length > 0 ? (communityCards.length * 700) + 1500 : 1000;
+      // Wait for community cards (0.8s delay each + 1.2s animation)
+      const delay = communityCards.length > 0 ? (communityCards.length * 800) + 1200 : 1000;
       const timer = setTimeout(() => {
         setDelayedWinnerIdx(winnerSeatIdx);
       }, delay);
@@ -174,8 +188,12 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         {/* POT AND COMMUNITY CARDS */}
         <div className="flex flex-col items-center z-10 relative gap-8 mt-[-110px]">
           <div className="z-20 flex flex-col items-center" ref={potRef}>
-             <img src="/image/jetonMany.png" alt="Jetons" className="w-24 h-24 sm:w-32 sm:h-32 object-contain" />
-             <div className="text-yellow-500 font-black text-lg sm:text-xl mt-2">{displayPot.toLocaleString()} MGA</div>
+             <ChipPot 
+               amount={displayPot} 
+               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
+               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x ?? getSeatOffset(delayedWinnerIdx).x}px` : `0px`} 
+               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y ?? getSeatOffset(delayedWinnerIdx).y}px` : `0px`} 
+             />
           </div>
 
           <style>{`
@@ -184,7 +202,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               100% { transform: translateX(0) scale(var(--card-scale, 1)); opacity: 1; }
             }
             .animate-community-card {
-              animation: slide-in-right 3.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              animation: slide-in-right 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
               opacity: 0;
             }
           `}</style>
@@ -198,7 +216,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
                 className="animate-community-card origin-center shrink-0"
-                style={{ animationDelay: `${idx * 1.5}s` }}
+                style={{ animationDelay: `${idx * 0.8}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
@@ -224,6 +242,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
             <PlayerSeatContainer 
               key={player.id}
               player={player} 
+              gameType={tableData.gameType}
               isActive={isPlayerTurn(tableData, player.id)} 
               isWinner={winnerIds.includes(player.id) && delayedWinnerIdx !== undefined} 
               isDealer={isDealer} isSB={isSB} isBB={isBB}

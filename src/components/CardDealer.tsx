@@ -4,6 +4,7 @@ import { MotionController } from './MotionController';
 
 interface CardDealerProps {
   cards: any[];
+  gameType?: string;
   dealOrigin: { x: string; y: string };
   dealOrder: number;
   numPlayers: number;
@@ -14,15 +15,26 @@ interface CardDealerProps {
 }
 
 export const CardDealer: React.FC<CardDealerProps> = ({
-  cards, dealOrigin, dealOrder, numPlayers, handKey, isRevealed, isShowdown, isVertical
+  cards, gameType, dealOrigin, dealOrder, numPlayers, handKey, isRevealed, isShowdown, isVertical
 }) => {
-  const displayCards = cards && cards.length > 0 ? cards : [null, null];
+  // Par défaut 2 cartes pour Hold'em, mais on s'adapte au nombre de cartes reçues (ex: 4 pour Omaha)
+  const defaultCount = gameType === 'omaha' ? 4 : 2;
+  const cardCount = cards && cards.length > 0 ? cards.length : defaultCount;
+  const displayCards = cards && cards.length > 0 ? cards : Array(cardCount).fill(null);
 
   return (
     <div key={handKey} className="absolute top-0 z-20 flex perspective-1000 items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
         const delayMs = (idx * numPlayers + (dealOrder - 1)) * 300;
-        const endXOffset = idx === 0 ? -12 : 12; // Chevauchement pour cartes plus grandes
+        
+        // Calcul dynamique des offsets pour centrer n'importe quel nombre de cartes
+        // Pour 2 cartes : -12, 12
+        // Pour 4 cartes : -24, -8, 8, 24
+        const spread = 24; // Espace total approximatif
+        const endXOffset = (idx - (cardCount - 1) / 2) * spread;
+        
+        // Rotation progressive pour un effet éventail
+        const rotation = (idx - (cardCount - 1) / 2) * 10;
 
         return (
           <MotionController
@@ -35,21 +47,22 @@ export const CardDealer: React.FC<CardDealerProps> = ({
             className="origin-center"
           >
             <div 
-              className="bg-black rounded-lg transition-transform duration-300"
+              className="bg-black rounded-lg transition-transform duration-300 hover:z-50 hover:scale-110"
               style={{ 
                 boxShadow: '0 8px 16px rgba(0,0,0,0.8)',
-                transform: `rotate(${idx === 0 ? -3 : 3}deg)`,
+                transform: `rotate(${rotation}deg)`,
                 maskImage: "linear-gradient(to bottom, black 60%, rgba(15,15,15,0.8) 100%)",
                 WebkitMaskImage: "linear-gradient(to bottom, black 60%, rgba(15,15,15,0.8) 100%)"
               }}
             >
               <Card 
-              value={card?.value || ''} 
-              suit={card?.suit || ''} 
-              revealed={isRevealed} 
-              hidden={false} 
-              size={isRevealed ? 'normal' : 'small'}
-              />            </div>
+                value={card?.value || ''} 
+                suit={card?.suit || ''} 
+                revealed={isRevealed} 
+                hidden={false} 
+                size={cardCount > 2 ? 'small' : (isRevealed ? 'normal' : 'small')}
+              />
+            </div>
           </MotionController>
         );
       })}
