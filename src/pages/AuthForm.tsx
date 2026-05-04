@@ -59,7 +59,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="bg-black/80 p-8 rounded-2xl border border-white/10 w-96 shadow-2xl flex flex-col items-center">
-        <img src="/logo.ico" alt="Logo" className="w-16 h-16 mb-4" />
+        <img src="/font.png" alt="Logo" className="w-16 h-16 mb-4" />
         <h2 className="text-2xl font-black text-yellow-500 mb-6 uppercase tracking-widest text-center">
           {isLogin ? 'Connexion' : 'Inscription'}
         </h2>

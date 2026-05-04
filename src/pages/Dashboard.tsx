@@ -230,7 +230,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <div className="flex items-center gap-2 sm:gap-8">
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex items-center gap-2">
-                    <img src="/logo.ico" alt="Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <img src="/font.png" alt="Logo" className="w-6 h-6 sm:w-8 sm:h-8 rounded-[20%]" />
                     <div className="text-white font-black text-lg sm:text-2xl tracking-tighter italic hidden sm:block">AFRI<span className="text-yellow-500">POKS</span></div>
                   </div>
                 </div>
