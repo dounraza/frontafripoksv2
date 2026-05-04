@@ -363,7 +363,8 @@ function App() {
           {/* HEADER: 4% */}
           <div className="h-[4%] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
              <button onClick={() => {
-                if (timeRemaining > 0) {
+                const hasEnoughPlayers = tableData && tableData.players && tableData.players.length >= 2;
+                if (timeRemaining > 0 && hasEnoughPlayers) {
                   setShowExitPopup(true);
                 } else {
                   leaveTable();

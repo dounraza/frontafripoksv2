@@ -216,7 +216,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               <div 
                 key={`${idx}-${card.value}-${card.suit}`} 
                 className="animate-community-card origin-center shrink-0"
-                style={{ animationDelay: `${idx * 0.8}s` }}
+                style={{ animationDelay: `${idx * 1.2}s` }}
               >
                 <Card value={card.value} suit={card.suit} hidden={false} />
               </div>
