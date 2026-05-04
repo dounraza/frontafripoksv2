@@ -207,10 +207,10 @@ export const PokerTable: React.FC<PokerTableProps> = ({
             }
           `}</style>
           <div 
-            className={`transition-all duration-700 gap-2 px-4 flex items-center justify-center bg-[#1e5a3d]/30 rounded-2xl shadow-inner border-2 border-white/10 z-10 opacity-100 shrink-0 ${
+            className={`transition-all duration-700 gap-2 px-4 flex items-center justify-center rounded-2xl z-10 shrink-0 ${
               communityCards.length >= 5 ? 'h-[120px] min-w-[300px]' : 'h-[130px] min-w-[320px]'
             } ${tableData.gameState === 'all_fold' ? 'hidden' : ''}`}
-            style={{ '--card-scale': communityCards.length >= 5 ? '1.15' : '1.25' ,'border-color': 'transparent','opacity': '1%'} as React.CSSProperties}
+            style={{ '--card-scale': communityCards.length >= 5 ? '1.15' : '1.25' } as React.CSSProperties}
           >
             {communityCards.map((card: any, idx: number) => (
               <div 
