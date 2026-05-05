@@ -362,15 +362,23 @@ function App() {
         <div className="flex flex-col h-screen bg-[#0a0a0a] overflow-hidden">
           {/* HEADER: 4% */}
           <div className="h-[4%] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
-             <button onClick={() => {
-                  leaveTable();
-                  setIsReadyToPlay(false);
-                  localStorage.removeItem('active_table');
-                  localStorage.removeItem('game_start_time');
-                  window.history.pushState({}, '', '/');
-             }} className="h-[70%] px-2 bg-black/40 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 transition-all shrink-0 text-gray-400 hover:text-white">
+             <button 
+                onClick={() => {
+                  const hasEnoughPlayers = tableData && tableData.players && tableData.players.length >= 2;
+                  // On peut quitter si (pas assez de joueurs) OU (le temps est écoulé)
+                  if (!hasEnoughPlayers || timeRemaining <= 0) {
+                      leaveTable();
+                      setIsReadyToPlay(false);
+                      localStorage.removeItem('active_table');
+                      localStorage.removeItem('game_start_time');
+                      window.history.pushState({}, '', '/');
+                  }
+                }} 
+                className={`h-[70%] px-2 bg-black/40 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 transition-all shrink-0 
+                  ${(tableData && tableData.players.length >= 2 && timeRemaining > 0) ? 'text-gray-500 cursor-not-allowed' : 'text-gray-400 hover:text-white'}`}
+             >
                <LogOut className="w-3 h-3" /> 
-               {timeRemaining > 0 ? `${Math.floor(timeRemaining / 60000)}:${Math.floor((timeRemaining % 60000) / 1000).toString().padStart(2, '0')}` : 'Quitter'}
+               {(tableData && tableData.players.length >= 2 && timeRemaining > 0) ? `${Math.floor(timeRemaining / 60000)}:${Math.floor((timeRemaining % 60000) / 1000).toString().padStart(2, '0')}` : 'Quitter'}
              </button>
              
              <div className="flex items-center gap-2 h-full">
@@ -392,17 +400,6 @@ function App() {
 
           {/* TABLE AREA: 86% */}
           <div className="h-[86%] w-full flex items-center justify-center overflow-hidden relative">
-            {/* BOUTON QUITTER INSTANTANÉ SI < 2 JOUEURS */}
-            {tableData && tableData.players.length < 2 && (
-                <div className="absolute top-2 left-2 z-[2000]">
-                    <button 
-                        onClick={leaveTable}
-                        className="py-1 px-3 bg-red-600 hover:bg-red-700 text-white font-black text-[10px] uppercase rounded-full shadow-lg border border-red-800 transition-all"
-                    >
-                        Quitter
-                    </button>
-                </div>
-            )}
             <PokerTable tableData={tableData} currentUserId={socket?.id} currentUserName={user?.name} isVertical={true} sendAction={sendAction} sendEmoji={sendEmoji} callAmount={callAmount} isMyTurn={isMyTurn} />
             <div className="absolute bottom-4 right-4 z-[3000]">
                 <Chat tableId={tableData?.id || 'lobby'} playerName={user.name} socket={socket} />

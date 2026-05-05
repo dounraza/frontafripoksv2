@@ -24,11 +24,11 @@ export const CardDealer: React.FC<CardDealerProps> = ({
   return (
     <div key={handKey} className="absolute top-0 z-20 flex items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
-        // Augmentation du délai pour un effet "vrai jeu de cartes" plus lent et naturel
         const delayMs = ((dealOrder - 1) * cardCount + idx) * 300; 
-        const spread = 25; // Augmenté pour éviter la superposition excessive
+        // Augmenter le spread en mobile pour éviter la superposition
+        const spread = isVertical ? 32 : 25; 
         const endXOffset = (idx - (cardCount - 1) / 2) * spread;
-        const rotation = (idx - (cardCount - 1) / 2) * 5; // Réduit pour moins incliner
+        const rotation = (idx - (cardCount - 1) / 2) * 5;
         
         return (
           <MotionController
@@ -54,7 +54,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
                 suit={card?.suit || ''} 
                 revealed={isRevealed} 
                 hidden={false} 
-                size={cardCount > 2 ? 'small' : (isRevealed ? 'normal' : 'small')}
+                size={isVertical ? 'small' : (cardCount > 2 ? 'small' : (isRevealed ? 'normal' : 'small'))}
               />
             </div>
           </MotionController>
