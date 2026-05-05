@@ -26,10 +26,11 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
   };
 
   const handleAction = (type: string, amount?: number) => {
-    console.log(`Action: ${type}, Amount: ${amount}`);
+    const finalAmount = amount !== undefined ? amount : 0;
+    console.log(`Action: ${type}, Amount: ${finalAmount}`);
     if (type === 'all-in') playSound('allin');
     else playSound(type as any);
-    sendAction(type, amount);
+    sendAction(type, finalAmount);
   };
 
   return (
