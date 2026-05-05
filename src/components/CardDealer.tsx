@@ -26,7 +26,7 @@ export const CardDealer: React.FC<CardDealerProps> = ({
       {displayCards.map((card: any, idx: number) => {
         // Augmentation du délai pour un effet "vrai jeu de cartes" plus lent et naturel
         const delayMs = ((dealOrder - 1) * cardCount + idx) * 300; 
-        const spread = 12; // Réduit pour serrer les cartes
+        const spread = 25; // Augmenté pour éviter la superposition excessive
         const endXOffset = (idx - (cardCount - 1) / 2) * spread;
         const rotation = (idx - (cardCount - 1) / 2) * 5; // Réduit pour moins incliner
         
