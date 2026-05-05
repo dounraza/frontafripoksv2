@@ -39,6 +39,16 @@ function App() {
   const [scale, setScale] = useState(1);
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (selectedTable) {
+        socket?.emit('leaveTable', { tableId: selectedTable });
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [socket, selectedTable]);
+
   // Re-fetch solde when tableData is received for the first time after a refresh
   useEffect(() => {
     if (tableData && user) {
@@ -228,9 +238,10 @@ function App() {
   }, [user]);
 
   if (!user) return <AuthForm onSuccess={(token, name, id) => {
+    localStorage.clear(); // Nettoyage total pour éviter les conflits
     localStorage.setItem('poker_user', JSON.stringify({ token, name, id }));
     setUser({ token, name, id });
-    connectSocket(token);
+    // connectSocket(token); // Si cette fonction existe, elle doit être appelée après
     window.location.reload();
   }} />;
 
