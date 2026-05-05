@@ -89,8 +89,8 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   const [showPicker, setShowPicker] = useState(false);
 
   const getEmojiPosition = () => {
-    // Déplacé plus haut pour éviter de cacher le nom ou le solde
-    return "absolute -top-20 left-1/2 transform -translate-x-1/2 z-[100]";
+    // Déplacé plus haut et agrandi pour être bien visible
+    return "absolute -top-24 left-1/2 transform -translate-x-1/2 z-[100]";
   };
 
   return (
@@ -119,12 +119,12 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           {isActive && <div className="absolute inset-[-8px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
           
           {currentEmoji && (
-            <div className={`${getEmojiPosition()} bg-white/90 rounded-full p-2 text-3xl animate-bounce shadow-xl border border-gray-200`}>
+            <div className={`${getEmojiPosition()} bg-white/90 rounded-full p-2 text-5xl animate-bounce shadow-xl border border-gray-200`}>
                 {currentEmoji}
             </div>
           )}
           
-          <div className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full p-1 shadow-2xl transition-all duration-300
+          <div className={`w-16 h-16 min-w-[64px] min-h-[64px] rounded-full p-1 shadow-2xl transition-all duration-300
             ${isActive ? 'bg-gradient-to-tr from-yellow-600 via-yellow-200 to-yellow-600 scale-105' : 'bg-gradient-to-tr from-gray-700 to-gray-900'}`}>
             <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden border-2 border-black/50">
                 <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
@@ -184,7 +184,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
         {/* REACTION TRIGGER - Placé en dessous pour ne pas cacher le solde */}
         {isCurrentUser && (
             <div className="mt-0 z-50">
-                <button onClick={() => setShowPicker(!showPicker)} className="text-[10px] hover:scale-125 transition-transform bg-black/80 p-1 rounded-full border border-white/20">😀</button>
+                <button onClick={() => setShowPicker(!showPicker)} className="text-[20px] hover:scale-125 transition-transform bg-black/80 p-1 rounded-full border border-white/20">😀</button>
                 {showPicker && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" onClick={() => setShowPicker(false)}>
                         <div className="bg-[#1a1a1a] p-4 rounded-2xl border border-white/20 flex gap-3 shadow-2xl" onClick={(e) => e.stopPropagation()}>
