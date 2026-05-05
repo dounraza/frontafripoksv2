@@ -138,6 +138,8 @@ function App() {
 
   useEffect(() => {
     if (isReadyToPlay && tableData && myPlayer) {
+      // Ne déclencher le modal de recave que si le joueur a 0 jeton
+      // ET que le jeu est en attente (waiting)
       if (myPlayer.chips <= 0 && tableData.gameState === 'waiting' && !showRecave && !isProcessingRecave) {
         setShowRecave(true);
         fetchSolde();
@@ -180,38 +182,80 @@ function App() {
     return () => clearInterval(interval);
   }, [gameStartTime, tableData]);
 
+  const rejoinTable = () => {
+    joinTable(user!.name, selectedTable, "0");
+    setIsReadyToPlay(true);
+    setShowRecave(false);
+    window.history.pushState({}, '', `/table/${selectedTable}`);
+  };
+
+  const handleJoinDirectly = (tableId: string, buyInAmount: number) => {
+    if (isProcessingRecave) return;
+    
+    // Vérification de solde simplifiée pour la cave
+    if (solde !== null && buyInAmount > solde) {
+      setAlertConfig({ message: "Votre solde est insuffisant", type: 'error' });
+      return;
+    }
+
+    joinTable(user!.name, tableId, String(buyInAmount)); 
+    setIsReadyToPlay(true);
+    
+    const now = Date.now();
+    setGameStartTime(now);
+    localStorage.setItem(`game_start_time_${user!.id}`, now.toString());
+    
+    setShowJoinForm(false);
+    localStorage.setItem('active_table', tableId);
+    localStorage.setItem('last_buy_in', String(buyInAmount));
+    window.history.pushState({}, '', `/table/${tableId}`);
+  };
+
   const handleJoin = () => {
     if (isProcessingRecave) return;
+    
+    // Si on est en mode recave, on utilise le 'buyIn' courant, 
+    // sinon c'est la reconnexion ou la cave initiale.
     const amount = parseInt(buyIn);
     const effectiveMinBuyIn = tableData?.minBuyIn || minBuyIn;
+    
     if (isNaN(amount)) {
       setAlertConfig({ message: "Montant invalide", type: 'error' });
       return;
     }
-    if (amount < effectiveMinBuyIn) {
-      setAlertConfig({ 
-        message: `Vous ne pouvez pas rejoindre avec moins de ${effectiveMinBuyIn.toLocaleString()} MGA (Cave minimale)`, 
-        type: 'error' 
-      });
-      return;
+    
+    // Vérification uniquement si on ajoute des jetons (pas pour une simple reconnexion à 0)
+    if (amount > 0) {
+        if (amount < effectiveMinBuyIn) {
+          setAlertConfig({ 
+            message: `Vous ne pouvez pas rejoindre avec moins de ${effectiveMinBuyIn.toLocaleString()} MGA (Cave minimale)`, 
+            type: 'error' 
+          });
+          return;
+        }
+        if (solde !== null && amount > solde) {
+          setAlertConfig({ message: "Votre solde est insuffisant pour cette cave", type: 'error' });
+          return;
+        }
     }
-    if (solde !== null && amount > solde) {
-      setAlertConfig({ message: "Votre solde est insuffisant pour cette cave", type: 'error' });
-      return;
-    }
+
     if (showRecave) {
       setIsProcessingRecave(true);
     }
+    
     joinTable(user!.name, selectedTable, String(amount)); 
     setIsReadyToPlay(true);
+    
     const now = Date.now();
     setGameStartTime(now);
     localStorage.setItem(`game_start_time_${user!.id}`, now.toString());
+    
     setShowJoinForm(false);
     setShowRecave(false);
     localStorage.setItem('active_table', selectedTable);
     localStorage.setItem('last_buy_in', String(amount));
     localStorage.setItem('min_buy_in', String(effectiveMinBuyIn));
+    
     window.history.pushState({}, '', `/table/${selectedTable}`);
   };
 
@@ -362,7 +406,22 @@ function App() {
           onRefreshSolde={fetchSolde}
           isMuted={isMuted}
           onToggleMute={toggleMute}
-          onJoinTable={(id, min) => { setSelectedTable(String(id)); setMinBuyIn(min); setBuyIn(String(min)); setShowJoinForm(true); }} 
+          onJoinTable={(id, amount) => {
+            if (amount === 0) {
+                // Reconnexion directe : on appelle joinTable sans ouvrir le modal
+                joinTable(user!.name, String(id), "0");
+                setIsReadyToPlay(true);
+                localStorage.setItem('active_table', String(id));
+                window.history.pushState({}, '', `/table/${id}`);
+            } else {
+                // Nouvelle cave : on ouvre le modal
+                setSelectedTable(String(id)); 
+                setMinBuyIn(amount); 
+                setBuyIn(String(amount)); 
+                fetchSolde();
+                setShowJoinForm(true); 
+            }
+          }} 
           onLogout={() => {
             localStorage.removeItem('poker_user');
             setUser(null);

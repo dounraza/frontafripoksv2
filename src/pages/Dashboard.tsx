@@ -78,6 +78,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [selectedCountryCode, setSelectedCountryCode] = useState('+261');
   const [isProcessing, setIsProcessing] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(window.innerWidth < 1024 ? 3 : 6);
+  const [activeTableId, setActiveTableId] = useState(() => localStorage.getItem('active_table'));
+
+  const handleReturnToTable = () => {
+    if (activeTableId) {
+       // On force le montant à 0 pour la reconnexion sans recave
+       onJoinTable(activeTableId, 0);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setItemsPerPage(window.innerWidth < 1024 ? 3 : 6);
@@ -224,9 +232,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const isMobileOrTablet = itemsPerPage === 3;
   const tablesToDisplay = isMobileOrTablet ? filteredTables : paginatedTables;
 
+  const handleJoinClick = (t: any) => {
+    const isAlreadyAtTable = t.playerNames && t.playerNames.includes(user.name);
+    if (isAlreadyAtTable) {
+        onJoinTable(t.id, 0);
+    } else {
+        onJoinTable(t.id, Number(t.cave));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
       <nav className="h-16 border-b border-white/10 flex items-center justify-between px-2 sm:px-4 bg-black/40">
+              <div className="flex items-center gap-2">
+                
+              </div>
               <div className="flex items-center gap-2 sm:gap-8">
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex items-center gap-2">
@@ -371,7 +391,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                           <div className="w-px h-5 sm:h-6 bg-white/10"></div>
                                           <div className="flex flex-col"><span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-widest">Joueurs</span><span className="text-[10px] sm:text-xs font-black text-yellow-500 flex items-center gap-1"><User className="w-3 h-3" /> {t.currentPlayers || 0} / 9</span></div>
                                       </div>
-                                      <button onClick={() => onJoinTable(t.id, Number(t.cave))} className="bg-white text-black h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all hover:scale-110 active:scale-95"><Play className="w-3 h-3 sm:w-4 sm:h-4 fill-current ml-0.5" /></button>
+                                      {String(t.id) === activeTableId ? (
+                                        <button onClick={handleReturnToTable} className="bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-black uppercase hover:bg-green-400 transition-all shadow-lg">
+                                            Rejoindre
+                                        </button>
+                                      ) : (
+                                        <button onClick={() => {
+                                          const isAlreadyAtTable = t.playerNames && t.playerNames.includes(user.name);
+                                          if (isAlreadyAtTable) {
+                                            onJoinTable(t.id, 0);
+                                          } else {
+                                            onJoinTable(t.id, Number(t.cave));
+                                          }
+                                        }} className="bg-white text-black h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all hover:scale-110 active:scale-95"><Play className="w-3 h-3 sm:w-4 sm:h-4 fill-current ml-0.5" /></button>
+                                      )}
                                   </div>
                               </div>
                           </div>
