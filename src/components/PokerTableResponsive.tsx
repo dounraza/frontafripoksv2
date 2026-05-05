@@ -151,7 +151,8 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
 
   React.useEffect(() => {
     if (winnerSeatIdx !== undefined) {
-      const delay = communityCards.length > 0 ? (communityCards.length * 600) + 1000 : 800;
+      // 5 secondes de délai pour synchroniser avec l'animation
+      const delay = 5000;
       const timer = setTimeout(() => {
         setDelayedWinnerIdx(winnerSeatIdx);
       }, delay);
@@ -159,7 +160,7 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
     } else {
       setDelayedWinnerIdx(undefined);
     }
-  }, [winnerSeatIdx, communityCards.length]);
+  }, [winnerSeatIdx]);
 
   return (
     <div className="flex flex-col items-center w-full p-0 m-0 overflow-visible">

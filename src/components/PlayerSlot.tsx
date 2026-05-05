@@ -8,6 +8,7 @@ interface PlayerSlotProps {
   player: any;
   isActive: boolean;
   isWinner: boolean;
+  isAnimatingPot: boolean;
   positionClass: string;
   shouldGatherBets: boolean;
   isDealer: boolean;
@@ -26,7 +27,7 @@ interface PlayerSlotProps {
 }
 
 export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
-  player, isActive, isWinner, positionClass, shouldGatherBets, isDealer, isSB, isBB,
+  player, isActive, isWinner, isAnimatingPot, positionClass, shouldGatherBets, isDealer, isSB, isBB,
   isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, id, isShowdown, currentEmoji, sendEmoji
 }) => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -58,29 +59,29 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
     }
   }, [isShowdown, player.handResult, player.lastAction]);
   
-  // Sync display chips with delay if winner
+  // Sync display chips with isAnimatingPot
   useEffect(() => {
-    if (isWinner) {
-      // Wait for the pot animation to travel to the player
-      const timer = setTimeout(() => {
-        setDisplayChips(player.chips);
-      }, 1500); // Adjust this to match your ChipPot animation duration
-      return () => clearTimeout(timer);
-    } else {
-      setDisplayChips(player.chips);
+    // Bloque la mise à jour si l'animation est en cours OU si on est en showdown (révélation des cartes)
+    if (isAnimatingPot || gameState === 'showdown') {
+      return;
     }
-  }, [player.chips, isWinner]);
+    // Sinon, on met à jour immédiatement
+    setDisplayChips(player.chips);
+  }, [player.chips, isAnimatingPot, gameState]);
 
   useEffect(() => {
     let timer: any;
-    if (isActive) {
+    // On n'active le chrono que si c'est le tour du joueur ET que le jeu n'est pas en phase de révélation
+    if (isActive && gameState === 'playing') {
       setTimeLeft(15);
       timer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
+    } else {
+      setTimeLeft(0); // Reset le chrono visuel si ce n'est pas le tour ou si jeu fini
     }
     return () => clearInterval(timer);
-  }, [isActive]);
+  }, [isActive, gameState]);
 
   const isInHand = player.status === 'active' || player.status === 'all-in';
   const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold';

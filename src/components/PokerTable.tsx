@@ -41,17 +41,9 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   const isShowdown = tableData.gameState === 'showdown';
   const winnerIds = tableData.winnerInfo?.map((w: any) => w.playerId) || [];
   
-  // TEST MODE
-  const IS_TEST_MODE = false; 
-  let players = tableData.players || [];
-  
-  if (IS_TEST_MODE) {
-    // Logic removed
-  }
-
   const communityCards = tableData.communityCards || [];
   
-  const currentBetsSum = players.reduce((sum: number, p: any) => sum + (p.bet || 0), 0);
+  const currentBetsSum = tableData.players.reduce((sum: number, p: any) => sum + (p.bet || 0), 0);
   const totalPotInPlay = (tableData.pot || 0) + currentBetsSum;
   
   const [lastTotalPot, setLastTotalPot] = React.useState(0);
@@ -82,7 +74,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           };
         }
       }
-      // Raha misy fiovana vao manao set
       setSeatCoords((prev: any) => JSON.stringify(prev) !== JSON.stringify(newCoords) ? newCoords : prev);
     };
     updateSeatCoords();
@@ -92,49 +83,41 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         window.removeEventListener('resize', updateSeatCoords);
         clearTimeout(timer);
     };
-  }, []); // Esorina ny dependency raha tsy ilaina isaky ny miova ny data
+  }, []);
 
   const getSeatOffset = (idx: number) => {
     const offsets = [
-     { x: -60, y: 140 },     // Seat 0
-     { x: -140, y:32 }, // Seat 1
-       { x: -140, y: -95 },   // Seat 2
-      { x: -110, y: -205 },// Seat 3
-     { x: 0, y: -230 },   // Seat 4
-    { x: 140, y: -200 }, // Seat 5
-    { x: 150, y: -80 },    // Seat 6
-    { x: 140, y: 80 },  // Seat 7
-      { x: 45, y: 120 },  // Seat 8
+     { x: -60, y: 140 },
+     { x: -140, y:32 },
+       { x: -140, y: -95 },
+      { x: -110, y: -205 },
+     { x: 0, y: -230 },
+    { x: 140, y: -200 },
+    { x: 150, y: -80 },
+    { x: 140, y: 80 },
+      { x: 45, y: 120 },
     ];
     return offsets[idx] || { x: 0, y: 0 };
   };
 
-
-  // Animation logic for Pot -> Winner with Delay
-  const firstWinner = players.find((p: any) => winnerIds.includes(p.id));
+  const firstWinner = tableData.players.find((p: any) => winnerIds.includes(p.id));
   const winnerSeatIdx = firstWinner ? firstWinner.position : undefined;
   const [delayedWinnerIdx, setDelayedWinnerIdx] = React.useState<number | undefined>(undefined);
+  const [isAnimatingPot, setIsAnimatingPot] = React.useState(false);
   
   const { playSound } = useSound();
   const lastPlayedActionRef = React.useRef<{[key: string]: string}>({});
 
-  // Jouer le son de partage de cartes quand les cartes communautaires changent
   React.useEffect(() => {
-    if (communityCards.length > 0) {
-      playSound('share-cards');
-    }
+    if (communityCards.length > 0) playSound('share-cards');
   }, [communityCards.length]);
 
-  // Jouer le son de victoire
   React.useEffect(() => {
-    if (winnerIds.length > 0) {
-      playSound('win');
-    }
+    if (winnerIds.length > 0) playSound('win');
   }, [winnerIds.length]);
 
-  // Sons des actions des joueurs (Optimisé pour ne jouer qu'une fois)
   React.useEffect(() => {
-    players.forEach((p: any) => {
+    tableData.players.forEach((p: any) => {
       const actionKey = `${p.id}-${p.lastAction}`;
       if (p.lastAction && lastPlayedActionRef.current[p.id] !== actionKey) {
         lastPlayedActionRef.current[p.id] = actionKey;
@@ -146,48 +129,37 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           case 'check': playSound('check'); break;
         }
       }
-      // Reset si plus d'action
-      if (!p.lastAction) {
-        lastPlayedActionRef.current[p.id] = '';
-      }
+      if (!p.lastAction) lastPlayedActionRef.current[p.id] = '';
     });
-  }, [players]);
+  }, [tableData.players]);
 
   React.useEffect(() => {
     if (winnerSeatIdx !== undefined) {
-      // Wait for community cards (0.8s delay each + 1.2s animation)
-      const delay = communityCards.length > 0 ? (communityCards.length * 800) + 1200 : 1000;
+      setIsAnimatingPot(true); 
+      const delay = 5000; 
       const timer = setTimeout(() => {
         setDelayedWinnerIdx(winnerSeatIdx);
+        setIsAnimatingPot(false);
       }, delay);
       return () => clearTimeout(timer);
     } else {
       setDelayedWinnerIdx(undefined);
+      setIsAnimatingPot(false);
     }
-  }, [winnerSeatIdx, communityCards.length]);
+  }, [winnerSeatIdx]);
 
   return (
-    <div className="flex flex-col items-center w-full h-full justify-center overflow-visible" style={{ backgroundImage: "url('/image/font.jpg')", backgroundSize: 'cover', backgroundPosition: 'center'
-
-     }}>
+    <div className="flex flex-col items-center w-full h-full justify-center overflow-visible" style={{ backgroundImage: "url('/image/font.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
-        style={{ 
-          width: 'auto', 
-          height: '90%', 
-          aspectRatio: '10/16',
-          maxWidth: '90vw',
-          maxHeight: '90%'
-        }}>
+        style={{ width: 'auto', height: '90%', aspectRatio: '10/16', maxWidth: '90vw', maxHeight: '90%' }}>
         
         <div className="absolute inset-[6px] bg-cover bg-center opacity-2 pointer-events-none rounded-full" style={{ backgroundImage: "url('/image/font.jpg')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
         
-        {/* LOGO DÉCORATIF AU MILIEU DE LA TABLE */}
         <div className="absolute flex flex-col items-center justify-center opacity-100 select-none pointer-events-none">
           <img src="/font.png" alt="AFRIPOKS Logo" className="w-30 h-30 sm:w-28 sm:h-28 object-contain rounded-[100%]" />
         </div>
         
-        {/* POT AND COMMUNITY CARDS */}
         <div className="flex flex-col items-center z-10 relative gap-8 mt-[-110px]">
           <div className="z-20 flex flex-col items-center" ref={potRef}>
              <ChipPot 
@@ -223,26 +195,27 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                <Card value={card.value} suit={card.suit} hidden={false} />
              </div>
             ))}
-            </div>        </div>
+            </div>
+        </div>
 
-        {/* PLAYERS */}
         {Array.from({ length: 9 }).map((_, idx) => {
-          const player = players.find((p: any) => p.position === idx);
+          const player = tableData.players.find((p: any) => p.position === idx);
           if (!player) return <EmptySlot key={`empty-${idx}`} positionClass={PLAYER_POSITIONS[idx]} />;
           const { isDealer, isSB, isBB } = getPlayerRoleInfo(player, tableData);
           
-          const myPlayer = players.find((p: any) => p.id === currentUserId);
+          const myPlayer = tableData.players.find((p: any) => p.id === currentUserId);
           const amIStillActive = myPlayer && 
                                 myPlayer.status !== 'folded' && 
                                 myPlayer.status !== 'out' && 
                                 myPlayer.lastAction !== 'fold';
-          const isRealShowdown = isShowdown && players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length > 1;
+          const isRealShowdown = isShowdown && tableData.players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length > 1;
           const isRevealed = amIStillActive && (player.id === currentUserId || isRealShowdown);
 
           return (
             <PlayerSeatContainer 
               key={player.id}
               player={player} 
+              isAnimatingPot={isAnimatingPot}
               gameType={tableData.gameType}
               isActive={isPlayerTurn(tableData, player.id)} 
               isWinner={winnerIds.includes(player.id) && delayedWinnerIdx !== undefined} 

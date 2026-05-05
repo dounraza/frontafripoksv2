@@ -8,6 +8,7 @@ interface PlayerSeatContainerProps {
   gameType?: string;
   isActive: boolean;
   isWinner: boolean;
+  isAnimatingPot: boolean;
   positionClass: string;
   shouldGatherBets: boolean;
   isDealer: boolean;
@@ -30,7 +31,7 @@ interface PlayerSeatContainerProps {
 
 export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) => {
   const { 
-    player, isActive, isWinner, positionClass, shouldGatherBets, 
+    player, isActive, isWinner, isAnimatingPot, positionClass, shouldGatherBets, 
     seatNumber, isShowdown, isRevealed, isMeActive, gameState, isVertical, handKey,
     isCurrentUser, centerX, centerY, gatheringPlayerId, currentEmoji, sendEmoji 
   } = props;
@@ -82,7 +83,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
         )}
 
         {/* COMPONENT PLAYER SLOT (Avatar + Trapeze + Info) */}
-        <PlayerSlot {...props} sendEmoji={sendEmoji} />
+        <PlayerSlot {...props} isAnimatingPot={isAnimatingPot} sendEmoji={sendEmoji} />
 
         {/* BET CHIPS */}
         {!shouldGatherBets && player.bet > 0 && (
