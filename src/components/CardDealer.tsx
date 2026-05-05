@@ -12,23 +12,32 @@ interface CardDealerProps {
   isRevealed: boolean;
   isShowdown: boolean;
   isVertical: boolean;
+  spread?: number;
+  rotationFactor?: number;
 }
 
 export const CardDealer: React.FC<CardDealerProps> = ({
-  cards, gameType, dealOrigin, dealOrder, numPlayers, handKey, isRevealed, isShowdown, isVertical
+  cards, gameType, dealOrigin, dealOrder, numPlayers, handKey, isRevealed, isShowdown, isVertical,
+  spread: customSpread, rotationFactor: customRotation
 }) => {
   const defaultCount = gameType === 'omaha' ? 4 : 2;
   const cardCount = cards && cards.length > 0 ? cards.length : defaultCount;
-  const displayCards = cards && cards.length > 0 ? cards : Array(cardCount).fill(null);
+  
+  // Carte fictive pour test si aucune carte n'est disponible
+  const displayCards = (cards && cards.length > 0) ? cards : 
+                       (cardCount === 2 ? [{ value: 'A', suit: 'h' }, { value: 'K', suit: 'h' }] : Array(cardCount).fill({ value: 'A', suit: 'h' }));
 
   return (
     <div key={handKey} className="absolute top-0 z-20 flex items-center justify-center">
       {displayCards.map((card: any, idx: number) => {
         const delayMs = ((dealOrder - 1) * cardCount + idx) * 300; 
-        // Augmenter le spread en mobile pour éviter la superposition
-        const spread = isVertical ? 32 : 25; 
+        
+        // Valeurs par défaut avec possibilité de customisation
+        const spread = customSpread ?? (isVertical ? 32 : 25);
+        const rotation = customRotation ?? 5;
+        
         const endXOffset = (idx - (cardCount - 1) / 2) * spread;
-        const rotation = (idx - (cardCount - 1) / 2) * 5;
+        const rotationVal = (idx - (cardCount - 1) / 2) * rotation;
         
         return (
           <MotionController
@@ -44,12 +53,9 @@ export const CardDealer: React.FC<CardDealerProps> = ({
               className="bg-black rounded-lg transition-transform duration-300 hover:z-50 hover:scale-110"
               style={{ 
                 boxShadow: '0 8px 16px rgba(0,0,0,0.8)',
-                transform: `rotate(${rotation}deg)`,
-                maskImage: "linear-gradient(to bottom, black 60%, rgba(15,15,15,0.8) 100%)",
-                WebkitMaskImage: "linear-gradient(to bottom, black 60%, rgba(15,15,15,0.8) 100%)"
+                transform: `rotate(${rotationVal}deg)`
               }}
-            >
-              <Card 
+            >              <Card 
                 value={card?.value || ''} 
                 suit={card?.suit || ''} 
                 revealed={isRevealed} 

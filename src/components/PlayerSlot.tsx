@@ -88,8 +88,8 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   const [showPicker, setShowPicker] = useState(false);
 
   const getEmojiPosition = () => {
-    // Tous les émojis apparaissent au-dessus de l'avatar
-    return "absolute -top-16 left-1/2 transform -translate-x-1/2 z-[100]";
+    // Déplacé plus haut pour éviter de cacher le nom ou le solde
+    return "absolute -top-20 left-1/2 transform -translate-x-1/2 z-[100]";
   };
 
   return (
@@ -132,8 +132,8 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
         </div>
 
         {/* TRAPEZE - Misy anarana, chips, ary D/SB/BB */}
-        <div className="glass-panel p-1.5 min-w-[105px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center"
-           style={{ clipPath: "polygon(0% 0%, 100% 0%, 90% 70%, 85% 92%, 75% 100%, 25% 100%, 15% 92%, 10% 70%)", paddingBottom: '10px' }}>
+        <div className="glass-panel p-2 min-w-[110px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center"
+           style={{ clipPath: "polygon(0% 0%, 100% 0%, 95% 70%, 90% 90%, 80% 100%, 20% 100%, 10% 90%, 5% 70%)", paddingBottom: '24px' }}>
           
           <div className="flex flex-col items-center gap-1 mb-0.5">
              <div className="flex items-center justify-center gap-1.5">
@@ -165,18 +165,24 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           </div>
           
           {isActive && (
-            <div className="absolute bottom-0 left-0 h-[4px] transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(0,0,0,0.5)]" 
+            <div className="absolute bottom-[-1px] left-0 w-full h-[6px] transition-all duration-1000 ease-linear shadow-[0_0_15px_rgba(0,0,0,0.8)] rounded-b-lg overflow-hidden" 
                  style={{ 
-                   width: `${(timeLeft / 15) * 100}%`,
-                   background: timeLeft > 10 ? '#10b981' : timeLeft > 5 ? '#f59e0b' : '#ef4444',
-                   boxShadow: timeLeft > 10 ? '0 0 8px #10b981' : timeLeft > 5 ? '0 0 8px #f59e0b' : '0 0 12px #ef4444'
-                 }}></div>
+                   background: 'transparent'
+                 }}>
+                <div className="h-full transition-all duration-1000 ease-linear"
+                     style={{
+                        width: `${(timeLeft / 15) * 100}%`,
+                        background: timeLeft > 10 ? '#22c55e' : timeLeft > 5 ? '#f59e0b' : '#ef4444',
+                        boxShadow: timeLeft > 10 ? '0 0 10px #22c55e' : timeLeft > 5 ? '0 0 10px #f59e0b' : '0 0 15px #ef4444'
+                     }}>
+                </div>
+            </div>
           )}
         </div>
 
-        {/* REACTION TRIGGER - Placé juste en bas du trapèze sans affecter la taille */}
+        {/* REACTION TRIGGER - Placé en dessous pour ne pas cacher le solde */}
         {isCurrentUser && (
-            <div className="mt-[-12px] z-50">
+            <div className="mt-0 z-50">
                 <button onClick={() => setShowPicker(!showPicker)} className="text-[10px] hover:scale-125 transition-transform bg-black/80 p-1 rounded-full border border-white/20">😀</button>
                 {showPicker && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" onClick={() => setShowPicker(false)}>

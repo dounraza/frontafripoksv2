@@ -42,8 +42,8 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
   const getCardTransform = (seat: number) => {
     // Valeurs ajustées pour être plus proche de l'avatar
     const transforms: { [key: number]: string } = {
-      0: "sm:-translate-y-0 sm:translate-x-1 translate-y-8 translate-x-4",
-      1: "sm:translate-y-8 sm:translate-x-4 translate-y-8 translate-x-4",
+      0: "sm:-translate-y-0 sm:translate-x-1 translate-y-4 translate-x-2",
+      1: "sm:translate-y-8 sm:translate-x-4 translate-y-6 translate-x-3",
       2: "sm:translate-y-4 sm:translate-x-8 translate-y-4 translate-x-6",
       3: "sm:translate-y-4 sm:translate-x-8 translate-y-6 translate-x-3",
       4: "sm:translate-y-4 -translate-y-0",
@@ -75,6 +75,8 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     dealOrder={1} numPlayers={9} handKey={handKey}
                     isRevealed={isRevealed}
                     isShowdown={isShowdown} isVertical={isVertical}
+                    spread={42}
+                    rotationFactor={8}
                 />
             </div>
         )}
