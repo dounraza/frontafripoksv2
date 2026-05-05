@@ -67,7 +67,7 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
     // Décalage pour aligner les jetons selon la demande :
     // Seat 0 et 8 : en haut de son avatar (au-dessus)
     if (seatNumber === 0 ) {
-      return { bottom: '17vh', left: '80%', transform: 'translateX(-50%)' };
+      return { bottom: '19vh', left: '80%', transform: 'translateX(-50%)' };
     }
     // Seat 4 : en bas du trapeze (au-dessous)
     if (seatNumber === 4) {
