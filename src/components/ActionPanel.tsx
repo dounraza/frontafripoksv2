@@ -26,10 +26,14 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
   };
 
   const handleAction = (type: string, amount?: number) => {
+    // Si l'action est 'raise', amount est le montant total voulu sur la table
     const finalAmount = amount !== undefined ? amount : 0;
-    console.log(`Action: ${type}, Amount: ${finalAmount}`);
+    
+    console.log(`Action: ${type}, TotalAmount: ${finalAmount}`);
     if (type === 'all-in') playSound('allin');
     else playSound(type as any);
+    
+    // On envoie le montant total au serveur
     sendAction(type, finalAmount);
   };
 

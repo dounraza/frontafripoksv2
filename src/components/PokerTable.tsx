@@ -57,8 +57,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   const [lastTotalPot, setLastTotalPot] = React.useState(0);
   
   React.useEffect(() => {
-    if (totalPotInPlay > 0 && !isShowdown) setLastTotalPot(totalPotInPlay);
-  }, [totalPotInPlay, isShowdown]);
+    if (totalPotInPlay > 0) setLastTotalPot(totalPotInPlay);
+  }, [totalPotInPlay]);
 
   const displayPot = isShowdown ? lastTotalPot : totalPotInPlay;
   const [handKey, setHandKey] = React.useState(0);
@@ -207,8 +207,8 @@ export const PokerTable: React.FC<PokerTableProps> = ({
             }
           `}</style>
           <div 
-            className={`transition-all duration-700 gap-2 px-4 flex items-center justify-center rounded-2xl z-10 shrink-0 ${
-              communityCards.length >= 5 ? 'h-[120px] min-w-[300px]' : 'h-[130px] min-w-[320px]'
+            className={`transition-all duration-700 gap-3 px-4 flex items-center justify-center rounded-2xl z-10 shrink-0 ${
+              communityCards.length >= 5 ? 'h-[120px] min-w-[310px]' : 'h-[130px] min-w-[330px]'
             } ${tableData.gameState === 'all_fold' ? 'hidden' : ''}`}
             style={{ '--card-scale': communityCards.length >= 5 ? '1.15' : '1.25' } as React.CSSProperties}
           >

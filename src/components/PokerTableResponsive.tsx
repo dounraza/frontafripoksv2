@@ -86,8 +86,8 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
   const [lastTotalPot, setLastTotalPot] = React.useState(0);
   
   React.useEffect(() => {
-    if (totalPotInPlay > 0 && !isShowdown) setLastTotalPot(totalPotInPlay);
-  }, [totalPotInPlay, isShowdown]);
+    if (totalPotInPlay > 0) setLastTotalPot(totalPotInPlay);
+  }, [totalPotInPlay]);
 
   const displayPot = isShowdown ? lastTotalPot : totalPotInPlay;
   const [handKey, setHandKey] = React.useState(0);

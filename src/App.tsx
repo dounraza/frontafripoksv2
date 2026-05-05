@@ -34,6 +34,7 @@ function App() {
   const [minBuyIn, setMinBuyIn] = useState(() => Number(localStorage.getItem('min_buy_in')) || 1000);
   const [buyIn, setBuyIn] = useState(() => localStorage.getItem('last_buy_in') || '1000');
   const [solde, setSolde] = useState<number | null>(null);
+  const [isFetchingSolde, setIsFetchingSolde] = useState(false);
   const [showRecave, setShowRecave] = useState(false);
   const [isProcessingRecave, setIsProcessingRecave] = useState(false);
   const [scale, setScale] = useState(1);
@@ -59,7 +60,8 @@ function App() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const fetchSolde = useCallback(() => {
-    if (!user?.token) return;
+    if (!user?.token || isFetchingSolde) return;
+    setIsFetchingSolde(true);
     fetch(`${API_URL}/api/solde`, {
       headers: { 'Authorization': `Bearer ${user.token}` }
     })
@@ -77,7 +79,8 @@ function App() {
           setSolde(isNaN(m) ? 0 : m);
         }
       })
-      .catch(err => console.error('Error fetching solde:', err));
+      .catch(err => console.error('Error fetching solde:', err))
+      .finally(() => setIsFetchingSolde(false));
   }, [user?.token, API_URL]);
 
   const fetchProfile = useCallback(async () => {
@@ -137,15 +140,26 @@ function App() {
   }, [myPlayer?.chips, isProcessingRecave]);
 
   useEffect(() => {
+    // Vérifier si tableData est chargé (pas nul)
     if (isReadyToPlay && tableData && myPlayer) {
-      // Ne déclencher le modal de recave que si le joueur a 0 jeton
-      // ET que le jeu est en attente (waiting)
-      if (myPlayer.chips <= 0 && tableData.gameState === 'waiting' && !showRecave && !isProcessingRecave) {
-        setShowRecave(true);
-        fetchSolde();
+      // Attendre que le solde soit chargé avant de décider d'afficher la recave
+      if (solde !== null && !isFetchingSolde) {
+        if (myPlayer.chips <= 0 && tableData.gameState === 'waiting') {
+           if (solde <= 0) {
+              // Nouveau : Si stack à 0 ET solde à 0, on quitte la table automatiquement
+              setAlertConfig({ message: "Solde insuffisant pour recaver. Veuillez recharger votre compte.", type: 'info' });
+              leaveTable();
+              setIsReadyToPlay(false);
+              setShowRecave(false);
+              localStorage.removeItem('active_table');
+              window.history.pushState({}, '', '/dashboard');
+           } else if (!showRecave && !isProcessingRecave) {
+              setShowRecave(true);
+           }
+        }
       }
     }
-  }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, fetchSolde]);
+  }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, solde, isFetchingSolde, leaveTable]);
 
   const [gameStartTime, setGameStartTime] = useState<number | null>(() => {
     if (!user?.id) return null;
@@ -434,8 +448,8 @@ function App() {
           <div className="h-[4%] w-full flex justify-between items-center px-4 z-50 bg-black/20 border-b border-white/5 shrink-0">
              <button 
                 onClick={() => {
+                  if (isFetchingSolde) return; 
                   const hasEnoughPlayers = tableData && tableData.players && tableData.players.length >= 2;
-                  // On peut quitter si (pas assez de joueurs) OU (le temps est écoulé)
                   if (!hasEnoughPlayers || timeRemaining <= 0) {
                       leaveTable();
                       setIsReadyToPlay(false);
@@ -445,7 +459,7 @@ function App() {
                   }
                 }} 
                 className={`h-[70%] px-2 bg-black/40 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 transition-all shrink-0 
-                  ${(tableData && tableData.players.length >= 2 && timeRemaining > 0) ? 'text-gray-500 cursor-not-allowed' : 'text-gray-400 hover:text-white'}`}
+                  ${(isFetchingSolde || (tableData && tableData.players.length >= 2 && timeRemaining > 0)) ? 'text-gray-500 cursor-not-allowed opacity-50' : 'text-gray-400 hover:text-white'}`}
              >
                <LogOut className="w-3 h-3" /> 
                {(tableData && tableData.players.length >= 2 && timeRemaining > 0) ? `${Math.floor(timeRemaining / 60000)}:${Math.floor((timeRemaining % 60000) / 1000).toString().padStart(2, '0')}` : 'Quitter'}
