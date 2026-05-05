@@ -12,8 +12,19 @@ import { getCallAmount, isPlayerTurn } from './utils/pokerLogic';
 import { useSound } from './hooks/useSound';
 
 function App() {
-  const { socket, tableData, joinTable, leaveTable, sendAction, sendEmoji } = useSocket();
+  const { socket, tableData, joinTable, leaveTable, sendAction, sendEmoji, error: socketError } = useSocket();
   const { isMuted, toggleMute } = useSound();
+
+  useEffect(() => {
+    if (socketError) {
+      setAlertConfig({ message: socketError, type: 'error' });
+      if (socketError.includes('session à cette table a expiré') || socketError.includes('Table non trouvée')) {
+        setIsReadyToPlay(false);
+        localStorage.removeItem('active_table');
+        window.history.pushState({}, '', '/dashboard');
+      }
+    }
+  }, [socketError]);
   
   const [user, setUser] = useState<{token: string, name: string, id: string, avatar_url?: string} | null>(() => {
     const savedUser = localStorage.getItem('poker_user');
@@ -35,20 +46,24 @@ function App() {
   const [buyIn, setBuyIn] = useState(() => localStorage.getItem('last_buy_in') || '1000');
   const [solde, setSolde] = useState<number | null>(null);
   const [isFetchingSolde, setIsFetchingSolde] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true); // Délai de grâce pour le refresh
   const [showRecave, setShowRecave] = useState(false);
   const [isProcessingRecave, setIsProcessingRecave] = useState(false);
-  const [scale, setScale] = useState(1);
-  const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (selectedTable) {
-        socket?.emit('leaveTable', { tableId: selectedTable });
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [socket, selectedTable]);
+    // Si on est à table, on attend 3 secondes avant de permettre la détection de recave/solde 0
+    if (isReadyToPlay) {
+      setIsInitializing(true);
+      const timer = setTimeout(() => {
+        setIsInitializing(false);
+      }, 3000); // 3 secondes de sécurité
+      return () => clearTimeout(timer);
+    } else {
+      setIsInitializing(false);
+    }
+  }, [isReadyToPlay, selectedTable]);
+  const [scale, setScale] = useState(1);
+  const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
 
   // Re-fetch solde when tableData is received for the first time after a refresh
   useEffect(() => {
@@ -142,8 +157,8 @@ function App() {
   useEffect(() => {
     // Vérifier si tableData est chargé (pas nul)
     if (isReadyToPlay && tableData && myPlayer) {
-      // Attendre que le solde soit chargé avant de décider d'afficher la recave
-      if (solde !== null && !isFetchingSolde) {
+      // Attendre que le solde soit chargé ET que le délai de grâce soit passé
+      if (solde !== null && !isFetchingSolde && !isInitializing) {
         if (myPlayer.chips <= 0 && tableData.gameState === 'waiting') {
            if (solde <= 0) {
               // Nouveau : Si stack à 0 ET solde à 0, on quitte la table automatiquement
@@ -491,7 +506,7 @@ function App() {
           </div>
           
           {/* ACTION PANEL: 10% */}
-          <div className="h-[10%] w-full flex items-center justify-center bg-gradient-to-t from-black to-transparent px-2 shrink-0">
+          <div className="h-[10%] w-full flex items-center justify-center px-2 shrink-0">
             <div className="w-full max-w-[420px]">
                <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
             </div>

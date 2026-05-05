@@ -166,7 +166,7 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
       <div className="relative transition-all duration-700 bg-gradient-to-br from-[#0a2e1a] to-[#051a0f] shadow-[0_0_80px_rgba(0,0,0,0.9),inset_0_0_120px_rgba(0,0,0,0.6)] flex items-center justify-center rounded-[200px] border-[4px] border-[#1e5a3d]/30 w-[98vw] max-w-[600px] aspect-[9/16]"
         style={{ margin: '0 auto' }}>
         
-        <div className="absolute inset-[2px] bg-cover opacity-5 pointer-events-none rounded-[198px]" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
+        <div className="absolute inset-[2px] bg-cover bg-center opacity-10 pointer-events-none rounded-[198px]" style={{ backgroundImage: "url('/image/font.jpg')" }}></div>
         <div className="absolute inset-[10px] border-[#1e5a3d]/10 rounded-[190px] border-[1px]"></div>
         
         {/* CARDS LAYER */}
@@ -187,7 +187,28 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
                targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y ?? getSeatOffset(delayedWinnerIdx).y}px` : `0px`} 
              />
           </div>
-          {/* ... reste du code ... */}
+
+          <style>{`
+            @keyframes slide-in-right {
+              0% { transform: translateX(50px) scale(0.8); opacity: 0; }
+              100% { transform: translateX(0) scale(0.8); opacity: 1; }
+            }
+            .animate-community-card {
+              animation: slide-in-right 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              opacity: 0;
+            }
+          `}</style>
+          <div className="flex gap-1.5 items-center justify-center min-h-[90px]">
+            {communityCards.map((card: any, idx: number) => (
+              <div
+                key={`${idx}-${card.value}-${card.suit}`}
+                className="animate-community-card origin-center shrink-0"
+                style={{ animationDelay: `${idx * 0.5}s` }}
+              >
+                <Card value={card.value} suit={card.suit} hidden={false} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* PLAYERS */}

@@ -167,7 +167,9 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   }, [winnerSeatIdx, communityCards.length]);
 
   return (
-    <div className="flex flex-col items-center w-full h-full justify-center overflow-visible">
+    <div className="flex flex-col items-center w-full h-full justify-center overflow-visible" style={{ backgroundImage: "url('/image/font.jpg')", backgroundSize: 'cover', backgroundPosition: 'center'
+
+     }}>
       <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
         style={{ 
           width: 'auto', 
@@ -177,7 +179,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
           maxHeight: '90%'
         }}>
         
-        <div className="absolute inset-[6px] bg-cover opacity-10 pointer-events-none rounded-full" style={{ backgroundImage: "url('/felt-texture.png')" }}></div>
+        <div className="absolute inset-[6px] bg-cover bg-center opacity-2 pointer-events-none rounded-full" style={{ backgroundImage: "url('/image/font.jpg')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
         
         {/* LOGO DÉCORATIF AU MILIEU DE LA TABLE */}
@@ -202,27 +204,26 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               100% { transform: translateX(0) scale(var(--card-scale, 1)); opacity: 1; }
             }
             .animate-community-card {
-              animation: slide-in-right 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              animation: slide-in-right 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
               opacity: 0;
             }
-          `}</style>
-          <div 
+            `}</style>
+            <div 
             className={`transition-all duration-700 gap-3 px-4 flex items-center justify-center rounded-2xl z-10 shrink-0 ${
-              communityCards.length >= 5 ? 'h-[120px] min-w-[310px]' : 'h-[130px] min-w-[330px]'
+             communityCards.length >= 5 ? 'h-[120px] min-w-[310px]' : 'h-[130px] min-w-[330px]'
             } ${tableData.gameState === 'all_fold' ? 'hidden' : ''}`}
             style={{ '--card-scale': communityCards.length >= 5 ? '1.15' : '1.25' } as React.CSSProperties}
-          >
+            >
             {communityCards.map((card: any, idx: number) => (
-              <div 
-                key={`${idx}-${card.value}-${card.suit}`} 
-                className="animate-community-card origin-center shrink-0"
-                style={{ animationDelay: `${idx * 1.2}s` }}
-              >
-                <Card value={card.value} suit={card.suit} hidden={false} />
-              </div>
+             <div
+               key={`${idx}-${card.value}-${card.suit}`}
+               className="animate-community-card origin-center shrink-0"
+               style={{ animationDelay: `${idx * 0.5}s` }}
+             >
+               <Card value={card.value} suit={card.suit} hidden={false} />
+             </div>
             ))}
-          </div>
-        </div>
+            </div>        </div>
 
         {/* PLAYERS */}
         {Array.from({ length: 9 }).map((_, idx) => {

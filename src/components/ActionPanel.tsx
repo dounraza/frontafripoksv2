@@ -38,7 +38,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
   };
 
   return (
-    <div className={`relative flex flex-col gap-1.5 p-2 pb-4 bg-gray-900/90 rounded-t-2xl border-t border-white/10 backdrop-blur-xl shadow-2xl transition-all ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+    <div className={`relative flex flex-col gap-1.5 p-2 pb-4 bg-white/5 rounded-t-2xl border-t border-white/10 backdrop-blur-xl shadow-2xl transition-all ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
         
         {/* ACTIONS */}
         <div className="grid grid-cols-3 gap-2 w-full">
