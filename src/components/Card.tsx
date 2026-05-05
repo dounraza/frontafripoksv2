@@ -28,11 +28,11 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
   const isLarge = size === 'large';
   const isSmall = size === 'small';
   
-  // Dimensions largeur augmentée très finement, hauteur augmentée légèrement
-  const width = isLarge ? 'w-[3.6rem]' : (isSmall ? 'w-[3.0rem]' : 'w-[3.3rem]');
-  const height = isLarge ? 'h-[4.9rem]' : (isSmall ? 'h-[4.1rem]' : 'h-[4.5rem]');
-  const minWidth = isLarge ? 'min-w-[3.6rem]' : (isSmall ? 'min-w-[3.0rem]' : 'min-w-[3.3rem]');
-  const minHeight = isLarge ? 'min-h-[4.9rem]' : (isSmall ? 'min-h-[4.1rem]' : 'min-h-[4.5rem]');
+  // Dimensions avec hauteur augmentée davantage
+  const width = isLarge ? 'w-[3.2rem]' : (isSmall ? 'w-[2.6rem]' : 'w-[2.9rem]');
+  const height = isLarge ? 'h-[4.8rem]' : (isSmall ? 'h-[4.0rem]' : 'h-[4.4rem]');
+  const minWidth = isLarge ? 'min-w-[3.2rem]' : (isSmall ? 'min-w-[2.6rem]' : 'min-w-[2.9rem]');
+  const minHeight = isLarge ? 'min-h-[4.8rem]' : (isSmall ? 'min-h-[4.0rem]' : 'min-h-[4.4rem]');
 
   const CardBack = (
     <div className={`w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20 bg-black overflow-hidden p-1`}>

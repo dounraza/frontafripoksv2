@@ -75,7 +75,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     dealOrder={1} numPlayers={9} handKey={handKey}
                     isRevealed={isRevealed}
                     isShowdown={isShowdown} isVertical={isVertical}
-                    spread={42}
+                    spread={32}
                     rotationFactor={8}
                 />
             </div>
