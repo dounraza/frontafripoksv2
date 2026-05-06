@@ -240,6 +240,8 @@ export const PokerTableResponsive: React.FC<PokerTableProps> = ({
           sendAction={sendAction} 
           callAmount={callAmount} 
           isMyTurn={isMyTurn} 
+          tableData={tableData}
+          myPlayer={players.find((p: any) => p.name === currentUserName)}
         />
       </div>
     </div>

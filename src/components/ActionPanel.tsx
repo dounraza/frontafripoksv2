@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useSound } from '../hooks/useSound';
+import { getMinRaiseTo, getMaxRaiseTo } from '../utils/pokerLogic';
 
 interface ActionPanelProps {
   sendAction: (type: string, amount?: number) => void;
   callAmount: number;
   isMyTurn: boolean;
-  minBuyIn?: number;
+  tableData?: any;
+  myPlayer?: any;
 }
 
-export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount, isMyTurn, minBuyIn = 1000 }) => {
+export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount, isMyTurn, tableData, myPlayer }) => {
   const [raiseAmount, setRaiseAmount] = useState(0);
   const { playSound } = useSound();
 
   // Initialiser le montant de relance quand c'est mon tour
   useEffect(() => {
     if (isMyTurn) {
-      // Minimum raise est généralement callAmount + bigBlind, ou au moins 2x callAmount
-      const minRaise = callAmount > 0 ? callAmount * 2 : 200;
-      setRaiseAmount(minRaise);
+      // Utilisation de la règle standard Poker (compatible poker-ts)
+      const minRaise = getMinRaiseTo(tableData);
+      const maxChips = getMaxRaiseTo(myPlayer);
+      
+      // On ne peut pas relancer plus que ses jetons
+      setRaiseAmount(Math.min(minRaise, maxChips));
     }
-  }, [isMyTurn, callAmount]);
+  }, [isMyTurn, callAmount, tableData, myPlayer]);
 
   const adjustRaise = (amount: number) => {
     setRaiseAmount(prev => Math.max(0, prev + amount));

@@ -33,10 +33,8 @@ export const getCallAmount = (tableData: any, myPlayer: any) => {
 export const getMinRaiseTo = (tableData: any) => {
   if (!tableData) return 0;
   const currentBet = tableData.currentBet || 0;
-  const previousBet = tableData.previousBet || 0;
-  const bigBlind = tableData.bigBlind || 20;
-  const lastRaise = Math.max(bigBlind, currentBet - previousBet);
-  return currentBet + lastRaise;
+  const lastRaiseIncrement = tableData.lastRaiseIncrement || tableData.bigBlind || 20;
+  return currentBet + lastRaiseIncrement;
 };
 
 export const getMaxRaiseTo = (myPlayer: any) => {

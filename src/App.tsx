@@ -489,10 +489,6 @@ function App() {
                 </div>
                 <div className="flex items-center gap-2 bg-black/40 h-[80%] px-2 rounded-full border border-white/5">
                    <span className="text-white font-black text-[9px] uppercase tracking-tighter">{user.name}</span>
-                   <div className="flex items-center gap-1 border-l border-white/10 pl-2">
-                      <Wallet className="w-2.5 h-2.5 text-yellow-500" />
-                      <div className="text-[10px] font-black text-yellow-500">{(myPlayer?.chips || 0).toLocaleString()}</div>
-                   </div>
                 </div>
              </div>
           </div>
@@ -508,7 +504,7 @@ function App() {
           {/* ACTION PANEL: 10% */}
           <div className="h-[10%] w-full flex items-center justify-center px-2 shrink-0">
             <div className="w-full max-w-[420px]">
-               <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} />
+               <ActionPanel sendAction={sendAction} callAmount={callAmount} isMyTurn={isMyTurn} tableData={tableData} myPlayer={myPlayer} />
             </div>
           </div>
         </div>

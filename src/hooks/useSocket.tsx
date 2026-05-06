@@ -22,7 +22,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [tableData, setTableData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [joinedTableId, setJoinedTableId] = useState<string | null>(null);
+  const joinedTableIdRef = React.useRef<string | null>(null);
   const [newEmoji, setNewEmoji] = useState<{ playerName: string, emoji: string } | null>(null);
+
+  useEffect(() => {
+    joinedTableIdRef.current = joinedTableId;
+  }, [joinedTableId]);
 
   useEffect(() => {
     const checkTokenAndConnect = () => {
@@ -69,7 +74,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       newSocket.on('tableUpdated', (data) => {
-        setTableData(data);
+        // Sécurité : Ne mettre à jour que si les données correspondent à la table rejointe
+        // On utilise le Ref pour éviter les closures périmées du useEffect initial
+        if (!joinedTableIdRef.current || String(data.id) === String(joinedTableIdRef.current)) {
+          setTableData(data);
+        }
       });
 
       newSocket.on('newEmoji', (data) => {
@@ -99,6 +108,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   const joinTable = useCallback((playerName: string, tableId: string, buyIn: string) => {
     if (socket) {
+      // Nettoyer les données de la table précédente avant d'en rejoindre une nouvelle
+      setTableData(null);
       // On envoieplayerName pour compatibilité mais le backend utilisera le token
       socket.emit('joinTable', { playerName, tableId, buyIn });
       setJoinedTableId(tableId);
