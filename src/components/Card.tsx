@@ -36,7 +36,7 @@ export const Card: React.FC<CardProps> = ({ value, suit, hidden, revealed = true
 
   const CardBack = (
     <div className={`w-full h-full card-back flex items-center justify-center shadow-md rounded-lg border border-white/20 bg-black overflow-hidden p-1`}>
-      <img src="/font.png" alt="logo" className="w-full h-full object-contain opacity-80" />
+      <img src="/logo.ico" alt="logo" className="w-full h-full object-contain" />
     </div>
   );
 
