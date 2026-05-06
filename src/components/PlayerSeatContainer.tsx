@@ -45,13 +45,13 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     const transforms: { [key: number]: string } = {
       0: "sm:-translate-y-0 sm:translate-x-1 translate-y-14 translate-x-1",
       1: "sm:translate-y-8 sm:translate-x-4 translate-y-14 translate-x-4",
-      2: "sm:translate-y-4 sm:translate-x-8 translate-y-4 translate-x-6",
-      3: "sm:translate-y-4 sm:translate-x-8 translate-y-6 translate-x-3",
-      4: "sm:translate-y-4 -translate-y-0",
-      5: "sm:translate-y-4 sm:-translate-x-8 translate-y-6 -translate-x-4",
-      6: "sm:translate-y-4 sm:-translate-x-8 translate-y-6 -translate-x-6",
-      7: "sm:-translate-y-16 sm:-translate-x-8 translate-y-4 -translate-x-6",
-      8: "sm:-translate-y-14 sm:-translate-x-2 translate-y-4 -translate-x-2",
+      2: "sm:translate-y-4 sm:translate-x-8 translate-y-14 translate-x-4",
+      3: "sm:translate-y-4 sm:translate-x-8 translate-y-14 translate-x-3",
+      4: "sm:translate-y-4 translate-y-14",
+      5: "sm:translate-y-4 sm:-translate-x-8 translate-y-12 -translate-x-4",
+      6: "sm:translate-y-4 sm:-translate-x-8 translate-y-14 -translate-x-4",
+      7: "sm:-translate-y-16 sm:-translate-x-8 translate-y-16 -translate-x-2",
+      8: "sm:-translate-y-14 sm:-translate-x-2 translate-y-14 -translate-x-2",
     };
     return transforms[seat] || "translate-y-2";
   };

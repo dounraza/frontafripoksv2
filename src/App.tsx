@@ -17,13 +17,9 @@ function App() {
 
   useEffect(() => {
     if (socketError) {
-      const isMinBuyInError = socketError.includes('Le montant minimum pour cette table');
-      setAlertConfig({ 
-        message: socketError, 
-        type: isMinBuyInError ? 'info' : 'error' 
-      });
+      setAlertConfig({ message: socketError, type: 'error' });
       
-      if (socketError.includes('Table non trouvée') || isMinBuyInError) {
+      if (socketError.includes('Table non trouvée') || socketError.includes('Le montant minimum pour cette table')) {
         setIsReadyToPlay(false);
         localStorage.removeItem('active_table');
         window.history.pushState({}, '', '/dashboard');
@@ -54,6 +50,25 @@ function App() {
   const [isInitializing, setIsInitializing] = useState(true); // Délai de grâce pour le refresh
   const [showRecave, setShowRecave] = useState(false);
   const [isProcessingRecave, setIsProcessingRecave] = useState(false);
+  const [hasPerformedAllIn, setHasPerformedAllIn] = useState(false);
+
+  // Déplacer les dérivés ici pour s'assurer qu'ils sont définis avant tout useEffect
+  const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
+  const isMyTurn = isPlayerTurn(tableData, socket?.id) && (myPlayer?.chips > 0 || tableData?.currentBet === (myPlayer?.bet || 0));
+  const callAmount = getCallAmount(tableData, myPlayer);
+
+  useEffect(() => {
+    // Réinitialisation lors du changement de main ou fin de main
+    if (tableData?.gameState === 'waiting' || tableData?.gameState === 'showdown') {
+      setHasPerformedAllIn(false);
+    }
+  }, [tableData?.gameState]);
+
+  useEffect(() => {
+    if (myPlayer?.lastAction === 'all-in') {
+      setHasPerformedAllIn(true);
+    }
+  }, [myPlayer?.lastAction]);
 
   useEffect(() => {
     // Si on est à table, on attend 3 secondes avant de permettre la détection de recave/solde 0
@@ -148,10 +163,6 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
-  const isMyTurn = isPlayerTurn(tableData, socket?.id) && (myPlayer?.chips > 0 || tableData?.currentBet === (myPlayer?.bet || 0));
-  const callAmount = getCallAmount(tableData, myPlayer);
-
   useEffect(() => {
     if (myPlayer && myPlayer.chips > 0 && isProcessingRecave) {
       setIsProcessingRecave(false);
@@ -164,9 +175,12 @@ function App() {
     if (isReadyToPlay && tableData && myPlayer) {
       // Attendre que le solde soit chargé ET que le délai de grâce soit passé
       if (solde !== null && !isFetchingSolde && !isInitializing) {
-        if (myPlayer.chips <= 0 && tableData.gameState === 'waiting') {
+        
+        // MODAL LOCK: Uniquement si la main est réellement terminée (showdown ou waiting)
+        const isGameEnded = tableData.gameState === 'showdown' || tableData.gameState === 'waiting';
+
+        if (myPlayer.chips <= 0 && isGameEnded) {
            if (solde <= 0) {
-              // Nouveau : Si stack à 0 ET solde à 0, on quitte la table automatiquement
               setAlertConfig({ message: "Solde insuffisant pour recaver. Veuillez recharger votre compte.", type: 'info' });
               leaveTable();
               setIsReadyToPlay(false);
@@ -174,7 +188,10 @@ function App() {
               localStorage.removeItem('active_table');
               window.history.pushState({}, '', '/dashboard');
            } else if (!showRecave && !isProcessingRecave) {
-              setShowRecave(true);
+              const timer = setTimeout(() => {
+                setShowRecave(true);
+              }, 10000); // 10 secondes de délai
+              return () => clearTimeout(timer);
            }
         }
       }

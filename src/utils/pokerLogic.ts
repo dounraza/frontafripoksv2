@@ -43,8 +43,8 @@ export const getMaxRaiseTo = (myPlayer: any) => {
 };
 
 export const isPlayerTurn = (tableData: any, socketId: string | undefined) => {
-  if (!tableData || !socketId || !tableData.players) return false;
-  const currentPlayer = tableData.players.find((p: any) => p.position === tableData.currentPlayerIndex);
+  if (!tableData || !socketId || !tableData.players || tableData.currentPlayerIndex === undefined) return false;
+  const currentPlayer = tableData.players[tableData.currentPlayerIndex];
   
   // Un joueur ne peut avoir son tour que s'il est réellement dans la main
   if (!currentPlayer || currentPlayer.status === 'folded' || currentPlayer.status === 'out' || currentPlayer.status === 'waiting') return false;
