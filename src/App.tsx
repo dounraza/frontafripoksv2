@@ -188,10 +188,7 @@ function App() {
               localStorage.removeItem('active_table');
               window.history.pushState({}, '', '/dashboard');
            } else if (!showRecave && !isProcessingRecave) {
-              const timer = setTimeout(() => {
-                setShowRecave(true);
-              }, 10000); // 10 secondes de délai
-              return () => clearTimeout(timer);
+              setShowRecave(true);
            }
         }
       }
