@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     if (socketError) {
       setAlertConfig({ message: socketError, type: 'error' });
-      if (socketError.includes('session à cette table a expiré') || socketError.includes('Table non trouvée')) {
+      if (socketError.includes('Table non trouvée')) {
         setIsReadyToPlay(false);
         localStorage.removeItem('active_table');
         window.history.pushState({}, '', '/dashboard');
