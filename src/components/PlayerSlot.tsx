@@ -72,7 +72,8 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   useEffect(() => {
     let timer: any;
     // On n'active le chrono que si c'est le tour du joueur ET que le jeu n'est pas en phase de révélation
-    if (isActive && gameState === 'playing') {
+    // NOUVEAU : On n'active pas le chrono si le joueur n'a plus de jetons (attente recave)
+    if (isActive && gameState === 'playing' && player.chips > 0) {
       setTimeLeft(15);
       timer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -81,7 +82,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
       setTimeLeft(0); // Reset le chrono visuel si ce n'est pas le tour ou si jeu fini
     }
     return () => clearInterval(timer);
-  }, [isActive, gameState]);
+  }, [isActive, gameState, player.chips]);
 
   const isInHand = player.status === 'active' || player.status === 'all-in';
   const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold';
@@ -116,7 +117,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
       <div className="relative flex flex-col items-center">
         {/* AVATAR */}
         <div className="relative mt-4 z-10">
-          {isActive && <div className="absolute inset-[-8px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
+          {isActive && player.chips > 0 && <div className="absolute inset-[-8px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
           
           {currentEmoji && (
             <div className={`${getEmojiPosition()} bg-white/90 rounded-full p-2 text-5xl animate-bounce shadow-xl border border-gray-200`}>

@@ -17,8 +17,13 @@ function App() {
 
   useEffect(() => {
     if (socketError) {
-      setAlertConfig({ message: socketError, type: 'error' });
-      if (socketError.includes('Table non trouvée')) {
+      const isMinBuyInError = socketError.includes('Le montant minimum pour cette table');
+      setAlertConfig({ 
+        message: socketError, 
+        type: isMinBuyInError ? 'info' : 'error' 
+      });
+      
+      if (socketError.includes('Table non trouvée') || isMinBuyInError) {
         setIsReadyToPlay(false);
         localStorage.removeItem('active_table');
         window.history.pushState({}, '', '/dashboard');
@@ -144,7 +149,7 @@ function App() {
   }, []);
 
   const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
-  const isMyTurn = isPlayerTurn(tableData, socket?.id);
+  const isMyTurn = isPlayerTurn(tableData, socket?.id) && (myPlayer?.chips > 0 || tableData?.currentBet === (myPlayer?.bet || 0));
   const callAmount = getCallAmount(tableData, myPlayer);
 
   useEffect(() => {
