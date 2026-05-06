@@ -54,8 +54,8 @@ function App() {
 
   // Déplacer les dérivés ici pour s'assurer qu'ils sont définis avant tout useEffect
   const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
-  const isMyTurn = isPlayerTurn(tableData, socket?.id) && (myPlayer?.chips > 0 || tableData?.currentBet === (myPlayer?.bet || 0));
-  const callAmount = getCallAmount(tableData, myPlayer);
+  const isMyTurn = (tableData?.players?.length > 1) && isPlayerTurn(tableData, socket?.id) && (myPlayer?.chips > 0 || tableData?.currentBet === (myPlayer?.bet || 0));
+  const callAmount = (tableData?.players?.length > 1) ? getCallAmount(tableData, myPlayer) : 0;
 
   useEffect(() => {
     // Réinitialisation lors du changement de main ou fin de main
