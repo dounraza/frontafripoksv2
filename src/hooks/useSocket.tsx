@@ -30,22 +30,30 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [joinedTableId]);
 
   useEffect(() => {
-    const checkTokenAndConnect = () => {
+    const checkToken = () => {
       const savedUser = localStorage.getItem('poker_user');
       const token = savedUser ? JSON.parse(savedUser).token : null;
 
       if (!token) {
-        console.log('No token found, waiting for login...');
+        if (socket) {
+          socket.disconnect();
+          setSocket(null);
+        }
         return;
       }
 
-      if (socket) return; // Already connected
+      if (socket) return; // Already initialized
 
-      console.log('Attempting to connect to socket at:', SOCKET_URL, '(with token)');
+      console.log('Attempting to connect to socket at:', SOCKET_URL);
       
       const newSocket = io(SOCKET_URL, {
         transports: ['websocket', 'polling'],
-        auth: { token }
+        auth: { token },
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000
       });
       
       setSocket(newSocket);
@@ -54,12 +62,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('Socket connected successfully!');
         setError(null);
         
-        // Auto-rejoin logic
         const activeTable = localStorage.getItem('active_table');
-        const savedUserCurrent = localStorage.getItem('poker_user');
-        if (activeTable && savedUserCurrent) {
-          const user = JSON.parse(savedUserCurrent);
-          console.log(`Auto-rejoining table ${activeTable} for ${user.name}`);
+        if (activeTable) {
+          console.log(`Auto-rejoining table ${activeTable}`);
           newSocket.emit('joinTable', { 
             tableId: activeTable, 
             buyIn: "0" 
@@ -70,12 +75,19 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       newSocket.on('connect_error', (err) => {
         console.error('Socket connection error:', err);
-    
+        if (err.message === 'timeout') {
+           setError('La connexion au serveur met trop de temps. Tentative de reconnexion...');
+        }
+      });
+
+      newSocket.on('disconnect', (reason) => {
+        console.log('Socket disconnected:', reason);
+        if (reason === 'io server disconnect') {
+          newSocket.connect();
+        }
       });
 
       newSocket.on('tableUpdated', (data) => {
-        // Sécurité : Ne mettre à jour que si les données correspondent à la table rejointe
-        // On utilise le Ref pour éviter les closures périmées du useEffect initial
         if (!joinedTableIdRef.current || String(data.id) === String(joinedTableIdRef.current)) {
           setTableData(data);
         }
@@ -83,19 +95,17 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       newSocket.on('newEmoji', (data) => {
         setNewEmoji(data);
-        setTimeout(() => setNewEmoji(null), 3000); // Clear emoji after 3 seconds
+        setTimeout(() => setNewEmoji(null), 3000);
       });
 
       newSocket.on('error', (err) => {
         console.error('Socket error event:', err);
-        setError(err.message || 'An unknown error occurred');
+        setError(err.message || 'Une erreur est survenue');
       });
     };
 
-    checkTokenAndConnect();
-
-    // Re-check periodically or listen for storage changes if needed
-    const interval = setInterval(checkTokenAndConnect, 2000);
+    checkToken();
+    const interval = setInterval(checkToken, 2000);
 
     return () => {
       clearInterval(interval);

@@ -85,7 +85,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   }, [isActive, gameState, player.chips]);
 
   const isInHand = player.status === 'active' || player.status === 'all-in';
-  const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold';
+  const isFolded = player.status === 'folded' || player.status === 'out' || player.status === 'waiting' || player.lastAction === 'fold';
   
   const [showPicker, setShowPicker] = useState(false);
 
@@ -153,7 +153,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
                `}>
                   {(isShowdown && player.handResult)
                       ? <span className="uppercase tracking-tighter">{player.handResult}</span>
-                      : player.name}
+                      : (player.status === 'waiting' ? <span className="text-gray-400">En attente...</span> : player.name)}
                </div>
                <div className="flex gap-1">
                  {isDealer && <span className="w-5 h-5 bg-white text-black rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-gray-300">D</span>}
