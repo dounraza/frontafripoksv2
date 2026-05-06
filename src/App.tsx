@@ -176,8 +176,9 @@ function App() {
       // Attendre que le solde soit chargé ET que le délai de grâce soit passé
       if (solde !== null && !isFetchingSolde && !isInitializing) {
         
-        // MODAL LOCK: Uniquement si la main est réellement terminée (showdown ou waiting)
-        const isGameEnded = tableData.gameState === 'showdown' || tableData.gameState === 'waiting';
+        // MODAL LOCK: Uniquement si la main n'est pas en phase de résultat (showdown)
+        // et que le joueur n'est pas "all-in" (il attend peut-être de gagner le pot)
+        const isGameEnded = tableData.gameState === 'waiting' || (tableData.gameState === 'playing' && myPlayer.status !== 'all-in');
 
         if (myPlayer.chips <= 0 && isGameEnded) {
            if (solde <= 0) {

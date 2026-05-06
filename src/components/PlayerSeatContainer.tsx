@@ -36,7 +36,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     isCurrentUser, centerX, centerY, gatheringPlayerId, currentEmoji, sendEmoji 
   } = props;
 
-  const isFolded = player.status === 'folded' || player.status === 'out' || player.lastAction === 'fold' || player.lastAction === 'auto-fold' || gameState === 'all_fold';
+  const isFolded = player.status === 'folded' || player.status === 'out' || player.status === 'waiting' || player.lastAction === 'fold' || player.lastAction === 'auto-fold' || gameState === 'all_fold';
   
   // Asehoy foana ny mpilalao fa ny karatra no afenina any ambany raha nanao fold
   
@@ -62,7 +62,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     (gameState === 'playing' || gameState === 'showdown') && 
                     player.status !== 'out' && 
                     player.status !== 'waiting' &&
-                    (!isMeActive ? isCurrentUser : true);
+                    (gameState === 'showdown' ? true : (!isMeActive ? isCurrentUser : true));
 
   return (
     <div id={`seat-${seatNumber}`} className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>

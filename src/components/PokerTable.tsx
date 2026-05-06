@@ -209,7 +209,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                                 myPlayer.status !== 'out' && 
                                 myPlayer.lastAction !== 'fold';
           const isRealShowdown = isShowdown && tableData.players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length > 1;
-          const isRevealed = amIStillActive && (player.id === currentUserId || isRealShowdown);
+          const isRevealed = isRealShowdown || (amIStillActive && player.id === currentUserId);
 
           return (
             <PlayerSeatContainer 

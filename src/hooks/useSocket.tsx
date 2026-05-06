@@ -70,7 +70,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       newSocket.on('connect_error', (err) => {
         console.error('Socket connection error:', err);
-        setError("Erreur de server, ou server is down");
+    
       });
 
       newSocket.on('tableUpdated', (data) => {

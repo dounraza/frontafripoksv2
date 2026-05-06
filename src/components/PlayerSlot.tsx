@@ -148,10 +148,10 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
                  </span>
                )}
                <div className={`text-[10px] font-black uppercase italic flex items-center gap-1
-                 ${(showResult && isCurrentUser) ? 'text-yellow-400 animate-pulse' : ''}
+                 ${(isShowdown && player.handResult) ? 'text-yellow-400 animate-pulse' : ''}
                  ${isLoser ? 'text-red-500' : 'text-white'}
                `}>
-                  {(showResult && isCurrentUser)
+                  {(isShowdown && player.handResult)
                       ? <span className="uppercase tracking-tighter">{player.handResult}</span>
                       : player.name}
                </div>
