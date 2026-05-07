@@ -7,7 +7,7 @@ import { AuthForm } from './pages/AuthForm';
 import { Alert } from './components/Alert';
 import { ActionPanel } from './components/ActionPanel';
 import { Profile } from './components/Profile';
-import { LogOut, Wallet, User, History, Volume2, VolumeX } from 'lucide-react';
+import { LogOut, Wallet, History, Volume2, VolumeX } from 'lucide-react';
 import { getCallAmount, isPlayerTurn } from './utils/pokerLogic';
 import { useSound } from './hooks/useSound';
 
@@ -50,25 +50,11 @@ function App() {
   const [isInitializing, setIsInitializing] = useState(true); // Délai de grâce pour le refresh
   const [showRecave, setShowRecave] = useState(false);
   const [isProcessingRecave, setIsProcessingRecave] = useState(false);
-  const [hasPerformedAllIn, setHasPerformedAllIn] = useState(false);
 
   // Déplacer les dérivés ici pour s'assurer qu'ils sont définis avant tout useEffect
   const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
   const isMyTurn = (tableData?.players?.length > 1) && isPlayerTurn(tableData, socket?.id) && (myPlayer?.chips > 0 || tableData?.currentBet === (myPlayer?.bet || 0));
   const callAmount = (tableData?.players?.length > 1) ? getCallAmount(tableData, myPlayer) : 0;
-
-  useEffect(() => {
-    // Réinitialisation lors du changement de main ou fin de main
-    if (tableData?.gameState === 'waiting' || tableData?.gameState === 'showdown') {
-      setHasPerformedAllIn(false);
-    }
-  }, [tableData?.gameState]);
-
-  useEffect(() => {
-    if (myPlayer?.lastAction === 'all-in') {
-      setHasPerformedAllIn(true);
-    }
-  }, [myPlayer?.lastAction]);
 
   useEffect(() => {
     // Si on est à table, on attend 3 secondes avant de permettre la détection de recave/solde 0
@@ -82,7 +68,6 @@ function App() {
       setIsInitializing(false);
     }
   }, [isReadyToPlay, selectedTable]);
-  const [scale, setScale] = useState(1);
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
 
   // Re-fetch solde when tableData is received for the first time after a refresh
@@ -127,7 +112,7 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         const userData = data.user || data;
-        setUser(prev => prev ? { ...prev, ...userData } : null);
+        setUser(prev => prev ? { ...prev, name: userData.name, avatar_url: userData.avatar_url || undefined } : null);
       }
     } catch (err) {
       console.error("Erreur chargement profil", err);
@@ -144,19 +129,9 @@ function App() {
     if (user) fetchSolde();
   }, [user, fetchSolde]);
 
-  const getAvatarUrl = (avatar_url?: string, name?: string) => {
-    if (avatar_url) {
-      return avatar_url.startsWith('http') ? avatar_url : `${API_URL}${avatar_url}`;
-    }
-    return `https://api.dicebear.com/9.x/adventurer/svg?seed=${name || 'default'}`;
-  };
-
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth;
-      const targetWidth = width < 480 ? 540 : 1000; 
-      const scaleW = (width * 0.9) / targetWidth;
-      setScale(Math.min(1.0, scaleW));
+      // Logic removed if scale is unused
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -194,7 +169,7 @@ function App() {
         }
       }
     }
-  }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, solde, isFetchingSolde, leaveTable]);
+  }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, solde, isFetchingSolde, leaveTable, isInitializing]);
 
   const [gameStartTime, setGameStartTime] = useState<number | null>(() => {
     if (!user?.id) return null;
@@ -202,7 +177,6 @@ function App() {
     return saved ? parseInt(saved) : null;
   });
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
-  const [showExitPopup, setShowExitPopup] = useState(false);
 
   useEffect(() => {
     // Le compteur ne s'active que s'il y a au moins 2 joueurs
@@ -230,35 +204,6 @@ function App() {
     }, 1000);
     return () => clearInterval(interval);
   }, [gameStartTime, tableData]);
-
-  const rejoinTable = () => {
-    joinTable(user!.name, selectedTable, "0");
-    setIsReadyToPlay(true);
-    setShowRecave(false);
-    window.history.pushState({}, '', `/table/${selectedTable}`);
-  };
-
-  const handleJoinDirectly = (tableId: string, buyInAmount: number) => {
-    if (isProcessingRecave) return;
-    
-    // Vérification de solde simplifiée pour la cave
-    if (solde !== null && buyInAmount > solde) {
-      setAlertConfig({ message: "Votre solde est insuffisant", type: 'error' });
-      return;
-    }
-
-    joinTable(user!.name, tableId, String(buyInAmount)); 
-    setIsReadyToPlay(true);
-    
-    const now = Date.now();
-    setGameStartTime(now);
-    localStorage.setItem(`game_start_time_${user!.id}`, now.toString());
-    
-    setShowJoinForm(false);
-    localStorage.setItem('active_table', tableId);
-    localStorage.setItem('last_buy_in', String(buyInAmount));
-    window.history.pushState({}, '', `/table/${tableId}`);
-  };
 
   const handleJoin = () => {
     if (isProcessingRecave) return;
@@ -347,7 +292,7 @@ function App() {
           currentUser={{ token: user.token, name: user.name, id: user.id }} 
           onClose={() => setShowProfile(false)}
           onProfileUpdate={(updatedUser) => {
-            setUser(prev => prev ? { ...prev, ...updatedUser } : null);
+            setUser(prev => prev ? { ...prev, name: updatedUser.name, avatar_url: updatedUser.avatar_url || undefined } : null);
           }}
         />
       )}
@@ -453,8 +398,6 @@ function App() {
           user={user} 
           solde={solde}
           onRefreshSolde={fetchSolde}
-          isMuted={isMuted}
-          onToggleMute={toggleMute}
           onJoinTable={(id, amount) => {
             if (amount === 0) {
                 // Reconnexion directe : on appelle joinTable sans ouvrir le modal

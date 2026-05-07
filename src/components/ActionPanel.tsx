@@ -34,7 +34,6 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
     // Si l'action est 'raise', amount est le montant total voulu sur la table
     const finalAmount = amount !== undefined ? amount : 0;
     
-    console.log(`Action: ${type}, TotalAmount: ${finalAmount}`);
     if (type === 'all-in') playSound('allin');
     else playSound(type as any);
     
@@ -86,7 +85,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
               placeholder="Mise"
             />
             <button 
-              onClick={() => { console.log('Raise clicked'); handleAction('raise', raiseAmount); }} 
+              onClick={() => { handleAction('raise', raiseAmount); }} 
               className="col-span-3 py-2 bg-yellow-500 border-b-4 border-yellow-700 hover:bg-yellow-400 text-black rounded-lg font-black uppercase text-[10px] active:border-b-0 active:translate-y-[4px] transition-all"
             >
               Raise {raiseAmount > 0 ? raiseAmount.toLocaleString() : ''}

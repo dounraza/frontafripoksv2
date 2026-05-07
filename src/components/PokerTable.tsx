@@ -16,6 +16,7 @@ interface PokerTableProps {
   currentUserName?: string;
   isVertical: boolean;
   sendAction: (type: string, amount?: number) => void;
+  sendEmoji: (emoji: string) => void;
   callAmount: number;
   isMyTurn: boolean;
 }
@@ -32,7 +33,7 @@ const PLAYER_POSITIONS = [
   'bottom-[-2%] right-[1%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
-  tableData, currentUserId, currentUserName, isVertical, sendAction, sendEmoji, callAmount, isMyTurn 
+  tableData, currentUserId, currentUserName, isVertical, sendEmoji 
 }) => {
   const { newEmoji } = useSocket();
   
@@ -53,7 +54,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
   }, [totalPotInPlay]);
 
   const displayPot = isShowdown ? lastTotalPot : totalPotInPlay;
-  const [handKey, setHandKey] = React.useState(0);
   
   const potRef = React.useRef<HTMLDivElement>(null);
   const [seatCoords, setSeatCoords] = React.useState<any>({});
@@ -110,11 +110,11 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
   React.useEffect(() => {
     if (communityCards.length > 0) playSound('share-cards');
-  }, [communityCards.length]);
+  }, [communityCards.length, playSound]);
 
   React.useEffect(() => {
     if (winnerIds.length > 0) playSound('win');
-  }, [winnerIds.length]);
+  }, [winnerIds.length, playSound]);
 
   React.useEffect(() => {
     tableData.players.forEach((p: any) => {
@@ -131,7 +131,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
       }
       if (!p.lastAction) lastPlayedActionRef.current[p.id] = '';
     });
-  }, [tableData.players]);
+  }, [tableData.players, playSound]);
 
   React.useEffect(() => {
     if (winnerSeatIdx !== undefined) {
@@ -232,7 +232,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               isVertical={isVertical}
               isRevealed={isRevealed}
               isMeActive={amIStillActive || false}
-              handKey={handKey}
               currentEmoji={newEmoji?.playerName === player.name ? newEmoji.emoji : null}
               sendEmoji={sendEmoji}
             />

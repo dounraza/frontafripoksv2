@@ -1,34 +1,21 @@
 // @ts-ignore
 import React, { useState, useEffect } from 'react';
-import { Card } from './Card';
-import { BetChips } from './BetChips';
-import { CardDealer } from './CardDealer';
 
 interface PlayerSlotProps {
   player: any;
   isActive: boolean;
   isWinner: boolean;
   isAnimatingPot: boolean;
-  positionClass: string;
-  shouldGatherBets: boolean;
-  isDealer: boolean;
-  isSB: boolean;
-  isBB: boolean;
-  seatNumber: number;
   isShowdown: boolean;
   isCurrentUser: boolean;
   gameState: string;
-  centerX: number;
-  centerY: number;
-  gatheringPlayerId: string | null;
   currentEmoji: string | null;
   sendEmoji: (emoji: string) => void;
-  id?: string;
 }
 
 export const PlayerSlot: React.FC<PlayerSlotProps> = ({ 
-  player, isActive, isWinner, isAnimatingPot, positionClass, shouldGatherBets, isDealer, isSB, isBB,
-  isCurrentUser, gameState, seatNumber, centerX, centerY, gatheringPlayerId, id, isShowdown, currentEmoji, sendEmoji
+  player, isActive, isWinner, isAnimatingPot,
+  isCurrentUser, gameState, isShowdown, currentEmoji, sendEmoji
 }) => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   const emojis = ['😊', '😂', '🔥', '👍', '👎', '😠'];
@@ -46,51 +33,33 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   const isLoser = !isWinner && isShowdown;
   const [timeLeft, setTimeLeft] = useState(15);
   const [displayChips, setDisplayChips] = useState(player.chips);
-  const [showResult, setShowResult] = useState(false);
-  
-  useEffect(() => {
-    if (isShowdown && player.handResult && player.lastAction !== 'fold' && player.lastAction !== 'out') {
-      const interval = setInterval(() => {
-        setShowResult(prev => !prev);
-      }, 3000);
-      return () => clearInterval(interval);
-    } else {
-      setShowResult(false);
-    }
-  }, [isShowdown, player.handResult, player.lastAction]);
   
   // Sync display chips with isAnimatingPot
   useEffect(() => {
-    // Bloque la mise à jour si l'animation est en cours OU si on est en showdown (révélation des cartes)
     if (isAnimatingPot || gameState === 'showdown') {
       return;
     }
-    // Sinon, on met à jour immédiatement
     setDisplayChips(player.chips);
   }, [player.chips, isAnimatingPot, gameState]);
 
   useEffect(() => {
     let timer: any;
-    // On n'active le chrono que si c'est le tour du joueur ET que le jeu n'est pas en phase de révélation
-    // NOUVEAU : On n'active pas le chrono si le joueur n'a plus de jetons (attente recave)
     if (isActive && gameState === 'playing' && player.chips > 0) {
       setTimeLeft(15);
       timer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
     } else {
-      setTimeLeft(0); // Reset le chrono visuel si ce n'est pas le tour ou si jeu fini
+      setTimeLeft(0);
     }
     return () => clearInterval(timer);
   }, [isActive, gameState, player.chips]);
 
-  const isInHand = player.status === 'active' || player.status === 'all-in';
   const isFolded = player.status === 'folded' || player.status === 'out' || player.status === 'waiting' || player.lastAction === 'fold';
   
   const [showPicker, setShowPicker] = useState(false);
 
   const getEmojiPosition = () => {
-    // Déplacé plus haut et agrandi pour être bien visible
     return "absolute -top-24 left-1/2 transform -translate-x-1/2 z-[100]";
   };
 
@@ -115,7 +84,6 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
       `}</style>
 
       <div className="relative flex flex-col items-center">
-        {/* AVATAR */}
         <div className="relative mt-4 z-10">
           {isActive && player.chips > 0 && <div className="absolute inset-[-8px] rounded-full border-yellow-400/60 sonar-animation z-0"></div>}
           
@@ -133,7 +101,6 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           </div>
         </div>
 
-        {/* TRAPEZE - Misy anarana, chips, ary D/SB/BB */}
         <div className="glass-panel p-2 min-w-[110px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center"
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 95% 70%, 90% 90%, 80% 100%, 20% 100%, 10% 90%, 5% 70%)", paddingBottom: '24px' }}>
           
@@ -156,9 +123,9 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
                       : (player.status === 'waiting' ? <span className="text-gray-400">En attente...</span> : player.name)}
                </div>
                <div className="flex gap-1">
-                 {isDealer && <span className="w-5 h-5 bg-white text-black rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-gray-300">D</span>}
-                 {isSB && <span className="w-5 h-5 bg-blue-600 text-white rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-blue-800">SB</span>}
-                 {isBB && <span className="w-5 h-5 bg-red-600 text-white rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-red-800">BB</span>}
+                 {player.role === 'dealer' && <span className="w-5 h-5 bg-white text-black rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-gray-300">D</span>}
+                 {player.role === 'small' && <span className="w-5 h-5 bg-blue-600 text-white rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-blue-800">SB</span>}
+                 {player.role === 'big' && <span className="w-5 h-5 bg-red-600 text-white rounded-md text-[10px] font-black flex items-center justify-center shadow-lg border border-red-800">BB</span>}
                </div>
              </div>
           </div>
@@ -182,7 +149,6 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           )}
         </div>
 
-        {/* REACTION TRIGGER - Placé en dessous pour ne pas cacher le solde */}
         {isCurrentUser && (
             <div className="mt-0 z-50">
                 <button onClick={() => setShowPicker(!showPicker)} className="text-[20px] hover:scale-125 transition-transform bg-black/80 p-1 rounded-full border border-white/20">😀</button>

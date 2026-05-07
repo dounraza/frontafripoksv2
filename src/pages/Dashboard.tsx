@@ -12,6 +12,8 @@ interface DashboardProps {
   onRefreshSolde: () => void;
   onLogout: () => void;
   onOpenProfile: () => void;
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
 const COUNTRY_CODES = [
@@ -78,7 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [selectedCountryCode, setSelectedCountryCode] = useState('+261');
   const [isProcessing, setIsProcessing] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(window.innerWidth < 1024 ? 3 : 6);
-  const [activeTableId, setActiveTableId] = useState(() => localStorage.getItem('active_table'));
+  const activeTableId = localStorage.getItem('active_table');
 
   const handleReturnToTable = () => {
     if (activeTableId) {

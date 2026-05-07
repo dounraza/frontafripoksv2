@@ -24,7 +24,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
     
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
     
-    console.log('Tentative de connexion vers:', `${API_URL}${endpoint}`);
     try {
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
@@ -32,9 +31,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         body: JSON.stringify(body),
       });
       
-      console.log('Réponse reçue, statut:', response.status);
       const data = await response.json();
-      console.log('Données reçues:', data);
       
       if (!response.ok) throw new Error(data.error || 'Erreur authentification');
       
