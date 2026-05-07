@@ -24,16 +24,16 @@ interface PlayerSeatContainerProps {
   isRevealed: boolean;
   isMeActive: boolean;
   isVertical: boolean;
-  handKey: number;
-  currentEmoji: string | null;
   sendEmoji: (emoji: string) => void;
+  handKey?: string;
+  currentEmoji?: string | null;
 }
 
 export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) => {
   const { 
-    player, isActive, isWinner, isAnimatingPot, positionClass, shouldGatherBets, 
-    seatNumber, isShowdown, isRevealed, isMeActive, gameState, isVertical, handKey,
-    isCurrentUser, centerX, centerY, gatheringPlayerId, currentEmoji, sendEmoji 
+    player, isActive: _isActive, isWinner: _isWinner, isAnimatingPot, positionClass, shouldGatherBets, 
+    seatNumber, isShowdown, isRevealed, isMeActive: _isMeActive, gameState, isVertical,
+    isCurrentUser, centerX, centerY, gatheringPlayerId, sendEmoji, currentEmoji: _currentEmoji, handKey 
   } = props;
 
   const isFolded = player.status === 'folded' || player.status === 'out' || player.status === 'waiting' || player.lastAction === 'fold' || player.lastAction === 'auto-fold' || gameState === 'all_fold';
@@ -62,7 +62,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     (gameState === 'playing' || gameState === 'showdown') && 
                     player.status !== 'out' && 
                     player.status !== 'waiting' &&
-                    (gameState === 'showdown' ? true : (!isMeActive ? isCurrentUser : true));
+                    (gameState === 'showdown' ? true : (!_isMeActive ? isCurrentUser : true));
 
   return (
     <div id={`seat-${seatNumber}`} className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>
@@ -73,7 +73,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     cards={player.cards}
                     gameType={props.gameType}
                     dealOrigin={{ x: "0px", y: "0px" }}
-                    dealOrder={1} numPlayers={9} handKey={handKey}
+                    dealOrder={1} numPlayers={9} handKey={parseInt(handKey || '0')}
                     isRevealed={isRevealed}
                     isShowdown={isShowdown} isVertical={isVertical}
                     spread={32}
@@ -83,7 +83,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
         )}
 
         {/* COMPONENT PLAYER SLOT (Avatar + Trapeze + Info) */}
-        <PlayerSlot {...props} isAnimatingPot={isAnimatingPot} sendEmoji={sendEmoji} />
+        <PlayerSlot {...props} currentEmoji={_currentEmoji ?? null} isAnimatingPot={isAnimatingPot} sendEmoji={sendEmoji} />
 
         {/* BET CHIPS */}
         {!shouldGatherBets && player.bet > 0 && (

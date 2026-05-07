@@ -17,7 +17,7 @@ interface CardDealerProps {
 }
 
 export const CardDealer: React.FC<CardDealerProps> = ({
-  cards, gameType, dealOrigin, dealOrder, numPlayers, handKey, isRevealed, isShowdown, isVertical,
+  cards, gameType, dealOrigin, dealOrder, numPlayers: _numPlayers, handKey, isRevealed, isShowdown: _isShowdown, isVertical,
   spread: customSpread, rotationFactor: customRotation
 }) => {
   const defaultCount = gameType === 'omaha' ? 4 : 2;

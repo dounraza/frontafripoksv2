@@ -1,5 +1,4 @@
 import React from 'react';
-import { PlayerSlot } from './PlayerSlot';
 import { PlayerSeatContainer } from './PlayerSeatContainer';
 import { Card } from './Card';
 import { ChipPot } from './ChipPot';
@@ -7,8 +6,7 @@ import { EmptySlot } from './EmptySlot';
 import { useSocket } from '../hooks/useSocket';
 import { useSound } from '../hooks/useSound';
 import { isPlayerTurn, getPlayerRoleInfo } from '../utils/pokerLogic';
-import { CardDealer } from './CardDealer';
-import { BetChips } from './BetChips';
+
 
 interface PokerTableProps {
   tableData: any;
@@ -232,7 +230,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               isVertical={isVertical}
               isRevealed={isRevealed}
               isMeActive={amIStillActive || false}
-              currentEmoji={newEmoji?.playerName === player.name ? newEmoji.emoji : null}
+              currentEmoji={newEmoji?.playerName === player.name ? newEmoji?.emoji : null}
               sendEmoji={sendEmoji}
             />
           );

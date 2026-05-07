@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSocket } from './hooks/useSocket';
 import { Chat } from './components/Chat';
 import { PokerTable } from './components/PokerTable';
@@ -162,8 +162,6 @@ function App() {
         // Le joueur est éligible à la recave s'il n'a plus de jetons.
         // On ne l'affiche que si le jeu est en attente (fin de main) pour laisser les animations se terminer.
         const isEligibleForRebuy = myPlayer.chips <= 0 && tableData.gameState === 'waiting';
-
-        console.log("DEBUG Rebuy:", { hasValidBalance, isEligibleForRebuy, gameState: tableData.gameState, chips: myPlayer.chips });
 
         if (hasValidBalance && isEligibleForRebuy) {
            if (solde !== null && solde <= 0) {

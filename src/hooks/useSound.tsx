@@ -49,7 +49,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const toggleMute = () => {
-    setIsMuted(prev => {
+    setIsMuted((prev: boolean): boolean => {
       const next = !prev;
       if (next) {
         Object.values(audioRefs.current).forEach(audio => {

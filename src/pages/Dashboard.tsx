@@ -234,14 +234,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const isMobileOrTablet = itemsPerPage === 3;
   const tablesToDisplay = isMobileOrTablet ? filteredTables : paginatedTables;
 
-  const handleJoinClick = (t: any) => {
-    const isAlreadyAtTable = t.playerNames && t.playerNames.includes(user.name);
-    if (isAlreadyAtTable) {
-        onJoinTable(t.id, 0);
-    } else {
-        onJoinTable(t.id, Number(t.cave));
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
