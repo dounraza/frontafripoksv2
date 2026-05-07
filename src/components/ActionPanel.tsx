@@ -40,17 +40,19 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount
     setTimeout(() => setIsProcessing(false), 2000);
   };
 
+  const isRevealingCards = tableData?.gameState === 'showdown';
+
   return (
-    <div className={`relative flex flex-col gap-1.5 p-2 pb-4 bg-white/5 rounded-t-2xl border-t border-white/10 backdrop-blur-xl shadow-2xl transition-all ${isMyTurn && !isProcessing ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+    <div className={`relative flex flex-col gap-1.5 p-2 pb-4 bg-white/5 rounded-t-2xl border-t border-white/10 backdrop-blur-xl shadow-2xl transition-all ${isMyTurn && !isProcessing && !isRevealingCards ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
         
-        {/* MESSAGE POUR LES JOUEURS EN ATTENTE (REJOINTS TARD) */}
-        {!isMyTurn && myPlayer?.status === 'waiting' && tableData?.gameState === 'playing' && (
+        {/* MESSAGE POUR LES JOUEURS EN ATTENTE (REJOINTS TARD OU SHOWDOWN) */}
+        {(!isMyTurn && myPlayer?.status === 'waiting' && tableData?.gameState === 'playing') || isRevealingCards ? (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 rounded-t-2xl">
             <span className="text-yellow-500 font-black uppercase text-xs tracking-widest animate-pulse">
-              Attente de la prochaine main...
+              {isRevealingCards ? 'Révélation...' : 'Attente de la prochaine main...'}
             </span>
           </div>
-        )}
+        ) : null}
 
         {/* ACTIONS */}
         <div className="grid grid-cols-3 gap-2 w-full">

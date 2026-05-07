@@ -139,11 +139,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (myPlayer && myPlayer.chips > 0 && isProcessingRecave) {
-      setIsProcessingRecave(false);
-      setShowRecave(false);
+    if (socket) {
+      socket.on('showRebuyModal', () => {
+        setShowRecave(true);
+      });
     }
-  }, [myPlayer?.chips, isProcessingRecave]);
+    return () => {
+        if (socket) socket.off('showRebuyModal');
+    };
+  }, [socket]);
 
   useEffect(() => {
     // Vérifier si tableData est chargé (pas nul)
@@ -152,13 +156,17 @@ function App() {
       // ET que la socket soit bien connectée (pour éviter les erreurs de lecture à 0)
       if (solde !== null && !isFetchingSolde && !isInitializing && socket?.connected) {
         
-        // NOUVEAU: On ajoute un délai de sécurité pour s'assurer que les données du joueur sont bien synchronisées
-        // On attend que les chips soient bien définis
+        // NOUVEAU: On attend que le joueur n'ait plus de jetons ET que la main soit terminée pour lui (ou qu'il ait foldé/été éliminé)
         const hasValidBalance = myPlayer.chips !== undefined && myPlayer.chips !== null;
-        const isGameEnded = tableData.gameState === 'waiting' || (tableData.gameState === 'playing' && myPlayer.status !== 'all-in');
+        
+        // Le joueur est éligible à la recave s'il n'a plus de jetons.
+        // On ne l'affiche que si le jeu est en attente (fin de main) pour laisser les animations se terminer.
+        const isEligibleForRebuy = myPlayer.chips <= 0 && tableData.gameState === 'waiting';
 
-        if (hasValidBalance && myPlayer.chips <= 0 && isGameEnded) {
-           if (solde <= 0) {
+        console.log("DEBUG Rebuy:", { hasValidBalance, isEligibleForRebuy, gameState: tableData.gameState, chips: myPlayer.chips });
+
+        if (hasValidBalance && isEligibleForRebuy) {
+           if (solde !== null && solde <= 0) {
               setAlertConfig({ message: "Solde insuffisant pour recaver. Veuillez recharger votre compte.", type: 'info' });
               leaveTable();
               setIsReadyToPlay(false);
@@ -214,10 +222,11 @@ function App() {
   }, [gameStartTime, tableData]);
 
   const handleJoin = () => {
-    if (isProcessingRecave) return;
+    console.log("DEBUG: handleJoin triggered. isProcessingRecave:", isProcessingRecave, "showRecave:", showRecave, "buyIn:", buyIn);
     
-    // Si on est en mode recave, on utilise le 'buyIn' courant, 
-    // sinon c'est la reconnexion ou la cave initiale.
+    // On retire la protection isProcessingRecave temporairement ou on l'ajuste pour permettre le clic
+    // joinTable est la fonction vitale.
+    
     const amount = parseInt(buyIn);
     const effectiveMinBuyIn = tableData?.minBuyIn || minBuyIn;
     
