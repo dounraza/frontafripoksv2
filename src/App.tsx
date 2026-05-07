@@ -148,14 +148,14 @@ function App() {
   useEffect(() => {
     // Vérifier si tableData est chargé (pas nul)
     if (isReadyToPlay && tableData && myPlayer) {
-      // Attendre que le solde soit chargé ET que le délai de grâce soit passé
-      if (solde !== null && !isFetchingSolde && !isInitializing) {
+      // Attendre que le solde soit chargé, que le délai de grâce soit passé, 
+      // ET que la socket soit bien connectée (pour éviter les erreurs de lecture à 0)
+      if (solde !== null && !isFetchingSolde && !isInitializing && socket?.connected) {
         
-        // MODAL LOCK: Uniquement si la main n'est pas en phase de résultat (showdown)
-        // et que le joueur n'est pas "all-in" (il attend peut-être de gagner le pot)
-        // NOUVEAU: On vérifie aussi que les jetons sont bien définis (pour éviter les faux 0 pendant la reconnexion)
-        const isGameEnded = tableData.gameState === 'waiting' || (tableData.gameState === 'playing' && myPlayer.status !== 'all-in');
+        // NOUVEAU: On ajoute un délai de sécurité pour s'assurer que les données du joueur sont bien synchronisées
+        // On attend que les chips soient bien définis
         const hasValidBalance = myPlayer.chips !== undefined && myPlayer.chips !== null;
+        const isGameEnded = tableData.gameState === 'waiting' || (tableData.gameState === 'playing' && myPlayer.status !== 'all-in');
 
         if (hasValidBalance && myPlayer.chips <= 0 && isGameEnded) {
            if (solde <= 0) {
@@ -171,7 +171,7 @@ function App() {
         }
       }
     }
-  }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, solde, isFetchingSolde, leaveTable, isInitializing]);
+  }, [tableData, myPlayer, isReadyToPlay, showRecave, isProcessingRecave, solde, isFetchingSolde, leaveTable, isInitializing, socket?.connected]);
 
   const [gameStartTime, setGameStartTime] = useState<number | null>(() => {
     if (!user?.id) return null;

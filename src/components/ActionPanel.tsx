@@ -12,37 +12,36 @@ interface ActionPanelProps {
 
 export const ActionPanel: React.FC<ActionPanelProps> = ({ sendAction, callAmount, isMyTurn, tableData, myPlayer }) => {
   const [raiseAmount, setRaiseAmount] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { playSound } = useSound();
 
   // Initialiser le montant de relance quand c'est mon tour
   useEffect(() => {
     if (isMyTurn) {
-      // Utilisation de la règle standard Poker (compatible poker-ts)
       const minRaise = getMinRaiseTo(tableData);
       const maxChips = getMaxRaiseTo(myPlayer);
-      
-      // On ne peut pas relancer plus que ses jetons
       setRaiseAmount(Math.min(minRaise, maxChips));
+      setIsProcessing(false); // Reset lors du changement de tour
     }
   }, [isMyTurn, callAmount, tableData, myPlayer]);
 
-  const adjustRaise = (amount: number) => {
-    setRaiseAmount(prev => Math.max(0, prev + amount));
-  };
-
   const handleAction = (type: string, amount?: number) => {
-    // Si l'action est 'raise', amount est le montant total voulu sur la table
+    if (isProcessing) return;
+    setIsProcessing(true);
+    
     const finalAmount = amount !== undefined ? amount : 0;
     
     if (type === 'all-in') playSound('allin');
     else playSound(type as any);
     
-    // On envoie le montant total au serveur
     sendAction(type, finalAmount);
+    
+    // Protection: on débloque après un délai si le serveur ne répond pas assez vite
+    setTimeout(() => setIsProcessing(false), 2000);
   };
 
   return (
-    <div className={`relative flex flex-col gap-1.5 p-2 pb-4 bg-white/5 rounded-t-2xl border-t border-white/10 backdrop-blur-xl shadow-2xl transition-all ${isMyTurn ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+    <div className={`relative flex flex-col gap-1.5 p-2 pb-4 bg-white/5 rounded-t-2xl border-t border-white/10 backdrop-blur-xl shadow-2xl transition-all ${isMyTurn && !isProcessing ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
         
         {/* MESSAGE POUR LES JOUEURS EN ATTENTE (REJOINTS TARD) */}
         {!isMyTurn && myPlayer?.status === 'waiting' && tableData?.gameState === 'playing' && (
