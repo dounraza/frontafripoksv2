@@ -25,10 +25,10 @@ const PLAYER_POSITIONS = [
   'top-[26%] sm:left-[-15%] left-[-8%]',                     
   'top-[2%] sm:left-[-10%] left-[-2%]',                     
   'top-[-10%] sm:top-[-13%] left-1/2 -translate-x-1/2',       
-  'top-[2%] sm:right-[-15%] right-[-2%]',                    
-  'top-[21%] sm:right-[-15%] right-[-8%]',                    
+  'top-[-3%] sm:right-[-15%] right-[-2%]',                    
+  'top-[24%] sm:right-[-15%] right-[-8%]',                    
   'bottom-[25%] sm:right-[-15%] right-[-5%]',                 
-  'bottom-[-2%] right-[1%]',                  
+  'bottom-[-2%] right-[10%]',                  
 ];
 export const PokerTable: React.FC<PokerTableProps> = ({ 
   tableData, currentUserId, currentUserName, isVertical, sendEmoji 
@@ -61,6 +61,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
       if (!potElement) return;
       const potRect = potElement.getBoundingClientRect();
       const newCoords: any = {};
+      let foundAny = false;
       for (let i = 0; i < 9; i++) {
         const seatElement = document.getElementById(`seat-${i}`);
         if (seatElement) {
@@ -69,18 +70,23 @@ export const PokerTable: React.FC<PokerTableProps> = ({
             x: (seatRect.left + seatRect.width / 2) - (potRect.left + potRect.width / 2),
             y: (seatRect.top + seatRect.height / 2) - (potRect.top + potRect.height / 2)
           };
+          foundAny = true;
         }
       }
-      setSeatCoords((prev: any) => JSON.stringify(prev) !== JSON.stringify(newCoords) ? newCoords : prev);
+      if (foundAny) {
+        setSeatCoords((prev: any) => JSON.stringify(prev) !== JSON.stringify(newCoords) ? newCoords : prev);
+      }
     };
     updateSeatCoords();
     window.addEventListener('resize', updateSeatCoords);
     const timer = setTimeout(updateSeatCoords, 500);
+    const timer2 = setTimeout(updateSeatCoords, 2000); // Second attempt after things settle
     return () => {
         window.removeEventListener('resize', updateSeatCoords);
         clearTimeout(timer);
+        clearTimeout(timer2);
     };
-  }, []);
+  }, [tableData?.id]);
 
   const firstWinner = tableData?.players?.find((p: any) => winnerIds.includes(p.id));
   const winnerSeatIdx = firstWinner ? firstWinner.position : undefined;
@@ -155,13 +161,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({
         </div>
 
         <div className="flex flex-col items-center z-10 relative gap-8 mt-[-110px]">
-          <div className="z-20 flex flex-col items-center" ref={potRef}>
-             <ChipPot 
-               amount={displayPot} 
-               winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
-               targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x ?? getSeatOffset(delayedWinnerIdx).x}px` : `0px`} 
-               targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y ?? getSeatOffset(delayedWinnerIdx).y}px` : `0px`} 
-             />
+          <div className="z-20 flex flex-col items-center">
+             <div ref={potRef}>
+                <ChipPot 
+                  amount={displayPot} 
+                  winnerPosition={delayedWinnerIdx !== undefined ? String(delayedWinnerIdx) : undefined} 
+                  targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x ?? 0}px` : `0px`} 
+                  targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y ?? 0}px` : `0px`} 
+                />
+             </div>
              {tableData.estimatedRake > 0 && (
                <div className="mt-1 bg-black/50 px-2 py-0.5 rounded text-[10px] text-white/80 text-center pointer-events-none">
                  <div>Rake estimé (5%): {tableData.estimatedRake}</div>
@@ -232,6 +240,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
               isVertical={isVertical}
               isRevealed={isRevealed}
               isMeActive={amIStillActive || false}
+              handKey={`${tableData.id}-${tableData.currentPhase}`}
               currentEmoji={newEmoji?.playerName === player.name ? newEmoji?.emoji : null}
               sendEmoji={sendEmoji}
             />

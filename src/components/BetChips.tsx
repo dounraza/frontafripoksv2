@@ -86,7 +86,7 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
 
     // Seat 5, 6, 7 : en bas et a droite du trapeze
      if ([5].includes(seatNumber)) {
-      return { top: '7vh', left: '-3vh' };
+      return { top: '7vh', left: '-5vh' };
     }
       if ([6].includes(seatNumber)) {
       return { top: '10vh', left: '-5vh' };
@@ -95,7 +95,7 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
       return { top: '8vh', left: '-3vh' };
     }
     if ([8].includes(seatNumber)) {
-     return { top: '-6vh', left: '4vh' };
+     return { top: '-2vh', left: '4vh' };
     }
     // Par défaut (milieu si inconnu)
     return { bottom: '140px', left: '50%', transform: 'translateX(-50%)' };

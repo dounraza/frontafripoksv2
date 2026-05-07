@@ -44,25 +44,22 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     // Valeurs ajustées pour être plus proche de l'avatar
     const transforms: { [key: number]: string } = {
       0: "sm:-translate-y-0 sm:translate-x-1 translate-y-14 translate-x-1",
-      1: "sm:translate-y-8 sm:translate-x-4 translate-y-14 translate-x-4",
-      2: "sm:translate-y-4 sm:translate-x-8 translate-y-14 translate-x-4",
-      3: "sm:translate-y-4 sm:translate-x-8 translate-y-14 translate-x-3",
-      4: "sm:translate-y-4 translate-y-14",
-      5: "sm:translate-y-4 sm:-translate-x-8 translate-y-12 -translate-x-4",
-      6: "sm:translate-y-4 sm:-translate-x-8 translate-y-14 -translate-x-4",
-      7: "sm:-translate-y-16 sm:-translate-x-8 translate-y-16 -translate-x-2",
+      1: "sm:translate-y-8 sm:translate-x-4 translate-y-13 translate-x-2",
+      2: "sm:translate-y-4 sm:translate-x-8 translate-y-13 translate-x-4",
+      3: "sm:translate-y-4 sm:translate-x-8 translate-y-13 translate-x-3",
+      4: "sm:translate-y-4 translate-y-10",
+      5: "sm:translate-y-4 sm:-translate-x-8 translate-y-10 -translate-x-2",
+      6: "sm:translate-y-4 sm:-translate-x-8 translate-y-14 -translate-x-2",
+      7: "sm:-translate-y-16 sm:-translate-x-8 translate-y-14 -translate-x-1",
       8: "sm:-translate-y-14 sm:-translate-x-2 translate-y-14 -translate-x-2",
     };
     return transforms[seat] || "translate-y-2";
   };
 
-  // Si le joueur courant a foldé (!isMeActive), il ne doit pas voir les cartes des autres.
-  // On masque si gameState est 'playing' ET que ce n'est pas moi.
-  const showCards = !isFolded && 
-                    (gameState === 'playing' || gameState === 'showdown') && 
-                    player.status !== 'out' && 
-                    player.status !== 'waiting' &&
-                    (gameState === 'showdown' ? true : (!_isMeActive ? isCurrentUser : true));
+  // On affiche les cartes si le joueur est en jeu (pas foldé/out/waiting)
+  // et que la main est en cours.
+  const showCards = (player.status === 'active' || player.status === 'all-in') && 
+                    (gameState === 'playing' || gameState === 'showdown');
 
   return (
     <div id={`seat-${seatNumber}`} className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>
