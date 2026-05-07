@@ -185,9 +185,15 @@ function App() {
     const hasEnoughPlayers = tableData && tableData.players && tableData.players.length >= 2;
 
     if (isReadyToPlay && hasEnoughPlayers && !gameStartTime && user?.id) {
-      const now = Date.now();
-      setGameStartTime(now);
-      localStorage.setItem(`game_start_time_${user.id}`, now.toString());
+      // Vérifier si une session existe déjà avant d'en créer une nouvelle
+      const existing = localStorage.getItem(`game_start_time_${user.id}`);
+      if (!existing) {
+        const now = Date.now();
+        setGameStartTime(now);
+        localStorage.setItem(`game_start_time_${user.id}`, now.toString());
+      } else {
+        setGameStartTime(parseInt(existing));
+      }
     }
   }, [isReadyToPlay, gameStartTime, user?.id, tableData]);
 
