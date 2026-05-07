@@ -153,9 +153,11 @@ function App() {
         
         // MODAL LOCK: Uniquement si la main n'est pas en phase de résultat (showdown)
         // et que le joueur n'est pas "all-in" (il attend peut-être de gagner le pot)
+        // NOUVEAU: On vérifie aussi que les jetons sont bien définis (pour éviter les faux 0 pendant la reconnexion)
         const isGameEnded = tableData.gameState === 'waiting' || (tableData.gameState === 'playing' && myPlayer.status !== 'all-in');
+        const hasValidBalance = myPlayer.chips !== undefined && myPlayer.chips !== null;
 
-        if (myPlayer.chips <= 0 && isGameEnded) {
+        if (hasValidBalance && myPlayer.chips <= 0 && isGameEnded) {
            if (solde <= 0) {
               setAlertConfig({ message: "Solde insuffisant pour recaver. Veuillez recharger votre compte.", type: 'info' });
               leaveTable();
@@ -240,9 +242,15 @@ function App() {
     joinTable(user!.name, selectedTable, String(amount)); 
     setIsReadyToPlay(true);
     
-    const now = Date.now();
-    setGameStartTime(now);
-    localStorage.setItem(`game_start_time_${user!.id}`, now.toString());
+    // Ne réinitialiser le temps de session QUE s'il n'existe pas déjà (pour ne pas reset lors d'une recave)
+    const existingStartTime = localStorage.getItem(`game_start_time_${user!.id}`);
+    if (!existingStartTime) {
+        const now = Date.now();
+        setGameStartTime(now);
+        localStorage.setItem(`game_start_time_${user!.id}`, now.toString());
+    } else {
+        setGameStartTime(parseInt(existingStartTime));
+    }
     
     setShowJoinForm(false);
     setShowRecave(false);
@@ -432,12 +440,14 @@ function App() {
                       leaveTable();
                       setIsReadyToPlay(false);
                       localStorage.removeItem('active_table');
-                      localStorage.removeItem('game_start_time');
+                      localStorage.removeItem(`game_start_time_${user?.id}`);
                       window.history.pushState({}, '', '/');
+                  } else {
+                      setAlertConfig({ message: "Vous devez rester à la table au moins 45 minutes avant de pouvoir quitter.", type: 'info' });
                   }
                 }} 
                 className={`h-[70%] px-2 bg-black/40 rounded-lg text-[9px] font-black uppercase border border-white/10 flex items-center gap-1 transition-all shrink-0 
-                  ${(isFetchingSolde || (tableData && tableData.players.length >= 2 && timeRemaining > 0)) ? 'text-gray-500 cursor-not-allowed opacity-50' : 'text-gray-400 hover:text-white'}`}
+                  ${(isFetchingSolde) ? 'text-gray-500 cursor-not-allowed opacity-50' : 'text-gray-400 hover:text-white'}`}
              >
                <LogOut className="w-3 h-3" /> 
                {(tableData && tableData.players.length >= 2 && timeRemaining > 0) ? `${Math.floor(timeRemaining / 60000)}:${Math.floor((timeRemaining % 60000) / 1000).toString().padStart(2, '0')}` : 'Quitter'}
