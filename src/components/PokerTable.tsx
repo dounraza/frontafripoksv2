@@ -162,6 +162,12 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                targetX={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.x ?? getSeatOffset(delayedWinnerIdx).x}px` : `0px`} 
                targetY={delayedWinnerIdx !== undefined ? `${seatCoords[delayedWinnerIdx]?.y ?? getSeatOffset(delayedWinnerIdx).y}px` : `0px`} 
              />
+             {tableData.estimatedRake > 0 && (
+               <div className="mt-1 bg-black/50 px-2 py-0.5 rounded text-[10px] text-white/80 text-center pointer-events-none">
+                 <div>Rake estimé (5%): {tableData.estimatedRake}</div>
+                 <div className="text-yellow-400 font-bold">Pot Net: {tableData.potAfterRake}</div>
+               </div>
+             )}
           </div>
 
           <style>{`
