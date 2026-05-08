@@ -384,14 +384,17 @@ function App() {
                                 if (typeof players === 'string') {
                                     try { players = JSON.parse(players); } catch (e) { players = []; }
                                 }
-                                return Array.isArray(players) ? players.map((p: any, idx: number) => (
+                                return Array.isArray(players) ? players
+                                  .filter(p => !hand.foldes?.includes(p.pseudo))
+                                  .map((p: any, idx: number) => (
                                   <div key={idx} className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
                                     <span className={`text-[10px] font-bold ${hand.gagnants?.includes(p.pseudo) ? 'text-yellow-500' : 'text-white'}`}>
                                       {p.pseudo} 
-                                      <span className={`ml-1 ${hand.gagnants?.includes(p.pseudo) ? 'text-green-500' : (hand.foldes?.includes(p.pseudo) ? 'text-red-500' : 'text-red-500')}`}>
-                                        ({hand.gagnants?.includes(p.pseudo) ? 'Gagnant' : (hand.foldes?.includes(p.pseudo) ? 'Fold' : 'Perdant')})
+                                      <span className={`ml-1 ${hand.gagnants?.includes(p.pseudo) ? 'text-green-500' : 'text-red-500'}`}>
+                                        ({hand.gagnants?.includes(p.pseudo) ? 'Gagnant' : 'Perdant'})
                                       </span>
-                                    </span>                                    <div className="flex">{Array.isArray(p.cards) ? p.cards.map(renderCard) : null}</div>
+                                    </span>
+                                    <div className="flex">{Array.isArray(p.cards) ? p.cards.map(renderCard) : null}</div>
                                   </div>
                                 )) : null;
                             })()}
