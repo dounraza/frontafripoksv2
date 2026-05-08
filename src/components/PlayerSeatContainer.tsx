@@ -36,8 +36,6 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
     centerX, centerY, gatheringPlayerId, sendEmoji, currentEmoji: _currentEmoji, handKey 
   } = props;
 
-  const isFolded = player.status === 'folded' || player.status === 'out' || player.status === 'waiting' || player.lastAction === 'fold' || player.lastAction === 'auto-fold' || gameState === 'all_fold';
-  
   // Asehoy foana ny mpilalao fa ny karatra no afenina any ambany raha nanao fold
   
   const getCardTransform = (seat: number) => {
