@@ -7,7 +7,6 @@ import { useSocket } from '../hooks/useSocket';
 import { useSound } from '../hooks/useSound';
 import { isPlayerTurn, getPlayerRoleInfo } from '../utils/pokerLogic';
 
-
 interface PokerTableProps {
   tableData: any;
   currentUserId: string | undefined;
@@ -30,6 +29,7 @@ const PLAYER_POSITIONS = [
   'bottom-[25%] sm:right-[-15%] right-[-5%]',                 
   'bottom-[-2%] right-[10%]',                  
 ];
+
 export const PokerTable: React.FC<PokerTableProps> = ({ 
   tableData, currentUserId, currentUserName, isVertical, sendEmoji 
 }) => {
@@ -80,7 +80,7 @@ export const PokerTable: React.FC<PokerTableProps> = ({
     updateSeatCoords();
     window.addEventListener('resize', updateSeatCoords);
     const timer = setTimeout(updateSeatCoords, 500);
-    const timer2 = setTimeout(updateSeatCoords, 2000); // Second attempt after things settle
+    const timer2 = setTimeout(updateSeatCoords, 2000);
     return () => {
         window.removeEventListener('resize', updateSeatCoords);
         clearTimeout(timer);
@@ -131,35 +131,17 @@ export const PokerTable: React.FC<PokerTableProps> = ({
     }
   }, [winnerSeatIdx]);
 
-  const getSeatOffset = (idx: number) => {
-    const offsets = [
-      { x: -60, y: 140 },
-      { x: -140, y: 32 },
-      { x: -140, y: -95 },
-      { x: -110, y: -205 },
-      { x: 0, y: -230 },
-      { x: 140, y: -200 },
-      { x: 150, y: -80 },
-      { x: 140, y: 80 },
-      { x: 45, y: 120 },
-    ];
-    return offsets[idx] || { x: 0, y: 0 };
-  };
-
   if (!tableData) return null;
 
   return (
     <div className="flex flex-col items-center w-full h-full justify-center overflow-visible" style={{ backgroundImage: "url('/image/font.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="relative transition-all duration-700 bg-gradient-to-br from-[#1e5a3d] to-[#0a2e1a] shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_0_150px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-full border-[12px] border-[#3d2b1f] table-surface"
         style={{ width: 'auto', height: '90%', aspectRatio: '10/16', maxWidth: '90vw', maxHeight: '90%' }}>
-
         <div className="absolute inset-[6px] bg-cover bg-center opacity-2 pointer-events-none rounded-full" style={{ backgroundImage: "url('/image/font.jpg')" }}></div>
         <div className="absolute inset-[6px] border-[#2c6e49] rounded-full border-[3px]"></div>
-
         <div className="absolute flex flex-col items-center justify-center opacity-100 select-none pointer-events-none">
           <img src="/font.png" alt="AFRIPOKS Logo" className="w-30 h-30 sm:w-28 sm:h-28 object-contain rounded-[100%]" />
         </div>
-
         <div className="flex flex-col items-center z-10 relative gap-8 mt-[-110px]">
           <div className="z-20 flex flex-col items-center">
              <div ref={potRef}>
@@ -177,7 +159,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                </div>
              )}
           </div>
-
           <style>{`
             @keyframes slide-in-right {
               0% { transform: translateX(50px) scale(var(--card-scale, 1)); opacity: 0; }
@@ -205,20 +186,14 @@ export const PokerTable: React.FC<PokerTableProps> = ({
             ))}
             </div>
         </div>
-
         {Array.from({ length: 9 }).map((_, idx) => {
           const player = tableData.players.find((p: any) => p.position === idx);
           if (!player) return <EmptySlot key={`empty-${idx}`} positionClass={PLAYER_POSITIONS[idx]} />;
           const { isDealer, isSB, isBB } = getPlayerRoleInfo(player, tableData);
-
           const myPlayer = tableData.players.find((p: any) => p.id === currentUserId);
-          const amIStillActive = myPlayer && 
-                                myPlayer.status !== 'folded' && 
-                                myPlayer.status !== 'out' && 
-                                myPlayer.lastAction !== 'fold';
+          const amIStillActive = myPlayer && myPlayer.status !== 'folded' && myPlayer.status !== 'out' && myPlayer.lastAction !== 'fold';
           const isRealShowdown = isShowdown && tableData.players.filter((p: any) => p.status !== 'folded' && p.status !== 'out').length > 1;
           const isRevealed = isRealShowdown || (amIStillActive && player.id === currentUserId);
-
           return (
             <PlayerSeatContainer 
               key={player.id}
@@ -249,4 +224,4 @@ export const PokerTable: React.FC<PokerTableProps> = ({
       </div>
     </div>
   );
-  };
+};

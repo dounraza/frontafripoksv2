@@ -12,28 +12,51 @@ import { getCallAmount, isPlayerTurn } from './utils/pokerLogic';
 import { useSound } from './hooks/useSound';
 
 function App() {
-  const { socket, tableData, joinTable, leaveTable, sendAction, sendEmoji, error: socketError } = useSocket();
+  const { socket, tableData, joinTable, leaveTable, sendAction, sendEmoji } = useSocket();
   const { isMuted, toggleMute } = useSound();
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    if (socketError) {
-      setAlertConfig({ message: socketError, type: 'error' });
-      
-      if (socketError.includes('Table non trouvée') || socketError.includes('Le montant minimum pour cette table')) {
-        setIsReadyToPlay(false);
-        localStorage.removeItem('active_table');
-        window.history.pushState({}, '', '/dashboard');
-      }
-    }
-  }, [socketError]);
-  
+  // ... (recherche)
   const [user, setUser] = useState<{token: string, name: string, id: string, avatar_url?: string} | null>(() => {
     const savedUser = localStorage.getItem('poker_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-  const [showProfile, setShowProfile] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const fetchHistory = useCallback(() => {
+    if (tableData?.id) {
+        const savedUser = localStorage.getItem('poker_user');
+        const token = savedUser ? JSON.parse(savedUser).token : null;
+        fetch(`${API_URL}/api/tables/${tableData.id}/historique`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        .then(res => res.json())
+        .then(data => setHistory(Array.isArray(data) ? data : []))
+        .catch(err => { console.error("Error fetching history:", err); setHistory([]); });
+    }
+  }, [tableData?.id, API_URL]);
+
+  useEffect(() => {
+    if (showHistory) fetchHistory();
+  }, [showHistory, fetchHistory]);
+
+  const renderCard = (card: string, idx: number) => {
+    if (!card) return null;
+    const value = card.slice(0, -1);
+    const suit = card.slice(-1).toLowerCase();
+    // Rouge pour Cœur (h) et Carreau (d), Noir pour Trèfle (c) et Pique (s)
+    const suitColors: any = { 'h': 'text-red-600', 'd': 'text-red-600', 'c': 'text-black', 's': 'text-black' };
+    const suitSymbols: any = { 'h': '♥', 'd': '♦', 'c': '♣', 's': '♠' };
+    
+    return (
+        <div key={idx} className="bg-white text-black font-black w-5 h-7 rounded text-[9px] flex flex-col items-center justify-center leading-none mr-0.5 shadow-sm">
+            <span>{value}</span>
+            <span className={suitColors[suit] || 'text-black'}>{suitSymbols[suit] || suit}</span>
+        </div>
+    );
+  };
   const [isReadyToPlay, setIsReadyToPlay] = useState(() => {
     const pathTableId = window.location.pathname.startsWith('/table/') ? window.location.pathname.split('/')[2] : null;
     return localStorage.getItem('active_table') !== null || pathTableId !== null;
@@ -57,6 +80,7 @@ function App() {
   });
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [alertConfig, setAlertConfig] = useState<{message: string, type: 'error'|'success'|'info'} | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
 
   // Déplacer les dérivés ici pour s'assurer qu'ils sont définis avant tout useEffect
   const myPlayer = tableData?.players.find((p: any) => p.name === user?.name);
@@ -82,8 +106,6 @@ function App() {
       fetchSolde();
     }
   }, [tableData?.id, user?.id]);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const fetchSolde = useCallback(() => {
     if (!user?.token || isFetchingSolde) return;
@@ -304,18 +326,88 @@ function App() {
           {showHistory && (
             <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
               <div className="bg-[#1a1a1a] border border-white/10 w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
-                <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                  <h3 className="text-xl font-black text-yellow-500 italic uppercase tracking-tighter flex items-center gap-2">
-                    <History className="w-6 h-6" /> Historique des mains
-                  </h3>
-                  <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-500 hover:text-white">
-                    <LogOut className="w-6 h-6 rotate-180" />
-                  </button>
-                </div>
-                <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                  <div className="p-4 bg-white/5 rounded-2xl border border-white/5 text-center text-gray-500 text-sm font-bold uppercase tracking-widest">
-                    Aucun historique disponible pour le moment
+                <div className="flex flex-col gap-4 mb-6 border-b border-white/10 pb-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-black text-yellow-500 italic uppercase tracking-tighter flex items-center gap-2">
+                      <History className="w-6 h-6" /> Historique
+                    </h3>
+                    <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-500 hover:text-white">
+                      <LogOut className="w-6 h-6 rotate-180" />
+                    </button>
                   </div>
+                  <input 
+                    type="text" 
+                    placeholder="Rechercher (gagnant, pseudo, date...)" 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-[12px] text-white outline-none focus:border-yellow-500"
+                  />
+                </div>
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                  {history.length > 0 ? (
+                    history.filter(h => {
+                        const term = searchTerm.toLowerCase();
+                        const gagnants = Array.isArray(h.gagnants) ? h.gagnants.join(' ').toLowerCase() : (typeof h.gagnants === 'string' ? h.gagnants.toLowerCase() : '');
+                        const foldes = Array.isArray(h.foldes) ? h.foldes.join(' ').toLowerCase() : (typeof h.foldes === 'string' ? h.foldes.toLowerCase() : '');
+                        
+                        let players = h.main_joueurs;
+                        if (typeof players === 'string') {
+                            try { players = JSON.parse(players); } catch (e) { players = []; }
+                        }
+                        const joueurs = Array.isArray(players) ? players.map((p: any) => p.pseudo).join(' ').toLowerCase() : '';
+                        
+                        const date = new Date(h.datetime).toLocaleString().toLowerCase();
+                        return gagnants.includes(term) || foldes.includes(term) || joueurs.includes(term) || date.includes(term);
+                    }).map((hand: any, i: number) => (
+                      <div key={i} className="p-4 bg-gray-900/50 rounded-2xl border border-white/10 shadow-lg">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-yellow-500 font-black text-[10px] uppercase tracking-wider">{hand.table_name}</span>
+                          <span className="text-gray-500 text-[9px]">{new Date(hand.datetime).toLocaleString()}</span>
+                        </div>
+                        <div className="mb-3">
+                          <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Communautaires</p>
+                          <div className="flex bg-black/20 p-2 rounded-lg">
+                            {(() => {
+                                let cards = hand.cartes_communaute;
+                                if (typeof cards === 'string') {
+                                    try { cards = JSON.parse(cards); } catch (e) { cards = []; }
+                                }
+                                return Array.isArray(cards) ? cards.map(renderCard) : null;
+                            })()}
+                          </div>
+                        </div>
+                        <div className="mb-3">
+                          <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Main des Joueurs</p>
+                          <div className="space-y-2">
+                            {(() => {
+                                let players = hand.main_joueurs;
+                                if (typeof players === 'string') {
+                                    try { players = JSON.parse(players); } catch (e) { players = []; }
+                                }
+                                return Array.isArray(players) ? players.map((p: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
+                                    <span className={`text-[10px] font-bold ${hand.gagnants?.includes(p.pseudo) ? 'text-yellow-500' : 'text-white'}`}>
+                                      {p.pseudo} 
+                                      <span className={`ml-1 ${hand.gagnants?.includes(p.pseudo) ? 'text-green-500' : (hand.foldes?.includes(p.pseudo) ? 'text-red-500' : 'text-red-500')}`}>
+                                        ({hand.gagnants?.includes(p.pseudo) ? 'Gagnant' : (hand.foldes?.includes(p.pseudo) ? 'Fold' : 'Perdant')})
+                                      </span>
+                                    </span>                                    <div className="flex">{Array.isArray(p.cards) ? p.cards.map(renderCard) : null}</div>
+                                  </div>
+                                )) : null;
+                            })()}
+                          </div>
+                        </div>
+                        <div className="pt-3 border-t border-white/5 flex justify-between items-center text-[10px]">
+                          <span className="text-gray-400">Rake perçu</span>
+                          <span className="font-black text-white">{Number(hand.rake).toLocaleString()} MGA</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5 text-center text-gray-500 text-sm font-bold uppercase tracking-widest">
+                      Aucun historique disponible
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

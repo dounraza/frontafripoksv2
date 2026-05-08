@@ -296,10 +296,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <button onClick={() => setView('main')} className={`${view === 'main' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 shrink-0`}><Home className="w-4 h-4" /> Home</button>
         <button onClick={() => setView('cashGames')} className={`${view === 'cashGames' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 shrink-0`}><DollarSign className="w-4 h-4" /> Cash Games</button>
         <button onClick={() => setView('tournaments')} className={`${view === 'tournaments' ? 'bg-yellow-500 text-black' : 'hover:bg-white/5'} px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 shrink-0`}><Trophy className="w-4 h-4" /> Tournaments <span className="text-[8px] sm:text-[10px] bg-red-600 px-1 rounded ml-1">NEW</span></button>
-      </div>
+        </div>
 
-      <main className="p-4 sm:p-6 max-w-[1600px] mx-auto">
-        {view === 'main' ? (
+        <main className="p-4 sm:p-6 max-w-[1600px] mx-auto">
+        {view === 'tournaments' ? (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <Trophy className="w-24 h-24 text-yellow-500 mb-6" />
+            <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">TOURNOIS À VENIR</h2>
+            <p className="text-gray-400 mb-8 font-medium">Cette fonctionnalité est actuellement en cours de développement.</p>
+            <button onClick={() => setView('main')} className="bg-yellow-500 text-black font-black uppercase px-8 py-3 rounded-xl hover:bg-yellow-400 transition-all">
+              Retour à l'accueil
+            </button>
+          </div>
+        ) : view === 'main' ? (
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 min-h-auto lg:min-h-[80vh]">
             <div className="lg:col-span-3 h-[300px] sm:h-[400px] lg:h-auto">
               <div className="relative h-full rounded-3xl overflow-hidden border border-white/10 group bg-gradient-to-b from-gray-900 to-black">

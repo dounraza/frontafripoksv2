@@ -33,7 +33,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
   const { 
     player, isActive: _isActive, isWinner: _isWinner, isAnimatingPot, positionClass, shouldGatherBets, 
     seatNumber, isShowdown, isRevealed, isMeActive: _isMeActive, gameState, isVertical,
-    isCurrentUser, centerX, centerY, gatheringPlayerId, sendEmoji, currentEmoji: _currentEmoji, handKey 
+    centerX, centerY, gatheringPlayerId, sendEmoji, currentEmoji: _currentEmoji, handKey 
   } = props;
 
   const isFolded = player.status === 'folded' || player.status === 'out' || player.status === 'waiting' || player.lastAction === 'fold' || player.lastAction === 'auto-fold' || gameState === 'all_fold';
