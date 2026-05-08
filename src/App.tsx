@@ -386,17 +386,31 @@ function App() {
                                 }
                                 return Array.isArray(players) ? players
                                   .filter(p => !hand.foldes?.includes(p.pseudo))
-                                  .map((p: any, idx: number) => (
+                                  .map((p: any, idx: number) => {
+                                    const isWinner = hand.gagnants?.includes(p.pseudo);
+                                    let communityCards = hand.cartes_communaute;
+                                    if (typeof communityCards === 'string') {
+                                        try { communityCards = JSON.parse(communityCards); } catch (e) { communityCards = []; }
+                                    }
+                                    const noCommunityCards = !communityCards || communityCards.length === 0;
+                                    
+                                    // Sur le front, on ne peut pas savoir si c'était un fold-win sur la river 
+                                    // pour les anciens records, donc on garde la règle des cartes communes 
+                                    // pour le moment. Le backend lui gérera correctement les nouveaux records 
+                                    // en n'enregistrant pas les cartes si c'est un fold-win.
+                                    const shouldShowCards = Array.isArray(p.cards) && p.cards.length > 0 && !(noCommunityCards && isWinner);
+                                    
+                                    return (
                                   <div key={idx} className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
-                                    <span className={`text-[10px] font-bold ${hand.gagnants?.includes(p.pseudo) ? 'text-yellow-500' : 'text-white'}`}>
+                                    <span className={`text-[10px] font-bold ${isWinner ? 'text-yellow-500' : 'text-white'}`}>
                                       {p.pseudo} 
-                                      <span className={`ml-1 ${hand.gagnants?.includes(p.pseudo) ? 'text-green-500' : 'text-red-500'}`}>
-                                        ({hand.gagnants?.includes(p.pseudo) ? 'Gagnant' : 'Perdant'})
+                                      <span className={`ml-1 ${isWinner ? 'text-green-500' : 'text-red-500'}`}>
+                                        ({isWinner ? 'Gagnant' : 'Perdant'})
                                       </span>
                                     </span>
-                                    <div className="flex">{Array.isArray(p.cards) ? p.cards.map(renderCard) : null}</div>
+                                    <div className="flex">{shouldShowCards ? p.cards.map(renderCard) : null}</div>
                                   </div>
-                                )) : null;
+                                )}) : null;
                             })()}
                           </div>
                         </div>
