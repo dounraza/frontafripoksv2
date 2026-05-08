@@ -153,12 +153,11 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                 />
              </div>
              {tableData.estimatedRake > 0 && (
-               <div className="mt-1 bg-black/50 px-2 py-0.5 rounded text-[10px] text-white/80 text-center pointer-events-none">
-                 <div>Rake estimé (5%): {tableData.estimatedRake}</div>
-                 <div className="text-yellow-400 font-bold">Pot Net: {tableData.potAfterRake}</div>
+               <div className="mt-1 bg-black/60 px-3 py-1 rounded-lg text-[12px] text-white/90 text-center pointer-events-none border border-white/5 backdrop-blur-sm">
+                 <div className="opacity-80">Rake estimé (5%): {tableData.estimatedRake}</div>
+                 <div className="text-yellow-400 font-black text-[13px] mt-0.5">Pot Net: {tableData.potAfterRake}</div>
                </div>
-             )}
-          </div>
+             )}          </div>
           <style>{`
             @keyframes slide-in-right {
               0% { transform: translateX(50px) scale(var(--card-scale, 1)); opacity: 0; }

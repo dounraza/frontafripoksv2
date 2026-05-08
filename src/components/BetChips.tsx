@@ -14,7 +14,7 @@ interface BetChipsProps {
 
 const PokerChip = ({ color, index }: { color: string, index: number }) => (
   <div 
-    className="relative w-5 h-5 rounded-full flex items-center justify-center shadow-md"
+    className="relative w-7 h-7 rounded-full flex items-center justify-center shadow-md"
     style={{ 
       backgroundColor: color,
       backgroundImage: `
@@ -27,7 +27,7 @@ const PokerChip = ({ color, index }: { color: string, index: number }) => (
       zIndex: 10 - index
     }}
   >
-    <div className="w-2 h-2 rounded-full border border-white/20 bg-white/5" />
+    <div className="w-3 h-3 rounded-full border border-white/20 bg-white/5" />
   </div>
 );
 
@@ -144,9 +144,11 @@ export const BetChips: React.FC<BetChipsProps> = ({ amount, shouldGather, seatNu
       </div>
 
       {/* Badge Montant compact */}
-      <div className="bg-black/80 backdrop-blur-md text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30 flex items-center justify-center font-bold text-[10px] shadow-lg min-w-[35px]">
+      <div className="bg-black/80 backdrop-blur-md text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30 flex items-center justify-center font-bold text-[14px] shadow-lg min-w-[50px]">
         {currentAmount.toLocaleString()}
       </div>
     </div>
   );
+
+
 };
