@@ -65,7 +65,7 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
   return (
     <div 
       className={`relative flex flex-col items-center gap-2 ${isWinner ? 'z-30 scale-110' : 'z-20'} transition-all duration-500`}
-      style={{ opacity: isFolded ? 0.4 : ((isActive || isCurrentUser) ? 1 : 0.8) }}
+      style={{ opacity: isFolded ? 0.8 : 1 }}
     >
       <style>{`
         .glass-panel {
@@ -93,23 +93,26 @@ export const PlayerSlot: React.FC<PlayerSlotProps> = ({
           )}
           
           <div className={`w-16 h-16 min-w-[64px] min-h-[64px] rounded-full p-1 shadow-2xl transition-all duration-300
-            ${isActive ? 'bg-gradient-to-tr from-yellow-600 via-yellow-200 to-yellow-600 scale-105' : 'bg-gradient-to-tr from-gray-700 to-gray-900'}`}>
+            ${isActive ? 'bg-gradient-to-tr from-yellow-600 via-yellow-200 to-yellow-600 scale-105' : 'bg-gradient-to-tr from-gray-700 to-gray-900'}
+            ${isFolded ? 'grayscale opacity-80' : ''}`}>
             <div className="w-full h-full rounded-full bg-gray-900 overflow-hidden border-2 border-black/50">
                 <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
 
-        <div className="glass-panel p-2 min-w-[110px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center"
+        <div className={`glass-panel p-2 min-w-[110px] text-center mt-[-8px] relative border-x border-t border-white/10 flex flex-col items-center
+           ${isFolded ? 'grayscale-[0.5] opacity-90' : ''}`}
            style={{ clipPath: "polygon(0% 0%, 100% 0%, 95% 70%, 90% 90%, 80% 100%, 20% 100%, 10% 90%, 5% 70%)", paddingBottom: '24px' }}>
           
           <div className="flex flex-col items-center gap-1 mb-0.5">
              <div className="flex items-center justify-center gap-1.5">
                {player.lastAction && player.lastAction !== 'check' && (
-                 <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-white
+                 <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-white relative z-[60]
                     ${player.lastAction === 'raise' ? 'bg-yellow-600' : 
                       player.lastAction === 'call' ? 'bg-blue-600' : 
-                      player.lastAction === 'fold' ? 'bg-red-600' : 'bg-gray-600'}`}>
+                      player.lastAction === 'fold' ? 'bg-red-600' : 'bg-gray-600'}`}
+                    style={{ filter: 'none' }}>
                     {player.lastAction}
                  </span>
                )}

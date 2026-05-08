@@ -62,7 +62,7 @@ export const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = (props) =
                     (gameState === 'playing' || gameState === 'showdown');
 
   return (
-    <div id={`seat-${seatNumber}`} className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500 ${isFolded ? 'opacity-40 grayscale' : ''}`}>
+    <div id={`seat-${seatNumber}`} className={`absolute flex flex-col items-center ${positionClass} z-20 transition-all duration-500`}>
         {/* TOERANA MISY NY KARATRA - Flex container miaraka amin'ny translate */}
         {showCards && (
             <div className={`flex justify-center items-center z-50 ${getCardTransform(seatNumber)}`}>
