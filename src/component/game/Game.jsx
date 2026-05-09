@@ -1,3 +1,4 @@
+import { getCardImage } from '../../utils/cardLoader';
 import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { toast, ToastContainer } from "react-toastify";
@@ -21,6 +22,7 @@ import { onlineUsersSocket } from '../../engine/socket';
 
 import TableTabs from './TableTabs';
 import TableChat from './TableChat';
+
 const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) => {
     const [tableState, setTableState] = useState({});
     const [betSize, setBetSize] = useState(0);
@@ -514,8 +516,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
     };
 
     const getSrcCard = (card_id) => {
-        const final_id_card = card_id.replace('T', 0).toUpperCase();
-        return require(`../../image/card2/${final_id_card}.svg`);  
+        return getCardImage(card_id);
     };
 
     const actionLabels = {

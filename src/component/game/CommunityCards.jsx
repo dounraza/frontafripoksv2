@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import rever from "../../styles/image/rever.png";
 
 const CommunityCards = ({
     community, communityShow, communityToShow, communityReversNb, moveCommCards,
@@ -50,7 +51,7 @@ const CommunityCards = ({
                                         }, 500);
                                     }}
                                 >
-                                    <img src={require("../../styles/image/rever.png")} alt="" />
+                                    <img src={rever} alt="" />
                                 </div>
                             )
                         })}
@@ -109,7 +110,7 @@ const CommunityCards = ({
                                 playSound('showCard');
                             }}
                         >
-                            <img src={require("../../styles/image/rever.png")} alt="" />
+                            <img src={rever} alt="" />
                         </div>
                     ))}
                 </div>

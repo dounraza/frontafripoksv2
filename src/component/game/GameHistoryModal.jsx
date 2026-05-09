@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { getCardImage } from '../../utils/cardLoader';
 import './GameHistoryModal.scss';
 
 const GameHistoryModal = ({ isOpen, onClose, lastMatchData, getSrcCard, playerNames }) => {
@@ -17,13 +18,7 @@ const GameHistoryModal = ({ isOpen, onClose, lastMatchData, getSrcCard, playerNa
 
     const getSrcCardLocal = (card_id) => {
         if (!card_id) return null;
-        const final_id_card = card_id.replace('T', '0').toUpperCase();
-        try {
-            return require(`../../image/card2/${final_id_card}.svg`);
-        } catch (e) {
-            console.error('Card not found:', final_id_card);
-            return null;
-        }
+        return getCardImage(card_id);
     };
 
     // Fonction pour obtenir le nom exact du joueur à partir de l'index
