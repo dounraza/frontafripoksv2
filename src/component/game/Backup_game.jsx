@@ -1,3 +1,4 @@
+import { getCardImage } from '../../utils/cardLoader';
 import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { toast, ToastContainer } from "react-toastify";
@@ -192,7 +193,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         const userId = sessionStorage.getItem('userId');
         if(!tableId) return;
 
-        const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+        const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:5000';
 
         socketRef.current = io(BASE_URL, {
             auth: {
@@ -481,8 +482,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
     };
 
     const getSrcCard = (card_id) => {
-        const final_id_card = card_id.replace('T', 0).toUpperCase();
-        return require(`../../image/card2/${final_id_card}.svg`);  
+        return getCardImage(card_id);
     };
 
     const actionLabels = {

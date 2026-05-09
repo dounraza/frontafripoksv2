@@ -69,7 +69,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
 
     
     useEffect(() => {
-        const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
+        const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || 'http://localhost:5000');
         socketRef.current = socket;
 
         // Reset state on entry to prevent seeing old hand data
@@ -199,7 +199,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         };
     }, [community]);
 
-    const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:5000';
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId');

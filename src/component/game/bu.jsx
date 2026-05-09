@@ -160,7 +160,7 @@ const Game = ({ tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) 
         const username = sessionStorage.getItem('userName');
         if (!tableId) return;
 
-        const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+        const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:5000';
         const socket = io(BASE_URL, {
             auth: { token: sessionStorage.getItem("accessToken") },
         });
@@ -522,8 +522,7 @@ const Game = ({ tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) 
     };
 
     const getSrcCard = (card_id) => {
-        const final_id_card = card_id.replace('T', 0).toUpperCase();
-        return require(`../../image/card2/${final_id_card}.svg`);
+        return getCardImage(card_id);
     };
 
     const addRange   = () => setBetSize(Math.min(betSize + 10, tableState.legalActions.chipRange.max));

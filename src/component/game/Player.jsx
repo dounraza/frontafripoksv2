@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Smile } from "lucide-react";
 import SmileyModal from './SmileyModal';
 import { smileySocket } from '../../engine/socket';
+import jetonImg from "../../styles/image/jeton.png";
 
 const Player = ({
     i,
@@ -484,7 +485,7 @@ const Player = ({
                                         </div>
                                         {playerAction.amount > 0 && (
                                             <div className="jeton">
-                                                <img src={require("../../styles/image/jeton.png")} alt="" />
+                                                <img src={jetonImg} alt="" />
                                             </div>
                                         )}
                                     </>
