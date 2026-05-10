@@ -1,3 +1,4 @@
+import { getCardImage } from '../../utils/cardLoader';
 import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { toast, ToastContainer } from "react-toastify";
@@ -21,6 +22,8 @@ import { onlineUsersSocket } from '../../engine/socket';
 
 import TableTabs from './TableTabs';
 import TableChat from './TableChat';
+import RecaveModal from './RecaveModal';
+
 const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) => {
     const [tableState, setTableState] = useState({});
     const [betSize, setBetSize] = useState(0);
@@ -63,11 +66,12 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
     const [hideStack, setHideStack] = useState(false)
     const [winAllIn, setWinAllIn] = useState(false)
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
+    const [isRecaveModalOpen, setIsRecaveModalOpen] = useState(false)
     const [lastMatchHistory, setLastMatchHistory] = useState(null)
 
     
     useEffect(() => {
-        const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
+        const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || 'http://localhost:5000');
         socketRef.current = socket;
 
         // Reset state on entry to prevent seeing old hand data
@@ -197,7 +201,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         };
     }, [community]);
 
-    const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:5000';
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId');
@@ -319,6 +323,11 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
             
             setAvatars(data.avatars);
 
+            // Vérification de la recave
+            if (data.seats && data.seat !== undefined && data.seats[data.seat] === 0 && !data.handInProgress) {
+                setIsRecaveModalOpen(true);
+            }
+
             const hasRealAction = data?.actions?.some(a => !['smallBlind', 'bigBlind', 'ante'].includes(a.action));
 
             if(data.communityCards.length > 0 && hasRealAction) {
@@ -367,6 +376,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         });
 
         socketRef.current.on('quitsuccess', () => {
+            if (isRecaveModalOpen) return;
             onlineUsersSocket.emit('joined-tables:leave', { uid: parseInt(userId), tid: parseInt(tableId) });
             navigate('/acceuil');
         });
@@ -468,18 +478,11 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                         }
                     }
                     
-                    setLastMatchHistory({
-                        communityCards: historyData.communityCards || historyData.cartes_communes || [],
-                        allCards: parsedAllCards,
-                        playerNames: parsedPlayerNames,
-                        foldedPlayers: foldedPlayersArray,
-                        // Garder aussi les données brutes au cas où le format serait différent
-                        playerNamesMap: historyData.playerNamesMap || historyData.noms_joueurs_map || null
-                    });
+                    // Si l'API retourne un objet, on le stocke
+                    setLastMatchHistory(historyData);
                 }
             } catch (error) {
                 console.error('Error fetching last history:', error);
-                // En cas d'erreur, on ne fait rien (pas de données fictives)
             }
         };
 
@@ -514,8 +517,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
     };
 
     const getSrcCard = (card_id) => {
-        const final_id_card = card_id.replace('T', 0).toUpperCase();
-        return require(`../../image/card2/${final_id_card}.svg`);  
+        return getCardImage(card_id);
     };
 
     const actionLabels = {
@@ -686,6 +688,14 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                 lastMatchData={lastMatchHistory}
                 getSrcCard={getSrcCard}
                 playerNames={tableState.playerNames || []}
+            />
+            <RecaveModal 
+                isOpen={isRecaveModalOpen}
+                onClose={() => setIsRecaveModalOpen(false)}
+                onRecave={() => {
+                    socketRef.current.emit('recave', { tableId, userId: currentUserId });
+                    setIsRecaveModalOpen(false);
+                }}
             />
             <TableChat 
                 socketRef={socketRef}
