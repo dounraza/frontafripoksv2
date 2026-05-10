@@ -360,9 +360,10 @@ const Player = ({
                         overflow: 'hidden',
                         zIndex: -1,
                         boxShadow: tableState.toAct === i ? '0px 0px 12px 2px #00FF99' : 'none',
-                        clipPath: 'polygon(10% 0%,90% 0%, 85% 100%,   15% 100%)'
- 
-    
+                        clipPath: 'polygon(10% 0%,90% 0%, 85% 100%,   15% 100%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
                     }}
                 >
                     {tableState.toAct === i && (
@@ -372,9 +373,48 @@ const Player = ({
                                 width: '80%',
                                 height: '4px',
                                 animation: 'shrinkToLeft 12s linear forwards',
+                                marginTop: 'auto',
+                                marginBottom: '5px'
                             }}
                         ></div>
                     )}
+                </div>
+
+                <div className="player-action-status" style={{ zIndex: 1, marginTop: '2px', textAlign: 'center' }}>
+                    {
+                        (() => {
+                            if (foldedPlayers.current.has(i)) {
+                                return <div className="action" style={{ 
+                                    padding: '2px 8px', 
+                                    borderRadius: '12px', 
+                                    backgroundColor: '#ff4444', 
+                                    border: '1px solid #ff4444', 
+                                    color: ' #ffffff',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 'bold',
+                                    marginTop:'-59%'
+                                }}>Fold</div>;
+                            }
+                            const playerAction = tableState.actions?.find(item => item.playerId === i);
+                            if (playerAction && playerAction.action !== 'fold') {
+                                return (
+                                    <div className={`action`} style={{ 
+                                        padding: '2px 8px', 
+                                        borderRadius: '12px', 
+                                        backgroundColor: '#ff444433', 
+                                        border: '1px solid #ff4444', 
+                                        color: '#ff4444',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 'bold',
+                                        textTransform: 'uppercase'
+                                    }} key={i}>
+                                        {playerAction.action}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })()
+                    }
                 </div>
 
                 <div className="player-name" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '120px' }}>
@@ -434,27 +474,6 @@ const Player = ({
                     </div>
                 </div>
                 
-                <div className="player-action-status">
-                    {
-                        (() => {
-                            // Priorité au statut Fold persistant via le set foldedPlayers
-                            if (foldedPlayers.current.has(i)) {
-                                return <div className="action" style={{ color: '#ff4444' }}>Fold</div>;
-                            }
-                            
-                            // Sinon, affichage des actions en cours (ex: raise, call)
-                            const playerAction = tableState.actions?.find(item => item.playerId === i);
-                            if (playerAction && playerAction.action !== 'fold') {
-                                return (
-                                    <div className={`action`} style={{ color: '#00FF99' }} key={i}>
-                                        {playerAction.action}
-                                    </div>
-                                );
-                            }
-                            return null;
-                        })()
-                    }
-                </div>
                 <div
                     style={{
                         height: 2,
