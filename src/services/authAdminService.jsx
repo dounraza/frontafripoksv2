@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'https://backafripoksv2-production.up.railway.app';
+const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
 const API_URL = `${BASE_URL}/api/auth/admin/login`; 
 
 export const loginAdmin = async (email, password) => {

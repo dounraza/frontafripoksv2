@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './acceuil.scss';
 import { FaHome, FaGamepad, FaTrophy, FaPlay } from 'react-icons/fa';
 import { getAll } from '../../services/tableServices';
-import { getSolde } from '../../services/soldeService'; // Import correct service
 import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 import Nav from "../../component/nav/Nav";
@@ -14,33 +13,11 @@ const Acceuil = () => {
     const [tables, setTables] = useState([]);
     const [sitCounts, setSitCounts] = useState(new Map());
     const [showCaveModal, setShowCaveModal] = useState(false);
-    const [showRecavePrompt, setShowRecavePrompt] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
     const [caveAmount, setCaveAmount] = useState(0);
     const navigate = useNavigate();
-
+    
     const userId = sessionStorage.getItem('userId');
-
-    useEffect(() => {
-        getAll(setTables, setSitCounts);
-
-        // Vérification du solde
-        const checkBalance = async () => {
-            try {
-                // Créer une promesse pour récupérer le solde
-                const solde = await new Promise((resolve, reject) => {
-                    getSolde(userId, resolve); // On passe resolve comme callback
-                });
-                
-                if (solde !== undefined && (solde === 0)) {
-                    setShowRecavePrompt(true);
-                }
-            } catch (err) {
-                console.error("Erreur solde:", err);
-            }
-        };
-        if(userId) checkBalance();
-    }, [userId]);
 
     const openCaveModal = (table) => {
         setSelectedTable(table);
@@ -172,15 +149,6 @@ const Acceuil = () => {
         <div className='dashboard-container'>
             <Nav />
 
-            {showRecavePrompt && (
-                <div className="modal-overlay">
-                    <div className="cave-modal">
-                        <h3>Solde épuisé</h3>
-                        <p>Votre solde est de 0. Veuillez contacter l'administration pour recharger.</p>
-                        <button className="confirm-btn" onClick={() => setShowRecavePrompt(false)}>OK</button>
-                    </div>
-                </div>
-            )}
             {showCaveModal && (
                 <div className="modal-overlay">
                     <div className="cave-modal">

@@ -22,9 +22,46 @@ import {
 import { ToastContainer } from 'react-toastify';
 import { allHisto } from '../../../services/RetraitCryptoService';
 import { Visibility } from '@mui/icons-material';
-import { getCardImage } from '../../../utils/cardLoader';
 
 const HistoriqueMain = () => {
+  const [data, setData] = useState([]);
+  const [isHandModalOpen, setIsHandModalOpen] = useState(false);
+  const [selectedHand, setSelectedHand] = useState(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const result = await allHisto();
+      console.log("Données reçues:", result); // Debug
+      setData(Array.isArray(result) ? result : []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setData([]);
+    }
+  };
+
+  const handleOpenHandModal = (item) => {
+    console.log("Ouvrir modal pour:", item); // Debug
+    if (item) {
+      setSelectedHand(item);
+      setIsHandModalOpen(true);
+    } else {
+      console.warn("Item est null/undefined"); // Debug
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsHandModalOpen(false);
+    setSelectedHand(null);
+  };
+
+  const getSrcCard = (card_id) => {
+        const final_id_card = card_id.replace('T', 0).toUpperCase();
+        return require(`../../../image/card2/${final_id_card}.svg`);  
+    };
 
   const renderCards = (cards) => {
   // Si cards est une string JSON, on la parse

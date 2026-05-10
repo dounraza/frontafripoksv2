@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { onlineUsersSocket } from '../engine/socket';
 
-const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'https://backafripoksv2-production.up.railway.app';
+const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
 const API_URL = `${BASE_URL}/api/auth/login`; 
 
 export const login = async (email, password) => {
@@ -9,12 +9,11 @@ export const login = async (email, password) => {
     const data= { email: email, password: password }
     const response = await axios.post(API_URL, data);
     
-    const { accessToken, name, id, avatar_url } = response.data;
+    const { accessToken, name, id } = response.data;
     
     sessionStorage.setItem('accessToken', accessToken);
     sessionStorage.setItem('userName', name);
     sessionStorage.setItem('userId', id);
-    sessionStorage.setItem('avatar', avatar_url || '/avatars/0.png');
 
     onlineUsersSocket.emit('online-users:join', id);
 

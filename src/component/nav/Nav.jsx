@@ -21,7 +21,6 @@ const Nav = () => {
     
     const userId = sessionStorage.getItem('userId');
     const userName = sessionStorage.getItem('userName') || 'Joueur';
-    const avatar = sessionStorage.getItem('avatar') || '/avatars/0.png';
 
     useEffect(() => {
         if (userId && isAuthenticated()) {
@@ -72,7 +71,7 @@ const Nav = () => {
                 {/* SECTION AVATAR */}
                 <div className="user-avatar-wrapper">
                     <div className="user-info-trigger" onClick={() => setShowDropdown(!showDropdown)}>
-                        <img src={avatar} alt="Avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #FFD700' }} />
+                        <FaUserCircle className="avatar-icon" size={36} color="#FFD700" />
                         <FaChevronDown className="chevron" color="#FFD700" size={12} />
                     </div>
                     {showDropdown && (

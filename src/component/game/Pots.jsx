@@ -102,13 +102,15 @@ const Pots = ({ tableState, jetonMany, jeton, potRef, animatePotToWinner, winner
                             }}
                         >
                             {/* <img src={jetonMany} alt="" style={{ width: '56px', height: '56px', objectFit: 'contain' }} /> */}
-                              {[singleJeton, singleJeton1, singleJeton2].map((jeton, i) => (
+                            {[singleJeton, singleJeton1, singleJeton2].map((jeton, i) => (
                               <div
-                                key={`coin-${i}`}
                                 style={{
                                   width: '24px',
                                   height: '24px',
+                                  // backgroundColor: 'gold',
                                   borderRadius: '50%',
+                                  // boxShadow: `0 0 8px gold`,
+                                  // border: `2px solid white`,
                                   position: 'absolute',
                                   top: '50%',
                                   left: '50%',

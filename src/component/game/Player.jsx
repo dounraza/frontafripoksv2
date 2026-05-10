@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Smile } from "lucide-react";
 import SmileyModal from './SmileyModal';
 import { smileySocket } from '../../engine/socket';
-import jetonImg from "../../styles/image/jeton.png";
 
 const Player = ({
     i,
@@ -170,9 +169,9 @@ const Player = ({
 
         if (!tableState.playerNames[i]) return null;
 
-    const avatarJson = avatars?.find(avt => avt && avt.userId === tableState.playerIds[i]);
+    const avatarJson = avatars?.find(avt => avt.userId === tableState.playerIds[i]);
     const avatar = avatarJson?.avatar;
-    const avatarSrc = tableState.avatars && tableState.avatars[i] ? tableState.avatars[i] : (avatar ? `/avatars/${avatar}` : '/avatars/0.png');
+    const avatarSrc = `/avatars/${avatar}`;
 
     const playerRef = playerRefs[i];
     const playerRect = playerRef.current?.getBoundingClientRect();
@@ -276,11 +275,7 @@ const Player = ({
                             {(winData.allCards[i] ?? []).length > 0 && !foldedPlayers.current.has(i) && (
                                 <>
                                     {(winData.allCards[i]).map((card, idx) => (
-                                        <div className="card" key={idx} style={{ 
-                                            transition: 'all 1.5s ease-out', 
-                                            transform: 'translateX(0)',
-                                            opacity: 1
-                                        }}>
+                                        <div className="card" key={idx}>
                                             <img src={getSrcCard(card)} alt="" />
                                         </div>
                                     ))}
@@ -298,11 +293,7 @@ const Player = ({
                                         }}
                                     >
                                         {tableState.playerCards.map((card, idx) => (
-                                            <div className="card" key={idx} style={{ 
-                                                transition: 'all 1.5s ease-out', 
-                                                transform: 'translateX(0)',
-                                                opacity: 1
-                                            }}>
+                                            <div className="card" key={idx}>
                                                 <img src={getSrcCard(card)} alt="" />
                                             </div>
                                         ))}
@@ -354,7 +345,6 @@ const Player = ({
                     )}
                 </div>
 
-                    
                 <div
                     style={{
                         position: 'absolute',
@@ -368,61 +358,21 @@ const Player = ({
                         overflow: 'hidden',
                         zIndex: -1,
                         boxShadow: tableState.toAct === i ? '0px 0px 12px 2px #00FF99' : 'none',
-                        clipPath: 'polygon(10% 0%,90% 0%, 85% 100%,   15% 100%)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center'
+                        clipPath: 'polygon(10% 0%,90% 0%, 85% 100%,   15% 100%)'
+ 
+    
                     }}
                 >
                     {tableState.toAct === i && (
                         <div
                             style={{
-                                backgroundColor: 'transparent',
+                                backgroundColor: '#d6cf00e5',
                                 width: '80%',
                                 height: '4px',
                                 animation: 'shrinkToLeft 12s linear forwards',
-                                marginTop: 'auto',
-                                marginBottom: '5px'
                             }}
                         ></div>
                     )}
-                </div>
-
-                <div className="player-action-status" style={{ zIndex: 1, marginTop: '2px', textAlign: 'center' }}>
-                    {
-                        (() => {
-                            if (foldedPlayers.current.has(i)) {
-                                return <div className="action" style={{ 
-                                    padding: '2px 8px', 
-                                    borderRadius: '12px', 
-                                    backgroundColor: '#ff4444', 
-                                    border: '1px solid #ff4444', 
-                                    color: ' #ffffff',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold',
-                                    marginTop:'-59%'
-                                }}>Fold</div>;
-                            }
-                            const playerAction = tableState.actions?.find(item => item.playerId === i);
-                            if (playerAction && playerAction.action !== 'fold') {
-                                return (
-                                    <div className={`action`} style={{ 
-                                        padding: '2px 8px', 
-                                        borderRadius: '12px', 
-                                        backgroundColor: '#ff444433', 
-                                        border: '1px solid #ff4444', 
-                                        color: '#ff4444',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 'bold',
-                                        textTransform: 'uppercase'
-                                    }} key={i}>
-                                        {playerAction.action}
-                                    </div>
-                                );
-                            }
-                            return null;
-                        })()
-                    }
                 </div>
 
                 <div className="player-name" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '120px' }}>
@@ -482,11 +432,32 @@ const Player = ({
                     </div>
                 </div>
                 
+                <div className="player-action-status">
+                    {
+                        (() => {
+                            // Priorité au statut Fold persistant via le set foldedPlayers
+                            if (foldedPlayers.current.has(i)) {
+                                return <div className="action" style={{ color: '#ff4444' }}>Fold</div>;
+                            }
+                            
+                            // Sinon, affichage des actions en cours (ex: raise, call)
+                            const playerAction = tableState.actions?.find(item => item.playerId === i);
+                            if (playerAction && playerAction.action !== 'fold') {
+                                return (
+                                    <div className={`action`} style={{ color: '#00FF99' }} key={i}>
+                                        {playerAction.action}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })()
+                    }
+                </div>
                 <div
                     style={{
                         height: 2,
                         width: '75%',
-                        backgroundColor: '#FFF',
+                        backgroundColor: '#00FF99',
                         marginTop: 2,
                         marginBottom: 2,
                         borderRadius: 2,
@@ -513,7 +484,7 @@ const Player = ({
                                         </div>
                                         {playerAction.amount > 0 && (
                                             <div className="jeton">
-                                                <img src={jetonImg} alt="" />
+                                                <img src={require("../../styles/image/jeton.png")} alt="" />
                                             </div>
                                         )}
                                     </>

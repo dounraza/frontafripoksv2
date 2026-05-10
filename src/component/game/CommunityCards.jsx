@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import rever from "../../styles/image/rever.png";
 
 const CommunityCards = ({
     community, communityShow, communityToShow, communityReversNb, moveCommCards,
@@ -51,7 +50,7 @@ const CommunityCards = ({
                                         }, 500);
                                     }}
                                 >
-                                    <img src={rever} alt="" />
+                                    <img src={require("../../styles/image/rever.png")} alt="" />
                                 </div>
                             )
                         })}
@@ -61,9 +60,8 @@ const CommunityCards = ({
                             {allInArr.length > 0 ? (
                                 <div className="card-community"
                                     style={{
-                                        // Animation slide lente de droite vers la gauche
-                                        transition: 'all 1.5s ease-out',
-                                        transform: communityToShow[i] === card ? 'translateX(0) rotateY(0deg)' : 'translateX(100px) rotateY(0deg)',
+                                        transition: 'all .8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                        transform: communityToShow[i] === card ? 'translateX(0) rotateY(0deg)' : 'translateX(-50px) rotateY(90deg)',
                                         opacity: communityToShow[i] === card ? 1 : 0
                                     }}
                                 >
@@ -72,8 +70,7 @@ const CommunityCards = ({
                             ) : (
                                 <div className="card-community"
                                     style={{
-                                        // Animation slide lente de droite vers la gauche
-                                        transition: 'all 1.5s ease-out',
+                                        transition: 'all .8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                                         transform: 'translateX(0) rotateY(0deg)',
                                         opacity: 1
                                     }}
@@ -112,7 +109,7 @@ const CommunityCards = ({
                                 playSound('showCard');
                             }}
                         >
-                            <img src={rever} alt="" />
+                            <img src={require("../../styles/image/rever.png")} alt="" />
                         </div>
                     ))}
                 </div>
