@@ -276,7 +276,11 @@ const Player = ({
                             {(winData.allCards[i] ?? []).length > 0 && !foldedPlayers.current.has(i) && (
                                 <>
                                     {(winData.allCards[i]).map((card, idx) => (
-                                        <div className="card" key={idx}>
+                                        <div className="card" key={idx} style={{ 
+                                            transition: 'all 1.5s ease-out', 
+                                            transform: 'translateX(0)',
+                                            opacity: 1
+                                        }}>
                                             <img src={getSrcCard(card)} alt="" />
                                         </div>
                                     ))}
@@ -294,7 +298,11 @@ const Player = ({
                                         }}
                                     >
                                         {tableState.playerCards.map((card, idx) => (
-                                            <div className="card" key={idx}>
+                                            <div className="card" key={idx} style={{ 
+                                                transition: 'all 1.5s ease-out', 
+                                                transform: 'translateX(0)',
+                                                opacity: 1
+                                            }}>
                                                 <img src={getSrcCard(card)} alt="" />
                                             </div>
                                         ))}

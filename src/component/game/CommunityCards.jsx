@@ -61,8 +61,9 @@ const CommunityCards = ({
                             {allInArr.length > 0 ? (
                                 <div className="card-community"
                                     style={{
-                                        transition: 'all .8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                                        transform: communityToShow[i] === card ? 'translateX(0) rotateY(0deg)' : 'translateX(-50px) rotateY(90deg)',
+                                        // Animation slide lente de droite vers la gauche
+                                        transition: 'all 1.5s ease-out',
+                                        transform: communityToShow[i] === card ? 'translateX(0) rotateY(0deg)' : 'translateX(100px) rotateY(0deg)',
                                         opacity: communityToShow[i] === card ? 1 : 0
                                     }}
                                 >
@@ -71,7 +72,8 @@ const CommunityCards = ({
                             ) : (
                                 <div className="card-community"
                                     style={{
-                                        transition: 'all .8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                        // Animation slide lente de droite vers la gauche
+                                        transition: 'all 1.5s ease-out',
                                         transform: 'translateX(0) rotateY(0deg)',
                                         opacity: 1
                                     }}

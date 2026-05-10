@@ -22,6 +22,7 @@ import { onlineUsersSocket } from '../../engine/socket';
 
 import TableTabs from './TableTabs';
 import TableChat from './TableChat';
+import RecaveModal from './RecaveModal';
 
 const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) => {
     const [tableState, setTableState] = useState({});
@@ -65,6 +66,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
     const [hideStack, setHideStack] = useState(false)
     const [winAllIn, setWinAllIn] = useState(false)
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
+    const [isRecaveModalOpen, setIsRecaveModalOpen] = useState(false)
     const [lastMatchHistory, setLastMatchHistory] = useState(null)
 
     
@@ -321,6 +323,11 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
             
             setAvatars(data.avatars);
 
+            // Vérification de la recave
+            if (data.seats && data.seat !== undefined && data.seats[data.seat] === 0 && !data.handInProgress) {
+                setIsRecaveModalOpen(true);
+            }
+
             const hasRealAction = data?.actions?.some(a => !['smallBlind', 'bigBlind', 'ante'].includes(a.action));
 
             if(data.communityCards.length > 0 && hasRealAction) {
@@ -369,6 +376,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         });
 
         socketRef.current.on('quitsuccess', () => {
+            if (isRecaveModalOpen) return;
             onlineUsersSocket.emit('joined-tables:leave', { uid: parseInt(userId), tid: parseInt(tableId) });
             navigate('/acceuil');
         });
@@ -680,6 +688,14 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                 lastMatchData={lastMatchHistory}
                 getSrcCard={getSrcCard}
                 playerNames={tableState.playerNames || []}
+            />
+            <RecaveModal 
+                isOpen={isRecaveModalOpen}
+                onClose={() => setIsRecaveModalOpen(false)}
+                onRecave={() => {
+                    socketRef.current.emit('recave', { tableId, userId: currentUserId });
+                    setIsRecaveModalOpen(false);
+                }}
             />
             <TableChat 
                 socketRef={socketRef}
