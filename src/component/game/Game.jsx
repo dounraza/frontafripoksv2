@@ -67,7 +67,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
 
     
     useEffect(() => {
-        const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
+        const socket = io(process.env.REACT_APP_SOCKET_URL || 'https://backafripoksv2-production.up.railway.app');
         socketRef.current = socket;
 
         // Reset state on entry to prevent seeing old hand data

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { onlineUsersSocket } from '../engine/socket';
 
-const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL || 'https://backafripoksv2-production.up.railway.app';
 const API_URL = `${BASE_URL}/api/auth/login`; 
 
 export const login = async (email, password) => {
