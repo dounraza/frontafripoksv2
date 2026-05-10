@@ -197,7 +197,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         };
     }, [community]);
 
-    const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const BASE_URL = process.env.REACT_APP_BASE_URL || 'https://backafripoksv2-production.up.railway.app';
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId');
