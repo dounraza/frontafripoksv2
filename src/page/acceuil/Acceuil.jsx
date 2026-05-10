@@ -20,6 +20,13 @@ const Acceuil = () => {
     const navigate = useNavigate();
 
     const userId = sessionStorage.getItem('userId');
+    const [solde, setSold] = useState(0);
+
+    useEffect(() => {
+        if(solde === 0) {
+            // Potential logic for recave prompt
+        }
+    }, [solde]);
 
     useEffect(() => {
         getAll(setTables, setSitCounts);
@@ -27,17 +34,12 @@ const Acceuil = () => {
         // Vérification du solde
         const checkBalance = async () => {
             try {
-                // Le service soldeService exporte un objet default : {soldeInit, getSolde, ...}
-                // Il faut importer l'objet ou utiliser la méthode correcte
-                const soldeData = await getSolde(userId);
-                // Si getSolde retourne directement le solde ou un objet
-                if (soldeData && (soldeData.montant === 0 || soldeData === 0)) {
-                    setShowRecavePrompt(true);
-                }
+                await getSolde(userId, setSold);
             } catch (err) {
                 console.error("Erreur solde:", err);
             }
         };
+
         if(userId) checkBalance();
     }, [userId]);
 
