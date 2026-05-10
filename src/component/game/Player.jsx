@@ -346,6 +346,7 @@ const Player = ({
                     )}
                 </div>
 
+                    
                 <div
                     style={{
                         position: 'absolute',
@@ -367,7 +368,7 @@ const Player = ({
                     {tableState.toAct === i && (
                         <div
                             style={{
-                                backgroundColor: '#d6cf00e5',
+                                backgroundColor: 'transparent',
                                 width: '80%',
                                 height: '4px',
                                 animation: 'shrinkToLeft 12s linear forwards',
@@ -458,7 +459,7 @@ const Player = ({
                     style={{
                         height: 2,
                         width: '75%',
-                        backgroundColor: '#00FF99',
+                        backgroundColor: '#FFF',
                         marginTop: 2,
                         marginBottom: 2,
                         borderRadius: 2,

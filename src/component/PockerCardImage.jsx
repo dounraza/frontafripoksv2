@@ -87,9 +87,9 @@ const PokerCardImage = ({ index, src, fallback }) => {
                         height: "100%",
                         objectFit: "cover",
                         opacity: 0.85,
-                    }}
-                />
-            )}
+                        borderRadius: "8px",
+                        }}
+                        />            )}
         </div>
     );
 };
