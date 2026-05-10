@@ -18,6 +18,13 @@ const Acceuil = () => {
     const navigate = useNavigate();
     
     const userId = sessionStorage.getItem('userId');
+    const [solde, setSold] = useState(0);
+
+    useEffect(() => {
+        if(solde === 0) {
+            // Potential logic for recave prompt
+        }
+    }, [solde]);
 
     const openCaveModal = (table) => {
         setSelectedTable(table);

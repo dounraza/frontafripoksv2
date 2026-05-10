@@ -67,7 +67,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
 
     
     useEffect(() => {
-        const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
+        const socket = io((typeof process !== 'undefined' && process.env && process.env.REACT_APP_SOCKET_URL) || 'http://localhost:5000');
         socketRef.current = socket;
 
         // Reset state on entry to prevent seeing old hand data
@@ -197,7 +197,8 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         };
     }, [community]);
 
-    const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
+    const BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_SOCKET_URL) || 
+                     'https://backafripoksv2-production.up.railway.app';
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId');
@@ -207,6 +208,10 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
             auth: {
                 token: sessionStorage.getItem("accessToken"),
             },
+            withCredentials: true,
+            extraHeaders: {
+                "Access-Control-Allow-Origin": "*"
+            }
         });
 
         socketRef.current.on('connect', () => {
@@ -515,7 +520,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
 
     const getSrcCard = (card_id) => {
         const final_id_card = card_id.replace('T', 0).toUpperCase();
-        return require(`../../image/card2/${final_id_card}.svg`);  
+        return new URL(`../../image/card2/${final_id_card}.svg`, import.meta.url).href;
     };
 
     const actionLabels = {
