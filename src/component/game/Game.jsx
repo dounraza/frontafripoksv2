@@ -197,7 +197,8 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         };
     }, [community]);
 
-    const BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_BASE_URL) || 'http://localhost:5000';
+    const BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_SOCKET_URL) || 
+                     (window.location.origin.includes('vercel') ? window.location.origin : 'http://localhost:5000');
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId');
