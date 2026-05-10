@@ -257,7 +257,7 @@
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(10, 10, 10, 0.85) 100%);
+                background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(10, 10, 10, 0.6) 100%);
                 transition: all 0.3s;
             }
 
@@ -267,6 +267,10 @@
                 border-color: rgba(248, 197, 55, 0.3); 
                 transform: translateY(-4px);
                 box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+
+                &::before {
+                    background: linear-gradient(135deg, rgba(10, 10, 10, 0.7) 0%, rgba(10, 10, 10, 0.5) 100%);
+                }
             }
 
             .lobby-card-title { 
@@ -431,56 +435,9 @@
     }
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3000;
-}
-
-.cave-modal {
-    background: #1a1a1a;
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px solid var(--gold);
-    width: 350px;
-    text-align: center;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-
-    h3 { color: var(--gold); margin-bottom: 20px; }
-    p { color: white; margin-bottom: 20px; }
-    
-    input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #333;
-        background: #000;
-        color: white;
-        margin-bottom: 20px;
-        text-align: center;
-        font-size: 1.1rem;
-    }
-
-    .modal-actions {
-        display: flex;
-        gap: 15px;
-        button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 800;
-            cursor: pointer;
-        }
-        .cancel-btn { background: #333; color: white; }
-        .confirm-btn { background: var(--gold); color: #000; }
-    }
+@media (max-width: 992px) {
+    .dashboard-container .welcome-section .features-grid { grid-template-columns: 1fr; }
+    .dashboard-container .welcome-section .hero-banner h1 { font-size: 2.5rem; }
 }
 
 @media (max-width: 768px) {

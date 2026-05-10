@@ -12,37 +12,9 @@ const Acceuil = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [tables, setTables] = useState([]);
     const [sitCounts, setSitCounts] = useState(new Map());
-    const [showCaveModal, setShowCaveModal] = useState(false);
-    const [selectedTable, setSelectedTable] = useState(null);
-    const [caveAmount, setCaveAmount] = useState(0);
     const navigate = useNavigate();
     
     const userId = sessionStorage.getItem('userId');
-    const [solde, setSold] = useState(0);
-
-    useEffect(() => {
-        if(solde === 0) {
-            // Potential logic for recave prompt
-        }
-    }, [solde]);
-
-    const openCaveModal = (table) => {
-        setSelectedTable(table);
-        setCaveAmount(table.cave || 0);
-        setShowCaveModal(true);
-    };
-
-    const confirmJoinTable = () => {
-        if (selectedTable) {
-            const amount = Number(caveAmount);
-            if (amount < selectedTable.cave) {
-                alert(`Le montant minimum requis est de ${selectedTable.cave.toLocaleString()} Ar.`);
-                return;
-            }
-            navigate(`/game/${selectedTable.id}?cave=${amount}`);
-            setShowCaveModal(false);
-        }
-    };
 
     const tableImages = [
         "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=400",
@@ -61,6 +33,8 @@ const Acceuil = () => {
             return matchesGame && matchesSearch;
         });
     }, [tables, gameFilter, searchTerm]);
+
+    const goToTable = (tableId) => navigate(`/game/${tableId}`);
 
     const renderContent = () => {
         if (activeTab === 'home') {
@@ -130,7 +104,7 @@ const Acceuil = () => {
                             <h4 className="lobby-card-title">{table.name}</h4>
                             
                             <div className="play-button-container">
-                                <button className="lobby-play-btn-circle" onClick={() => openCaveModal(table)}>
+                                <button className="lobby-play-btn-circle" onClick={() => goToTable(table.id)}>
                                     <FaPlay color="black" size={18} />
                                 </button>
                             </div>
@@ -155,24 +129,6 @@ const Acceuil = () => {
     return (
         <div className='dashboard-container'>
             <Nav />
-
-            {showCaveModal && (
-                <div className="modal-overlay">
-                    <div className="cave-modal">
-                        <h3>Sélectionnez votre cave</h3>
-                        <p>Table: {selectedTable?.name}</p>
-                        <input 
-                            type="number" 
-                            value={caveAmount} 
-                            onChange={(e) => setCaveAmount(e.target.value)}
-                        />
-                        <div className="modal-actions">
-                            <button className="cancel-btn" onClick={() => setShowCaveModal(false)}>Annuler</button>
-                            <button className="confirm-btn" onClick={confirmJoinTable}>Rejoindre</button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             <nav className="tabs-nav" style={{ marginTop: '80px' }}>
                 <button className={`tab-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}><FaHome /> Home</button>

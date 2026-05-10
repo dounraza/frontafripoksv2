@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-     "vite": "^7.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.2",
@@ -26,14 +25,15 @@
     "react-toastify": "^11.0.5",
     "sass": "^1.87.0",
     "socket.io-client": "^4.8.1",
+    "vite": "^8.0.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=truereact-scripts build",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev":"vite"
+    "dev": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
