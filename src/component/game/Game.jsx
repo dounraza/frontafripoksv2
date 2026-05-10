@@ -470,18 +470,11 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                         }
                     }
                     
-                    setLastMatchHistory({
-                        communityCards: historyData.communityCards || historyData.cartes_communes || [],
-                        allCards: parsedAllCards,
-                        playerNames: parsedPlayerNames,
-                        foldedPlayers: foldedPlayersArray,
-                        // Garder aussi les données brutes au cas où le format serait différent
-                        playerNamesMap: historyData.playerNamesMap || historyData.noms_joueurs_map || null
-                    });
+                    // Si l'API retourne un objet, on le stocke
+                    setLastMatchHistory(historyData);
                 }
             } catch (error) {
                 console.error('Error fetching last history:', error);
-                // En cas d'erreur, on ne fait rien (pas de données fictives)
             }
         };
 

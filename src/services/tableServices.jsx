@@ -46,7 +46,7 @@ export const isUserInTable = async (userId) => {
 
 export const getLastHistory = async (tableName) => {
   try {
-    const response = await api.get(`/api/table/${tableName}/last`);
+    const response = await api.get(`/api/historique/table/${tableName}/last`);
     return response.data;
   } catch (error) {
     console.error('Error fetching last history:', error);

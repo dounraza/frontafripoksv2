@@ -170,9 +170,9 @@ const Player = ({
 
         if (!tableState.playerNames[i]) return null;
 
-    const avatarJson = avatars?.find(avt => avt.userId === tableState.playerIds[i]);
+    const avatarJson = avatars?.find(avt => avt && avt.userId === tableState.playerIds[i]);
     const avatar = avatarJson?.avatar;
-    const avatarSrc = `/avatars/${avatar}`;
+    const avatarSrc = tableState.avatars && tableState.avatars[i] ? tableState.avatars[i] : (avatar ? `/avatars/${avatar}` : '/avatars/0.png');
 
     const playerRef = playerRefs[i];
     const playerRect = playerRef.current?.getBoundingClientRect();

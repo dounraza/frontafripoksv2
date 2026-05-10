@@ -9,11 +9,12 @@ export const login = async (email, password) => {
     const data= { email: email, password: password }
     const response = await axios.post(API_URL, data);
     
-    const { accessToken, name, id } = response.data;
+    const { accessToken, name, id, avatar_url } = response.data;
     
     sessionStorage.setItem('accessToken', accessToken);
     sessionStorage.setItem('userName', name);
     sessionStorage.setItem('userId', id);
+    sessionStorage.setItem('avatar', avatar_url || '/avatars/0.png');
 
     onlineUsersSocket.emit('online-users:join', id);
 
