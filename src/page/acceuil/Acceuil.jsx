@@ -27,11 +27,12 @@ const Acceuil = () => {
         // Vérification du solde
         const checkBalance = async () => {
             try {
-                // Le service soldeService exporte un objet default : {soldeInit, getSolde, ...}
-                // Il faut importer l'objet ou utiliser la méthode correcte
-                const soldeData = await getSolde(userId);
-                // Si getSolde retourne directement le solde ou un objet
-                if (soldeData && (soldeData.montant === 0 || soldeData === 0)) {
+                // Créer une promesse pour récupérer le solde
+                const solde = await new Promise((resolve, reject) => {
+                    getSolde(userId, resolve); // On passe resolve comme callback
+                });
+                
+                if (solde !== undefined && (solde === 0)) {
                     setShowRecavePrompt(true);
                 }
             } catch (err) {
