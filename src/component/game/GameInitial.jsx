@@ -10,8 +10,7 @@ import rever from "../../styles/image/rever.png";
 import jeton from "../../styles/image/jeton.png";
 import jetonMany from "../../styles/image/jetonMany.png";
 import tableTexture from "../../styles/image/vert_table.png";
-//vert_table_rot
-import tableTextureLandscape from "../../styles/image/vert_afripoks.png";
+
 import PlayerActions from './PlayerActions';
 import Player from './Player';
 import CommunityCards from './CommunityCards';
@@ -66,35 +65,26 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
     const [lastMatchHistory, setLastMatchHistory] = useState(null)
 
-      // ✅ Tu ajoutes ici
-    const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
-
+    
     useEffect(() => {
-        const handleResize = () => {
-            setIsLandscape(window.innerWidth > window.innerHeight);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-    // useEffect(() => {
-    //     const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
-    //     socketRef.current = socket;
+        const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000');
+        socketRef.current = socket;
 
-    //     const userId = sessionStorage.getItem('userId');
-    //     const username = sessionStorage.getItem('userName'); // ✅ FIX: 'userName' pas 'username'
+        const userId = sessionStorage.getItem('userId');
+        const username = sessionStorage.getItem('userName'); // ✅ FIX: 'userName' pas 'username'
 
-    //     // Rejoindre la table
-    //     socket.emit('join_table', { tableId, userId, username });
+        // Rejoindre la table
+        socket.emit('join_table', { tableId, userId, username });
 
-    //     // ✅ CLEANUP CORRECT
-    //     return () => {
-    //         // Émettre que l'utilisateur quitte la table (événement custom)
-    //         socket.emit('leave_table', { tableId, userId });
+        // ✅ CLEANUP CORRECT
+        return () => {
+            // Émettre que l'utilisateur quitte la table (événement custom)
+            socket.emit('leave_table', { tableId, userId });
             
-    //         // Déconnexion propre
-    //         socket.disconnect(); // ✅ Pas socket.emit('disconnect')
-    //     };
-    // }, [tableId]);
+            // Déconnexion propre
+            socket.disconnect(); // ✅ Pas socket.emit('disconnect')
+        };
+    }, [tableId]);
     /**
      * Plays sound
      * 
@@ -161,26 +151,22 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
 
         const timeouts = [];
         if (diff > 1) {
-            let timeindex = 0;
             for(let i = communityShow.length; i < community.length; i++) {
                 const newShowCards = community.slice(0, i + 1);
                 
                 const timeout = setTimeout(() => {
                     console.log('Community show', newShowCards);
-                    console.log(i);
+                    setCommunityShow(newShowCards);
                     setTimeout(() => {
-                        setCommunityShow(newShowCards);
-                        setTimeout(() => {
-                            setCommunityToShow(prev => [...prev, newShowCards[i]]);
-                        }, 100);
-                    }, 500);
+                        setCommunityToShow(prev => [...prev, newShowCards[i]]);
+                    }, 50);
+                    
                     if (i + 1 === community.length) {
                         setIsRevealFinished(true);
                     }
-                }, (timeindex * 1000));
+                }, (i - communityShow.length) * 200);
 
                 timeouts.push(timeout);
-                timeindex ++;
             }
         }
         return () => {
@@ -192,9 +178,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
         const userId = sessionStorage.getItem('userId');
         if(!tableId) return;
 
-        const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
-
-        socketRef.current = io(BASE_URL, {
+        socketRef.current = io(process.env.REACT_APP_BASE_URL, {
             auth: {
                 token: sessionStorage.getItem("accessToken"),
             },
@@ -559,8 +543,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                     }}
                 >
                     <img 
-                        
-                        src={isLandscape ? tableTextureLandscape : tableTexture}
+                        src={tableTexture} 
                         alt=""
                         style={{
                             width: 'calc(408px)',
@@ -604,7 +587,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                 })}
             </div>
 
-            {/* {!tableState.handInProgress && ( */}
+            {!tableState.handInProgress && (
                 <div 
                     className="exit" 
                     onClick={() => quitter()}
@@ -617,7 +600,7 @@ const Game = ({tableId, tableSessionIdShared, setTableSessionId, cavePlayer }) =
                     <ArrowBigLeft size={24} style={{ marginRight: 0 }} />
                     Quitter
                 </div>
-            {/* )} */}
+            )}
 
             <div
                 style={{

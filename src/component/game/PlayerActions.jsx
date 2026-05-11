@@ -2,7 +2,7 @@ import React from 'react';
 import { Plus, Minus, Smile } from 'lucide-react';
 
 const actionLabels = {
-    fold: 'Fold',
+    fold: 'Coucher',
     check: 'Parole',
     call: 'Suivre',
 };
@@ -18,12 +18,7 @@ const PlayerActions = ({
             (action !== 'raise' && action !== 'bet') ? (
                 <div 
                     key={action} 
-                    className={`poker-button ${
-                        action === 'fold' ? 'button-green' : 
-                        action === 'check' ? 'button-teal' : 
-                        action === 'call' ? 'button-green' :
-                        'button-teal'
-                    }`}
+                    className={`btn-${action === 'check' || action === 'call' ? 'call' : action}`}
                     onClick={() => emitPlayerAction(action)}
                 >
                     {actionLabels[action] || action.charAt(0).toUpperCase() + action.slice(1)}
@@ -31,37 +26,37 @@ const PlayerActions = ({
             ) : null
         ))}
         {(tableState.legalActions.actions.includes('raise') || tableState.legalActions.actions.includes('bet')) && (
-            <div className="poker-button button-red" onClick={() => emitPlayerAction('raise', Number(tableState.legalActions.chipRange.max))}>
+            <div className="btn-allin" onClick={() => emitPlayerAction('raise', Number(tableState.legalActions.chipRange.max))}>
                 Tapis
             </div>
         )}
     </div>
     {(tableState.legalActions.actions.includes('raise') || tableState.legalActions.actions.includes('bet')) && (
-        <div className="input-group">
-            <div className="bet-input-container">
-                <div className="bet-control button-minus" onClick={minusRange}>
-                    <Minus />
-                </div>
-                <input
-                    className='bet-amount'
-                    style={{
-                        backgroundColor: 'transparent',
-                        border: '1px solid transparent'
-                    }}
-                    type="number"
-                    min={tableState.legalActions.chipRange.min}
-                    max={tableState.legalActions.chipRange.max}
-                    value={betSize}
-                    onChange={(e) => setBetSize(Number(e.target.value))}
-                />
-                <div className="bet-control button-plus" onClick={addRange}>
-                    <Plus />
-                </div>
+    <div className="input-group">
+        <div className="bet-input-container">
+            <div className="bet-control button-minus" onClick={minusRange}>
+                <Minus />
             </div>
-            <div className="poker-button button-teal" onClick={() => emitPlayerAction('raise')}>Miser / Relancer</div>
+            <input
+                className='bet-amount'
+                style={{
+                    backgroundColor: 'transparent',
+                    border: '1px solid transparent'
+                }}
+                type="number"
+                min={tableState.legalActions.chipRange.min}
+                max={tableState.legalActions.chipRange.max}
+                value={betSize}
+                onChange={(e) => setBetSize(Number(e.target.value))}
+            />
+            <div className="bet-control button-plus" onClick={addRange}>
+                <Plus />
+            </div>
         </div>
+        <div className="btn-raise" onClick={() => emitPlayerAction('raise')}>Miser/Relancer</div>
+    </div>
     )}
-</div>
+   </div>
         
     );
 };

@@ -1,30 +1,79 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import './acceuil.scss';
-import { FaHome, FaGamepad, FaTrophy, FaPlay } from 'react-icons/fa';
+import { FaHome, FaGamepad, FaTrophy, FaPlay, FaSignInAlt } from 'react-icons/fa';
 import { getAll } from '../../services/tableServices';
 import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 import Nav from "../../component/nav/Nav";
+import { JoinedTableContext } from '../../contexts/JoinedTableContext';
+import tableImg1 from '../../styles/image/table/1.jpg';
+import tableImg2 from '../../styles/image/table/2.jpg';
+import tableImg3 from '../../styles/image/table/3.jpg';
+import tableImg4 from '../../styles/image/table/4.jpg';
+import tableImg5 from '../../styles/image/table/5.jpg';
+import tableImg6 from '../../styles/image/table/6.png';
 
 const Acceuil = () => {
+    const { joinedTables } = useContext(JoinedTableContext);
     const [activeTab, setActiveTab] = useState('cash'); 
     const [gameFilter, setGameFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [tables, setTables] = useState([]);
     const [sitCounts, setSitCounts] = useState(new Map());
+    const [showModalCave, setShowModalCave] = useState(false);
+    const [selectedTableId, setSelectedTableId] = useState(null);
+    const [cave, setCave] = useState("");
+    const [solde, setSolde] = useState(0);
     const navigate = useNavigate();
     
     const userId = sessionStorage.getItem('userId');
 
-    const tableImages = [
-        "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=400",
-        "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400",
-        "https://images.unsplash.com/photo-1594996792525-d4e9ff6d8f28?w=400"
-    ];
+    const isTableJoined = (tableId) => {
+        return joinedTables.includes(parseInt(tableId));
+    };
+
+    const tableImages = useMemo(() => [
+        tableImg1, tableImg2, tableImg3, tableImg4, tableImg5, tableImg6
+    ], []);
 
     useEffect(() => {
         getAll(setTables, setSitCounts);
+        if (userId) {
+            import('../../services/soldeService').then(module => {
+                module.getSolde(userId, setSolde);
+            });
+        }
     }, [userId]);
+
+    const handleJoinClick = (tableId) => {
+        setSelectedTableId(tableId);
+        setShowModalCave(true);
+    };
+
+    const verifyCave = async (id) => {
+        const table = tables.find(t => t.id === id);
+        const caveMin = table?.cave || 0;
+
+        if (cave === '') {
+            goToTable(selectedTableId, caveMin);
+        } else if (Number(cave) >= Number(caveMin)) {
+            if (solde >= Number(cave)) {
+                goToTable(selectedTableId, cave);
+            } else {
+                alert("Votre solde est insuffisant !");
+                return;
+            }
+        } else {
+            alert(`La cave minimale est ${caveMin.toLocaleString()} Ar`);
+            return;
+        }
+
+        setShowModalCave(false);
+        setSelectedTableId(null);
+        setCave('');
+    };
+
+    const playGame = () => verifyCave(selectedTableId);
 
     const filteredTables = useMemo(() => {
         return tables.filter(t => {
@@ -34,7 +83,9 @@ const Acceuil = () => {
         });
     }, [tables, gameFilter, searchTerm]);
 
-    const goToTable = (tableId) => navigate(`/game/${tableId}`);
+    const goToTable = (tableId, caveValue) => {
+        navigate(`/game/${tableId}`, { state: { cave: caveValue } });
+    };
 
     const renderContent = () => {
         if (activeTab === 'home') {
@@ -99,14 +150,26 @@ const Acceuil = () => {
                     </div>
                 </div>
                 <div className="lobby-grid">
-                    {filteredTables.map((table) => (
-                        <div key={table.id} className="lobby-card" style={{ backgroundImage: `url(${tableImages[table.id % tableImages.length]})` }}>
-                            <h4 className="lobby-card-title">{table.name}</h4>
+                    {filteredTables.map((table) => {
+                        const joined = isTableJoined(table.id);
+                        return (
+                        <div key={table.id} 
+                             className="lobby-card" 
+                             style={{ backgroundImage: `url(${tableImages[table.id % tableImages.length]})` }}
+                             onClick={() => joined ? goToTable(table.id, null) : handleJoinClick(table.id)}>
+                            
+                            <h4 className="lobby-card-title"><i>{table.name}</i></h4>
                             
                             <div className="play-button-container">
-                                <button className="lobby-play-btn-circle" onClick={() => goToTable(table.id)}>
-                                    <FaPlay color="black" size={18} />
-                                </button>
+                                {joined ? (
+                                    <button className="lobby-play-btn-circle" title="Rejoindre">
+                                        <FaSignInAlt color="black" size={18} />
+                                    </button>
+                                ) : (
+                                    <button className="lobby-play-btn-circle" title="Jouer">
+                                        <FaPlay color="black" size={18} />
+                                    </button>
+                                )}
                             </div>
 
                             <div className="lobby-card-info-bottom">
@@ -120,7 +183,7 @@ const Acceuil = () => {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    )})}
                 </div>
             </div>
         );
@@ -142,6 +205,90 @@ const Acceuil = () => {
             <main className="main-content">
                 {renderContent()}
             </main>
+
+            {/* Modal Cave */}
+            {showModalCave && (() => {
+                const selectedTable = tables.find(t => t.id === selectedTableId);
+                const minCave = selectedTable?.cave || 0;
+                const maxCave = solde; // Limite par le solde du joueur
+                
+                // Si la cave n'est pas encore définie, on commence au minimum
+                const currentCaveValue = cave === "" ? minCave : parseInt(cave);
+
+                return (
+                    <div className="modal-overlay" onClick={() => setShowModalCave(false)}>
+                        <div className="modal-card cave-modal-premium" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-glow"></div>
+                            <div className="modal-header">
+                                <div className="table-icon">♠</div>
+                                <h3>Rejoindre {selectedTable?.name}</h3>
+                                <div className="header-divider"></div>
+                            </div>
+                            
+                            <div className="modal-body">
+                                <div className="cave-display">
+                                    <span className="label">VOTRE CAVE</span>
+                                    <div className="amount-wrapper">
+                                        <input
+                                            type="number"
+                                            value={cave === "" ? minCave : cave}
+                                            onChange={(e) => setCave(e.target.value)}
+                                            onBlur={() => {
+                                                // Optionnel : valider les bornes au focus out
+                                                const val = parseInt(cave);
+                                                if (val < minCave) setCave(minCave.toString());
+                                                if (val > maxCave) setCave(maxCave.toString());
+                                            }}
+                                            className="cave-input-premium"
+                                            autoFocus
+                                        />
+                                        <span className="currency">Ar</span>
+                                    </div>
+                                </div>
+
+                                <div className="slider-container">
+                                    <input 
+                                        type="range" 
+                                        min={minCave} 
+                                        max={Math.max(minCave, maxCave)} 
+                                        value={currentCaveValue}
+                                        onChange={(e) => setCave(e.target.value)}
+                                        className="cave-slider"
+                                    />
+                                    <div className="slider-labels">
+                                        <span>Min: {minCave.toLocaleString()}</span>
+                                        <span>Max: {maxCave.toLocaleString()}</span>
+                                    </div>
+                                </div>
+
+                                <div className="info-grid">
+                                    <div className="info-item">
+                                        <span className="info-label">SOLDE DISPONIBLE</span>
+                                        <span className="info-value gold">{solde.toLocaleString()} Ar</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">BLINDS</span>
+                                        <span className="info-value">{selectedTable?.smallBlind}/{selectedTable?.bigBlind} Ar</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modal-actions">
+                                <button className="modal-btn cancel" onClick={() => setShowModalCave(false)}>
+                                    ANNULER
+                                </button>
+                                <button 
+                                    className="modal-btn confirm-premium" 
+                                    onClick={playGame}
+                                    disabled={currentCaveValue < minCave || currentCaveValue > solde}
+                                >
+                                    C'EST PARTI !
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
         </div>
     );
 }
